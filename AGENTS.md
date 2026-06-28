@@ -4,7 +4,7 @@
 
 ## 项目结构
 
-这是一个使用 pnpm workspaces 和 lerna 管理的 monorepo。
+这是一个使用 pnpm workspaces、Changesets 和 Turbo 管理的 monorepo。
 
 ```
 packages/

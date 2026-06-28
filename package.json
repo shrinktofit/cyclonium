@@ -6,8 +6,8 @@
   "scripts": {
     "build": "turbo build",
     "test": "turbo test",
-    "ver": "lerna version --no-push --no-private",
-    "pub": "lerna publish from-package --no-private",
+    "ver": "changeset version",
+    "pub": "changeset publish",
     "clean:ours": "git clean -xdi --exclude=**/node_modules/",
     "publish": "exm publish @cyclonium/extension-cyclo"
   },
@@ -17,7 +17,6 @@
     "@cyclonium/workflow": "workspace:*",
     "@shrinktofit/eslint-config": "^0.0.3",
     "eslint": "^9.36.0",
-    "lerna": "^8.2.3",
     "turbo": "^2.9.12",
     "typescript": "6.0.2"
   }
