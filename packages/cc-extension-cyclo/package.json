@@ -2,7 +2,7 @@
   "name": "@cyclonium/extension-cyclo",
   "private": true,
   "extensionName": "cc-extension-cyclo",
-  "version": "0.0.81",
+  "version": "0.0.100",
   "type": "module",
   "package_version": 2,
   "editor": ">=3.8.5",

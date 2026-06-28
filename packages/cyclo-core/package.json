@@ -1,6 +1,6 @@
 {
   "name": "@cyclonium/core",
-  "version": "0.0.43",
+  "version": "0.0.100",
   "type": "module",
   "files": [
     "lib/**/*{.js,.d.ts}"

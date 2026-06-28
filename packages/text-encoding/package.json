@@ -1,6 +1,6 @@
 {
   "name": "@cyclonium/text-encoding",
-  "version": "0.0.14",
+  "version": "0.0.100",
   "type": "module",
   "files": [
     "lib/**/*{.js,.d.ts}"

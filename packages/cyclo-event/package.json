@@ -1,6 +1,6 @@
 {
   "name": "@cyclonium/event",
-  "version": "0.0.22",
+  "version": "0.0.100",
   "type": "module",
   "files": [
     "lib/**/*{.js,.d.ts}"

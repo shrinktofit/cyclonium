@@ -1,6 +1,6 @@
 {
   "name": "@cyclonium/abort-controller",
-  "version": "0.0.15",
+  "version": "0.0.100",
   "type": "module",
   "files": [
     "lib/**/*{.js,.d.ts}",
