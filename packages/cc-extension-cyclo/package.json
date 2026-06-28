@@ -1,6 +1,11 @@
 {
   "name": "@cyclonium/extension-cyclo",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shrinktofit/cyclonium",
+    "directory": "packages/cc-extension-cyclo"
+  },
   "extensionName": "cc-extension-cyclo",
   "version": "0.0.100",
   "type": "module",
