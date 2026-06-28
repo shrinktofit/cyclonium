@@ -8,8 +8,6 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "@cyclonium/workflow",
-    "@cyclonium/types-cc",
     "@cyclonium/extension-cyclo"
   ]
 }
