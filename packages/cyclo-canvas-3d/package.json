@@ -1,6 +1,6 @@
 {
   "name": "@cyclonium/canvas-3d",
-  "version": "0.0.100",
+  "version": "0.0.101",
   "type": "module",
   "files": [
     "lib/**/*{.js,.d.ts}"
