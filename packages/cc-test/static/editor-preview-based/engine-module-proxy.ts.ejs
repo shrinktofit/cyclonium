@@ -1,0 +1,23 @@
+<%#
+targetModuleId - Module id to proxy with.
+targetModuleSpecifier - Module id to proxy with as a JS string literal.
+preInitModuleSpecifier - Module id to the pre-init module as a JS string literal.
+postInitModuleSpecifier? - Module id to the post-init module as a JS string literal. Only applicable to 'cc' module.
+postInitOpts? - Options to pass to the post-init module.
+syntheticNamedExportsId - Specify the synthetic named exports id.
+%>
+
+import { loader as __loader } from <%- preInitModuleSpecifier %>;
+
+export const <%- syntheticNamedExportsId %> = await __loader.import(<%- targetModuleSpecifier %>);
+
+export const {
+  <% exportBindings.forEach((exportBinding) => { %>
+    <%- exportBinding %>,
+  <% }) %>
+} = <%- syntheticNamedExportsId %>;
+
+<% if (targetModuleId === 'cc') { %>
+  import { postInit } from <%- postInitModuleSpecifier %>;
+  await postInit({ cc: <%- syntheticNamedExportsId %>, ...<%- postInitOpts %> });
+<% } %>

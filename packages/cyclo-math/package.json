@@ -1,0 +1,29 @@
+{
+  "name": "@cyclonium/math",
+  "version": "0.0.17",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    "./mat3": "./lib/mat3.js",
+    "./number": "./lib/number.js",
+    "./transform-2d": "./lib/transform-2d.js",
+    "./trigonometry": "./lib/trigonometry.js",
+    "./vec2": "./lib/vec2.js",
+    "./bounds-2d": "./lib/bounds-2d.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "test": "npm run test:compile && npm run t",
+    "test:compile": "tsc -b test/tsconfig.json",
+    "t": "vitest run"
+  },
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

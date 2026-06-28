@@ -1,0 +1,29 @@
+{
+  "name": "@cyclonium/abort-controller",
+  "version": "0.0.15",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}",
+    "index.d.ts",
+    "types.d.ts"
+  ],
+  "exports": {
+    ".": {
+      "node": "./lib/global.js",
+      "browser": "./lib/global.js",
+      "types": "./index.d.ts",
+      "default": "./lib/index.js"
+    }
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "abort-controller": "^3.0.0"
+  },
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

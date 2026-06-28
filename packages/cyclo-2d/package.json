@@ -1,0 +1,47 @@
+{
+  "name": "@cyclonium/2d",
+  "version": "0.0.3",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./editor": {
+      "types": "./lib/editor.d.ts",
+      "default": "./lib/editor.js"
+    }
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "test": "npm run test:compile && npm run t",
+    "test:compile": "tsc -b test/tsconfig.json",
+    "t": "vitest run --browser.headless=true",
+    "test:browser:dev": "vitest"
+  },
+  "peerDependencies": {
+    "@cyclonium/core": "workspace:*",
+    "@cyclonium/editor": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@cyclonium/editor": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@cyclonium/cc-test": "workspace:*",
+    "@cyclonium/editor": "workspace:*",
+    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/types-cc": "workspace:*",
+    "@types/node": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
+    "playwright": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

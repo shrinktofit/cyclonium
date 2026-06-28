@@ -1,0 +1,28 @@
+{
+  "name": "@cyclonium/event",
+  "version": "0.0.22",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "test": "npm run test:compile && npm run t",
+    "test:compile": "tsc -b test/tsconfig.json",
+    "t": "vitest run"
+  },
+  "dependencies": {
+    "@cyclonium/abort-controller": "workspace:*",
+    "@cyclonium/algorithm": "workspace:*"
+  },
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@cyclonium/handles",
+  "version": "0.0.3",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    }
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "dev": "tsc -b --watch"
+  },
+  "peerDependencies": {
+    "@cyclonium/core": "workspace:*"
+  },
+  "dependencies": {
+    "@cyclonium/canvas-3d": "workspace:*"
+  },
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/types-cc": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@cyclonium/rapier2d",
+  "version": "0.0.12",
+  "type": "module",
+  "files": [
+    "lib",
+    "!lib/**/*.map"
+  ],
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "tsc -b --noEmit && vite build",
+    "dev": "vite build --watch"
+  },
+  "devDependencies": {
+    "@cocos/creator-types": "catalog:",
+    "@dimforge/rapier2d": "^0.15.0",
+    "typescript": "catalog:",
+    "unplugin-dts": "1.0.0-beta.6",
+    "vite": "catalog:"
+  }
+}

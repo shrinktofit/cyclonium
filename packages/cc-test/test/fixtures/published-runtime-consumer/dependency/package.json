@@ -1,0 +1,9 @@
+{
+  "name": "cc-test-runtime-consumer",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./built/index.js",
+  "exports": {
+    ".": "./built/index.js"
+  }
+}

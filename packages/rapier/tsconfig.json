@@ -1,0 +1,15 @@
+{
+  "extends": "@cyclonium/workflow/tsconfig/lib",
+  "include": ["src"],
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": [
+      "@cocos/creator-types/engine",
+      "./@types/wasm",
+      "./@types/rapier-2d",
+    ],
+  },
+}

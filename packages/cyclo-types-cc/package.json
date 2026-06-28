@@ -1,0 +1,12 @@
+{
+  "name": "@cyclonium/types-cc",
+  "version": "0.0.8",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*"
+  },
+  "dependencies": {
+    "@cocos/creator-types": "^3.8.6"
+  }
+}

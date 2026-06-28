@@ -1,0 +1,14 @@
+{
+  "extends": "@cyclonium/workflow/tsconfig/lib",
+  "include": ["src"],
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib",
+    "types": [
+      "@cyclonium/types-cc/cc",
+      "@cyclonium/types-cc/cc.env",
+    ],
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+  },
+}

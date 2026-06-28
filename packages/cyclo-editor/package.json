@@ -1,0 +1,35 @@
+{
+  "name": "@cyclonium/editor",
+  "version": "0.0.3",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./legacy-globals": {
+      "types": "./lib/legacy-globals.d.ts",
+      "default": "./lib/legacy-globals.js"
+    }
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "dev": "tsc -b --watch"
+  },
+  "dependencies": {
+    "@cyclonium/handles": "workspace:*"
+  },
+  "peerDependencies": {
+    "@cyclonium/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/types-cc": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

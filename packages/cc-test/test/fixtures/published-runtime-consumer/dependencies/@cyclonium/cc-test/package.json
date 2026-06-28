@@ -1,0 +1,8 @@
+{
+  "name": "@cyclonium/cc-test",
+  "version": "0.0.32",
+  "type": "module",
+  "exports": {
+    "./runtime": "./built/runtime/index.js"
+  }
+}

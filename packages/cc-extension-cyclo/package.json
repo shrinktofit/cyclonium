@@ -1,0 +1,50 @@
+{
+  "name": "@cyclonium/extension-cyclo",
+  "private": true,
+  "extensionName": "cc-extension-cyclo",
+  "version": "0.0.81",
+  "type": "module",
+  "package_version": 2,
+  "editor": ">=3.8.5",
+  "author": "Cyclo Team",
+  "files": [
+    "dist",
+    "!dist/**/*.map",
+    "public",
+    "mount"
+  ],
+  "main": "./dist/main.cjs",
+  "creator": {
+    "extensionName": "cc-extension-cyclo",
+    "hookScript": "./dist/hooks.cjs"
+  },
+  "vortex": {
+    "extensionName": "cc-extension-cyclo",
+    "hookScript": "./dist/hooks.cjs"
+  },
+  "scripts": {
+    "prepublishOnly": "node --run build",
+    "build": "vite build",
+    "dev": "vite build --watch"
+  },
+  "devDependencies": {
+    "@cocos/creator-types": "^3.8.5",
+    "@cyclonium/core": "workspace:*",
+    "@cyclonium/physics-2d": "workspace:*",
+    "@cyclonium/workflow": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^18.17.1",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "primevue": "^4.3.1",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  },
+  "dependencies": {
+    "@cyclonium/cc-extension-utils": "workspace:*",
+    "fs-extra": "^11.3.0",
+    "vue": "^3.5.13",
+    "winston": "^3.17.0",
+    "winston-transport": "*",
+    "yaml": "^2.7.0"
+  }
+}

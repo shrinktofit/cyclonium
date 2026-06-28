@@ -1,0 +1,18 @@
+<%#
+targetModuleId - Module id to proxy with.
+configureGuardModuleSpecifier - Module id to the configure guard module as a JS string literal.
+preInitModuleSpecifier - Module id to the pre-init module as a JS string literal.
+targetModuleSpecifier - Cocos module to export as a JS string literal.
+postInitModuleSpecifier? - Module id to the post-init module as a JS string literal. Only applicable to 'cc' module.
+postInitOpts? - Options to pass to the post-init module.
+%>
+
+import <%- configureGuardModuleSpecifier %>;
+import <%- preInitModuleSpecifier %>;
+export * from <%- targetModuleSpecifier %>;
+
+<% if (targetModuleId === 'cc') { %>
+  import * as cc from <%- targetModuleSpecifier %>;
+  import { postInit } from <%- postInitModuleSpecifier %>;
+  await postInit({ cc, ...<%- postInitOpts %> });
+<% } %>

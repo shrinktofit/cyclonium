@@ -1,0 +1,46 @@
+{
+  "name": "@cyclonium/cc-test",
+  "version": "0.0.34",
+  "type": "module",
+  "files": [
+    "lib/**/*",
+    "static/**/*",
+    "!lib/**/*.map"
+  ],
+  "exports": {
+    "./runtime": "./lib/runtime/index.js",
+    "./runtime/configure": "./lib/runtime/configure.js",
+    "./runtime/vitest-canvas-snapshot": "./lib/runtime/vitest-canvas-snapshot.js",
+    "./vitest-plugin": "./lib/vitest-plugin.js"
+  },
+  "imports": {
+    "#env": {
+      "node": "./lib/node/node.js",
+      "default": "./lib/browser/browser.js"
+    }
+  },
+  "scripts": {
+    "prepublishOnly": "npm run clean && npm run build",
+    "clean": "node -e \"const fs = require('node:fs'); fs.rmSync('lib', { recursive: true, force: true }); fs.rmSync('tsconfig.tsbuildinfo', { force: true })\"",
+    "build": "tsc -b",
+    "dev": "tsc --watch",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*",
+    "@types/ejs": "^3.1.5",
+    "@cyclonium/types-cc": "workspace:*",
+    "@types/node": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
+    "playwright": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "vitest": "*"
+  },
+  "dependencies": {
+    "@cyclonium/bundle-wasm": "workspace:*",
+    "ejs": "^5.0.2"
+  }
+}

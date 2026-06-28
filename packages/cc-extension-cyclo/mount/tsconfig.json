@@ -1,0 +1,6 @@
+{
+  "include": "assets",
+  "compilerOptions": {
+    "rootDir": "assets",
+  },
+}

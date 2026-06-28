@@ -1,0 +1,55 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`contributionModules > should emit contribution output from a CJS build 1`] = `
+[
+  {
+    "code": ""use strict";
+Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
+const node_path = require("node:path");
+const node_url = require("node:url");
+const { from, path } = { from: __filename, path: "panel-55fc01.cjs" };
+const fromFile = from.startsWith("file:") ? node_url.fileURLToPath(from) : from;
+const panel = node_path.resolve(fromFile, "..", path);
+exports.panelMain = panel;
+",
+    "name": "entry.cjs",
+  },
+  {
+    "code": ""use strict";
+Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
+function register() {
+  return "registered";
+}
+exports.register = register;
+",
+    "name": "panel-55fc01.cjs",
+  },
+]
+`;
+
+exports[`contributionModules > should emit contribution output from an ESM build 1`] = `
+[
+  {
+    "code": "import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+const { from, path } = { from: import.meta.url, path: "panel-55fc01.cjs" };
+const fromFile = from.startsWith("file:") ? fileURLToPath(from) : from;
+const panel = resolve(fromFile, "..", path);
+export {
+  panel as panelMain
+};
+",
+    "name": "entry.mjs",
+  },
+  {
+    "code": "function register() {
+  return "registered";
+}
+export {
+  register
+};
+",
+    "name": "panel-55fc01.cjs",
+  },
+]
+`;

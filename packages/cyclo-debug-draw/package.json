@@ -1,0 +1,27 @@
+{
+  "name": "@cyclonium/debug-draw",
+  "version": "0.0.27",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@cyclonium/algorithm": "workspace:*"
+  },
+  "peerDependencies": {
+    "@cyclonium/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/types-cc": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

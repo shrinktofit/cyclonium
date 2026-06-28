@@ -1,0 +1,28 @@
+{
+  "name": "@cyclonium/algorithm",
+  "version": "0.0.14",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    "./partition": "./lib/partition.js",
+    "./prune": "./lib/prune.js",
+    "./retain-if": "./lib/retain-if.js",
+    "./remove-if": "./lib/remove-if.js",
+    "./array/remove": "./lib/array/remove.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "test": "npm run test:compile && npm run t",
+    "test:compile": "tsc -b test/tsconfig.json",
+    "t": "vitest run"
+  },
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

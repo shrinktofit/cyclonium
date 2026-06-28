@@ -1,0 +1,10 @@
+<%#
+configureModuleSpecifier - Cocos configure module as a JS string literal.
+ccTestConfigureModuleSpecifier - cc-test runtime configure module as a JS string literal.
+defaultConfigure - Default configure object as JS source.
+%>
+
+import { configure } from <%- configureModuleSpecifier %>;
+import { resolveStandaloneConfigure } from <%- ccTestConfigureModuleSpecifier %>;
+
+configure(resolveStandaloneConfigure(<%- defaultConfigure %>));

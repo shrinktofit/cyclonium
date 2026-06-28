@@ -1,0 +1,45 @@
+{
+  "name": "@cyclonium/core",
+  "version": "0.0.43",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    "./internal": "./lib/export/internal.js",
+    "./framework": "./lib/export/framework.js",
+    "./utils": "./lib/export/utils.js",
+    "./legacy-decorator": "./lib/export/legacy-decorator.js",
+    "./2d": "./lib/export/2d.js",
+    "./log": "./lib/export/log.js",
+    "./math/bounds-2d": "./lib/export/math/bounds-2d.js",
+    "./math/vec2": "./lib/export/math/vec2.js",
+    "./math/number": "./lib/export/math/number.js",
+    "./math/trigonometry": "./lib/export/math/trigonometry.js",
+    "./math/mat3": "./lib/export/math/mat3.js",
+    "./math/geometry": "./lib/export/math/geometry.js",
+    "./math/ray": "./lib/export/math/ray.js",
+    "./math/transform-2d": "./lib/export/math/transform-2d.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "dev": "tsc --watch",
+    "test": "npm run test:compile && npm run t",
+    "test:compile": "tsc -b test/tsconfig.json",
+    "t": "vitest run"
+  },
+  "dependencies": {
+    "@cyclonium/abort-controller": "workspace:*",
+    "@cyclonium/algorithm": "workspace:*",
+    "@cyclonium/math": "workspace:*"
+  },
+  "devDependencies": {
+    "@cyclonium/cc-test": "workspace:*",
+    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/types-cc": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

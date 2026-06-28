@@ -1,0 +1,51 @@
+CCEffect %{
+  techniques:
+  - name: default
+    passes:
+    - vert: px2d-debugger-vs:vert
+      frag: px2d-debugger-fs:frag
+      properties:
+        z: { target: px2dDebuggerProps.x, value: 0.0, editor: { type: number } }
+      blendState:
+        targets:
+        - blend: true
+          blendSrc: src_alpha
+          blendDst: one_minus_src_alpha
+          blendSrcAlpha: src_alpha
+          blendDstAlpha: one_minus_src_alpha
+}%
+
+CCProgram px2d-debugger-vs %{
+  precision highp float;
+
+  #include <builtin/uniforms/cc-local>
+  #include <builtin/uniforms/cc-global>
+  #include <builtin/functionalities/world-transform>
+
+  in vec2 a_position;
+  in vec4 a_color;
+
+  uniform Px2dDebuggerProps {
+    vec4 px2dDebuggerProps;
+  };
+
+  out vec4 v_color;
+
+  vec4 vert() {
+    v_color = a_color;
+
+    vec3 position = vec3(a_position, px2dDebuggerProps.x);
+
+    return cc_matProj * (cc_matView * cc_matWorld) * vec4(position, 1.0);
+  }
+}%
+
+CCProgram px2d-debugger-fs %{
+  precision highp float;
+
+  in vec4 v_color;
+
+  vec4 frag () {
+    return v_color;
+  }
+}%

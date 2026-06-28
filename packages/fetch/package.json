@@ -1,0 +1,23 @@
+{
+  "name": "@cyclonium/fetch",
+  "version": "0.0.14",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b"
+  },
+  "devDependencies": {
+    "@cyclonium/minigame-globals": "workspace:*",
+    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/types-cc": "workspace:*",
+    "minigame-api-typings": "^3.8.11",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

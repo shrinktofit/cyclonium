@@ -1,0 +1,9 @@
+{
+  "include": ["."],
+  "compilerOptions": {
+    "rootDir": ".",
+    "types": [
+      "vitest"
+    ]
+  }
+}

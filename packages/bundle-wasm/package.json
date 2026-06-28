@@ -1,0 +1,32 @@
+{
+  "name": "@cyclonium/bundle-wasm",
+  "version": "0.0.19",
+  "type": "module",
+  "files": [
+    "lib/**",
+    "!lib/**/*.map",
+    "static/**"
+  ],
+  "exports": {
+    "./rollup": "./lib/rollup.js",
+    "./vite": "./lib/vite.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@cyclonium/workflow": "workspace:*",
+    "@types/ejs": "^3.1.5",
+    "@types/node": "catalog:",
+    "rollup": "^4.60.1",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "dependencies": {
+    "ejs": "^5.0.2"
+  }
+}

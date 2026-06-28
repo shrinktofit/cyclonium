@@ -1,0 +1,39 @@
+{
+  "name": "@cyclonium/cc-extension-utils",
+  "version": "0.0.12",
+  "type": "module",
+  "files": [
+    "lib/**/*",
+    "!lib/**/*.map",
+    "types/**/*"
+  ],
+  "exports": {
+    "./vite-plugins/contribution-modules": "./lib/vite-plugins/contribution-modules.js",
+    "./vite-plugins/use-editor-modules": "./lib/vite-plugins/use-editor-modules.js",
+    "./extension": "./lib/extension.js",
+    "./require-editor-module": "./lib/require-editor-module.js",
+    "./types/*": "./types/*.d.ts"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "test": "npm run test:compile && npm run t",
+    "test:compile": "tsc -b test/tsconfig.json",
+    "t": "vitest run"
+  },
+  "devDependencies": {
+    "@cocos/creator-types": "^3.8.5",
+    "@cyclonium/workflow": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.0",
+    "winston": "^3.17.0",
+    "winston-transport": "*"
+  }
+}

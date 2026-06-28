@@ -1,0 +1,51 @@
+{
+  "name": "@cyclonium/physics-2d",
+  "version": "0.0.75",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "imports": {
+    "#gizmo": {
+      "headless": "./lib/gizmo-headless.js",
+      "default": "./lib/gizmo.js"
+    },
+    "#physics-2d-debugger": {
+      "headless": "./lib/physics-2d-debugger-headless.js",
+      "default": "./lib/physics-2d-debugger.js"
+    }
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "test:browser": "vitest --no-file-parallelism --disableConsoleIntercept",
+    "test": "npm run test:compile && npm run t",
+    "test:compile": "tsc -b test/tsconfig.json",
+    "t": "npm run test:browser -- run --browser.headless=true"
+  },
+  "dependencies": {
+    "@cyclonium/algorithm": "workspace:*",
+    "@cyclonium/debug-draw": "workspace:*",
+    "@cyclonium/event": "workspace:*",
+    "@cyclonium/rapier2d": "workspace:*",
+    "@cyclonium/web-assembly": "workspace:*"
+  },
+  "peerDependencies": {
+    "@cyclonium/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@cyclonium/cc-test": "workspace:*",
+    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/types-cc": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
+    "@vitest/browser-playwright": "catalog:",
+    "fs-extra": "^11.3.0",
+    "playwright": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

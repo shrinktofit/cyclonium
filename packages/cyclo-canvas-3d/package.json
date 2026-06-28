@@ -1,0 +1,33 @@
+{
+  "name": "@cyclonium/canvas-3d",
+  "version": "0.0.3",
+  "type": "module",
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build --clean && npm run build",
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "test:browser": "vitest --no-file-parallelism --disableConsoleIntercept",
+    "test": "npm run test:compile && npm run t",
+    "test:compile": "tsc -b test/tsconfig.json",
+    "t": "npm run test:browser -- run --browser.headless=true"
+  },
+  "peerDependencies": {
+    "@cyclonium/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@cyclonium/cc-test": "workspace:*",
+    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/types-cc": "workspace:*",
+    "@types/node": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
+    "playwright": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

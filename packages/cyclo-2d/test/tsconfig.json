@@ -1,0 +1,21 @@
+{
+  "extends": "@cyclonium/workflow/tsconfig/basic",
+  "include": [
+    "./**/*.ts"
+  ],
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "rootDir": ".",
+    "skipLibCheck": true,
+    "types": [
+      "node",
+      "vitest",
+      "@cyclonium/types-cc/cc",
+      "@cyclonium/types-cc/cc.env",
+    ],
+  },
+  "references": [
+    { "path": "../tsconfig.json" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "extends": "@cyclonium/workflow/tsconfig/lib",
+  "include": ["src"],
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "rootDir": "./src",
+    "outDir": "./lib",
+    "skipLibCheck": true,
+    "types": [
+      "node",
+      "./node_modules/@cocos/creator-types/engine",
+      "./node_modules/@cocos/creator-types/editor",
+    ]
+  },
+}
