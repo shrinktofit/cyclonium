@@ -1,5 +1,13 @@
 # @cyclonium/canvas-3d
 
+## 0.0.102
+
+### Patch Changes
+
+- 1f0c093: Bump Cyclonium packages to 0.0.102.
+- Updated dependencies [1f0c093]
+  - @cyclonium/core@0.0.102
+
 ## 0.0.101
 
 ### Patch Changes
