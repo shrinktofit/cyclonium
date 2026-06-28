@@ -1,6 +1,6 @@
 {
   "name": "@cyclonium/physics-2d",
-  "version": "0.0.100",
+  "version": "0.0.101",
   "type": "module",
   "files": [
     "lib/**/*{.js,.d.ts}"
