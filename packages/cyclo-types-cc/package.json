@@ -1,6 +1,11 @@
 {
   "name": "@cyclonium/types-cc",
   "version": "0.0.100",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shrinktofit/cyclonium",
+    "directory": "packages/cyclo-types-cc"
+  },
   "private": true,
   "type": "module",
   "devDependencies": {

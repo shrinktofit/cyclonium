@@ -1,6 +1,11 @@
 {
   "name": "@cyclonium/bundle-wasm",
   "version": "0.0.101",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shrinktofit/cyclonium",
+    "directory": "packages/bundle-wasm"
+  },
   "type": "module",
   "files": [
     "lib/**",

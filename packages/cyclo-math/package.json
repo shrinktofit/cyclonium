@@ -1,6 +1,11 @@
 {
   "name": "@cyclonium/math",
   "version": "0.0.101",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shrinktofit/cyclonium",
+    "directory": "packages/cyclo-math"
+  },
   "type": "module",
   "files": [
     "lib/**/*{.js,.d.ts}"

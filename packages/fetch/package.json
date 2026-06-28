@@ -1,6 +1,11 @@
 {
   "name": "@cyclonium/fetch",
   "version": "0.0.101",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shrinktofit/cyclonium",
+    "directory": "packages/fetch"
+  },
   "type": "module",
   "files": [
     "lib/**/*{.js,.d.ts}"
