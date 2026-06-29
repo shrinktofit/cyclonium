@@ -1,5 +1,5 @@
 {
-  "name": "@cyclonium/extension-cyclo",
+  "name": "cc-extension-cyclo",
   "private": true,
   "repository": {
     "type": "git",
@@ -7,6 +7,9 @@
     "directory": "packages/cc-extension-cyclo"
   },
   "extensionName": "cc-extension-cyclo",
+  "exm": {
+    "registryPackageName": "@cyclonium/extension-cyclo"
+  },
   "version": "0.0.100",
   "type": "module",
   "package_version": 2,
