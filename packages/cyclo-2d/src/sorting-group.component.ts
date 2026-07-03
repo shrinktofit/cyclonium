@@ -2,13 +2,18 @@
 
 import { CycloComponent } from '@cyclonium/core/framework';
 import { editable, executeInEditMode, cycloClass, serializable } from '@cyclonium/core/legacy-decorator';
+import { SortingTreeGroup } from './sortable.js';
 import { SortSettings } from './sort-settings.js';
 
 @cycloClass(`cyclo.SortingGroup`)
 @executeInEditMode
-export class SortingGroup extends CycloComponent {
+export class SortingGroup extends CycloComponent implements SortingTreeGroup {
   @editable
   get sortSettings() {
+    return this._sortSettings;
+  }
+
+  get [SortingTreeGroup.Tags.sortSettings]() {
     return this._sortSettings;
   }
 
