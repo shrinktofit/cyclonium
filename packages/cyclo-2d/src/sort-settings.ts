@@ -1,9 +1,8 @@
 import { cycloClass, editable, idem, designType, serializable } from '@cyclonium/core/legacy-decorator';
 import { CCInteger } from 'cc';
-import { MIN_ORDER_IN_LAYER, MAX_ORDER_IN_LAYER, SortableRenderer } from './sortable.js';
+import { MIN_ORDER_IN_LAYER, MAX_ORDER_IN_LAYER, type SortableRenderer, type SortingTreeGroup } from './sortable.js';
 import { SortingLayer } from './sorting-layer.js';
 import { SortingTreeNode } from './sorting-tree.js';
-import type { SortingGroup } from './sorting-group.component.js';
 
 @cycloClass(`cyclo.SortSettings`)
 export class SortSettings {
@@ -42,7 +41,7 @@ export class SortSettings {
     return this._sortingTreeNode?.sortingKeyStart ?? 0;
   }
 
-  connect(sortableRenderer: SortableRenderer | SortingGroup) {
+  connect(sortableRenderer: SortableRenderer | SortingTreeGroup) {
     if (this._sortingTreeNode) {
       throw new Error('Already connected to a sorting tree node');
     }

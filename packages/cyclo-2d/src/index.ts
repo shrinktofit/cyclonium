@@ -2,6 +2,7 @@ export {
   MAX_ORDER_IN_LAYER,
   MIN_ORDER_IN_LAYER,
   SortableRenderer,
+  SortingTreeGroup,
   computeLocalSortingKey,
 } from './sortable.js';
 export { SortSettings } from './sort-settings.js';

@@ -19,6 +19,22 @@ export namespace SortableRenderer {
   }
 }
 
+export interface SortingTreeGroup extends Component {
+  readonly [SortingTreeGroup.Tags.sortSettings]: SortSettings;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace SortingTreeGroup {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  export namespace Tags {
+    export const sortSettings = Symbol('isSortingTreeGroup');
+  }
+
+  export function is(component: Component): component is SortingTreeGroup {
+    return Tags.sortSettings in component;
+  }
+}
+
 const MAX_ORDER_IN_LAYER_POW = 16;
 export const MIN_ORDER_IN_LAYER = -(2 ** (MAX_ORDER_IN_LAYER_POW - 1));
 export const MAX_ORDER_IN_LAYER = 2 ** (MAX_ORDER_IN_LAYER_POW - 1);

@@ -1,9 +1,8 @@
-import { Node, Scene } from 'cc';
-import { SortingGroup } from './sorting-group.component.js';
+import type { Node, Scene } from 'cc';
 import { assert } from '@cyclonium/core/utils';
 import { logger } from '@cyclonium/core/log';
 import { EDITOR_NOT_IN_PREVIEW } from 'cc/env';
-import { computeLocalSortingKey, SortableRenderer } from './sortable.js';
+import { computeLocalSortingKey, SortableRenderer, SortingTreeGroup } from './sortable.js';
 import type { SortSettings } from './sort-settings.js';
 
 const ENABLE_SORTING_TREE_DEBUG: boolean = (false as boolean) && !EDITOR_NOT_IN_PREVIEW;
@@ -41,10 +40,12 @@ interface SceneSortingRecord {
   };
 }
 
-type TreeNodeMap = WeakMap<SortingGroup | SortableRenderer, SortingTreeNode>;
+type SortingTreeComponent = SortingTreeGroup | SortableRenderer;
+
+type TreeNodeMap = WeakMap<SortingTreeComponent, SortingTreeNode>;
 
 export class SortingTreeNode {
-  static create(component: SortingGroup | SortableRenderer) {
+  static create(component: SortingTreeComponent) {
     if (ENABLE_SORTING_TREE_DEBUG) {
       debugLog?.log(`Request creating sorting tree node: ${component.name}`);
     }
@@ -176,14 +177,18 @@ export class SortingTreeNode {
     return this._computeLocalSortingKey(a) - this._computeLocalSortingKey(b);
   }
 
-  private static _ensureSceneSortingRecord(component: SortingGroup | SortableRenderer) {
+  private static _getSortingGroup(node: Node) {
+    return node.components.find(SortingTreeGroup.is);
+  }
+
+  private static _ensureSceneSortingRecord(component: SortingTreeComponent) {
     const scene = component.node.scene;
     let sceneSortingRecord = this._sceneSortingRecordMap.get(scene);
     if (sceneSortingRecord) {
       sceneSortingRecord.treeChangeContext.rootNodeInvolved = false;
       sceneSortingRecord.treeChangeContext.dirtyTreeNodes.length = 0;
     } else {
-      const treeNodeMap = new WeakMap<SortingGroup | SortableRenderer, SortingTreeNode>();
+      const treeNodeMap = new WeakMap<SortingTreeComponent, SortingTreeNode>();
       if (ENABLE_SORTING_TREE_DEBUG) {
         debugLog?.log(`Create(PASSIVE) sorting tree root`);
       }
@@ -214,10 +219,10 @@ export class SortingTreeNode {
     return sceneSortingRecord;
   }
 
-  private static _getOrCreateParent(sceneSortingRecord: SceneSortingRecord, component: SortingGroup | SortableRenderer) {
-    const startSceneNode = component instanceof SortingGroup ? component.node.parent : component.node;
+  private static _getOrCreateParent(sceneSortingRecord: SceneSortingRecord, component: SortingTreeComponent) {
+    const startSceneNode = SortingTreeGroup.is(component) ? component.node.parent : component.node;
     for (let currentNode: Node | null = startSceneNode; currentNode; currentNode = currentNode.parent) {
-      const sortingGroup = currentNode.getComponent(SortingGroup);
+      const sortingGroup = this._getSortingGroup(currentNode);
       if (sortingGroup && sortingGroup.enabledInHierarchy) {
         const sortingTreeNode = this._getOrCreateNode(sceneSortingRecord, sortingGroup);
         return sortingTreeNode;
@@ -226,7 +231,7 @@ export class SortingTreeNode {
     return sceneSortingRecord.rootTreeNode;
   }
 
-  private static _getOrCreateNode(sceneSortingRecord: SceneSortingRecord, component: SortingGroup | SortableRenderer) {
+  private static _getOrCreateNode(sceneSortingRecord: SceneSortingRecord, component: SortingTreeComponent) {
     {
       const existingTreeNode = sceneSortingRecord.treeNodeMap.get(component);
       if (existingTreeNode) {
@@ -250,7 +255,7 @@ export class SortingTreeNode {
     const newSortingTreeNode = this._createComponentSortingTreeNode(sceneSortingRecord, component);
     parentTreeNode._addChildSlightly(newSortingTreeNode);
     SortingTreeNode._queueUpdate(sceneSortingRecord, parentTreeNode);
-    if (component instanceof SortingGroup) {
+    if (SortingTreeGroup.is(component)) {
       debugLog?.log(`[NOTICE] Creating subtrees from ${component.name} top-to-bottom`);
       this._constructSubTree(sceneSortingRecord, newSortingTreeNode, component.node);
     }
@@ -258,7 +263,7 @@ export class SortingTreeNode {
     return newSortingTreeNode;
   }
 
-  private static _createComponentSortingTreeNode(sceneSortingRecord: SceneSortingRecord, component: SortingGroup | SortableRenderer) {
+  private static _createComponentSortingTreeNode(sceneSortingRecord: SceneSortingRecord, component: SortingTreeComponent) {
     const sortingTreeNode = new SortingTreeNode(component, sceneSortingRecord.treeNodeMap);
     sceneSortingRecord.treeNodeMap.set(component, sortingTreeNode);
     return sortingTreeNode;
@@ -289,7 +294,7 @@ export class SortingTreeNode {
     for (const childSceneNode of sceneNode.children) {
       // If child scene node is a sorting group, then itself is our child,
       // but its child scene nodes are not our children.
-      const childSortingGroup = childSceneNode.getComponent(SortingGroup);
+      const childSortingGroup = this._getSortingGroup(childSceneNode);
       if (childSortingGroup && childSortingGroup.enabledInHierarchy) {
         let childTreeNode = sceneSortingRecord.treeNodeMap.get(childSortingGroup);
         if (childTreeNode) {
@@ -335,14 +340,14 @@ export class SortingTreeNode {
   }
 
   private constructor(
-    private readonly _component: SortingGroup | SortableRenderer | undefined,
+    private readonly _component: SortingTreeComponent | undefined,
     private readonly _treeNodeMap: TreeNodeMap | undefined,
   ) {
-    this._sortSettings = _component instanceof SortingGroup
-      ? _component.sortSettings
-      : _component
-        ? _component[SortableRenderer.Tags.sortSettings]
-        : undefined;
+    this._sortSettings = _component
+      ? SortingTreeGroup.is(_component)
+        ? _component[SortingTreeGroup.Tags.sortSettings]
+        : _component[SortableRenderer.Tags.sortSettings]
+      : undefined;
   }
 
   private _parent: SortingTreeNode | undefined = undefined;
