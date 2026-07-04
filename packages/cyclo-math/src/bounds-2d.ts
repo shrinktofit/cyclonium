@@ -1,5 +1,7 @@
 import { Vec2 } from './vec2.js';
 
+const EPSILON = 1e-6;
+
 export class Bounds2D {
   static fromMinMax(min: Vec2, max: Vec2) {
     return new Bounds2D(min, max);
@@ -9,6 +11,10 @@ export class Bounds2D {
     return new Bounds2D(Vec2.ZERO, Vec2.ZERO).setCenterSize(center, size);
   }
 
+  static invertedInfinity() {
+    return Bounds2D.fromMinMax(Vec2.POSITIVE_INFINITY, Vec2.NEGATIVE_INFINITY);
+  }
+
   constructor();
   constructor(min: Vec2, max: Vec2);
   constructor(min?: Vec2, max?: Vec2) {
@@ -16,6 +22,24 @@ export class Bounds2D {
       this._min.copyFrom(min);
       this._max.copyFrom(max);
     }
+  }
+
+  clone() {
+    return Bounds2D.fromMinMax(this._min, this._max);
+  }
+
+  strictEquals(other: Bounds2D): boolean {
+    return this.xMin === other.xMin
+      && this.yMin === other.yMin
+      && this.xMax === other.xMax
+      && this.yMax === other.yMax;
+  }
+
+  equals(other: Bounds2D, epsilon = EPSILON): boolean {
+    return equalNumber(this.xMin, other.xMin, epsilon)
+      && equalNumber(this.yMin, other.yMin, epsilon)
+      && equalNumber(this.xMax, other.xMax, epsilon)
+      && equalNumber(this.yMax, other.yMax, epsilon);
   }
 
   get min() {
@@ -180,6 +204,14 @@ export class Bounds2D {
     return this;
   }
 
+  grow(delta: number) {
+    this._min.x -= delta;
+    this._min.y -= delta;
+    this._max.x += delta;
+    this._max.y += delta;
+    return this;
+  }
+
   extend(point: Vec2) {
     const { x, y } = point;
     const min = this._min;
@@ -193,4 +225,8 @@ export class Bounds2D {
   private readonly _max = new Vec2();
   private _center_cache: undefined | Vec2 = undefined;
   private _size_cache: undefined | Vec2 = undefined;
+}
+
+function equalNumber(a: number, b: number, epsilon: number) {
+  return a === b || Math.abs(a - b) < epsilon;
 }
