@@ -1,5 +1,11 @@
 # @cyclonium/canvas-3d
 
+## 0.0.103
+
+### Patch Changes
+
+- @cyclonium/core@0.0.103
+
 ## 0.0.102
 
 ### Patch Changes

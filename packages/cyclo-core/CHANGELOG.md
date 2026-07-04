@@ -1,5 +1,14 @@
 # @cyclonium/core
 
+## 0.0.103
+
+### Patch Changes
+
+- Updated dependencies [2ab6f2b]
+- Updated dependencies [438a8bd]
+  - @cyclonium/math@0.0.103
+  - @cyclonium/algorithm@1.0.0
+
 ## 0.0.102
 
 ### Patch Changes
