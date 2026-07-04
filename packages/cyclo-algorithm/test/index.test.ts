@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { partition } from '../src/partition.js';
-import { prune } from '../src/prune.js';
 import { removeIf } from '../src/remove-if.js';
 import { retainIf } from '../src/retain-if.js';
 
@@ -18,21 +17,19 @@ describe('partition', () => {
   });
 });
 
-describe('prune', () => {
-  it('should retain matching items as a deprecated alias', () => {
-    const array = [1, 2, 3];
-    prune(array, (x: number) => x > 2);
-    expect(array).toEqual([3]);
-  });
-});
-
 describe('retainIf', () => {
-  it('should retain matching items in place', () => {
-    const array = [1, 2, 3, 4, 5];
+  it('should retain matching items in place with stable order', () => {
+    const array = [
+      { id: 'a', keep: true },
+      { id: 'b', keep: false },
+      { id: 'c', keep: true },
+      { id: 'd', keep: false },
+      { id: 'e', keep: true },
+    ];
     const original = array;
-    retainIf(array, (x: number) => x % 2 === 1);
+    retainIf(array, (item) => item.keep);
     expect(array).toBe(original);
-    expect(array).toEqual([1, 3, 5]);
+    expect(array.map((item) => item.id)).toEqual(['a', 'c', 'e']);
   });
 
   it('should pass item index and array to predicate', () => {
@@ -48,15 +45,43 @@ describe('retainIf', () => {
     expect(sameArray).toEqual([true, true, true]);
     expect(array).toEqual(['a', 'c']);
   });
+
+  it('should leave an all-retained array unchanged', () => {
+    const array = [1, 2, 3];
+    const original = array;
+    retainIf(array, (x: number) => x > 0);
+    expect(array).toBe(original);
+    expect(array).toEqual([1, 2, 3]);
+  });
+
+  it('should handle removing every item', () => {
+    const array = [1, 2, 3];
+    const original = array;
+    retainIf(array, () => false);
+    expect(array).toBe(original);
+    expect(array).toEqual([]);
+  });
+
+  it('should handle empty arrays', () => {
+    const array: number[] = [];
+    retainIf(array, () => true);
+    expect(array).toEqual([]);
+  });
 });
 
 describe('removeIf', () => {
-  it('should remove matching items in place', () => {
-    const array = [1, 2, 3, 4, 5];
+  it('should remove matching items in place with stable order', () => {
+    const array = [
+      { id: 'a', remove: false },
+      { id: 'b', remove: true },
+      { id: 'c', remove: false },
+      { id: 'd', remove: true },
+      { id: 'e', remove: false },
+    ];
     const original = array;
-    removeIf(array, (x: number) => x % 2 === 0);
+    removeIf(array, (item) => item.remove);
     expect(array).toBe(original);
-    expect(array).toEqual([1, 3, 5]);
+    expect(array.map((item) => item.id)).toEqual(['a', 'c', 'e']);
   });
 
   it('should remove items by index predicate', () => {

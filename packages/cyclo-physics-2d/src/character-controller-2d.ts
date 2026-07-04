@@ -12,7 +12,7 @@ import { Transform2DComponent } from '@cyclonium/core/2d';
 import { toRadians } from '@cyclonium/core/math/trigonometry';
 import { ManagedEventEmitter } from '@cyclonium/event';
 import { logger } from '@cyclonium/core/log';
-import { prune } from '@cyclonium/algorithm/prune';
+import { retainIf } from '@cyclonium/algorithm/retain-if';
 
 enum PropertyGroup {
   common = 'Common',
@@ -380,7 +380,7 @@ export class KinematicCharacterController2D extends PhysicsComponent2DBase {
       }
     }
 
-    prune(this._collisionRecords, (record) => record.state !== CollisionRecordState.end);
+    retainIf(this._collisionRecords, (record) => record.state !== CollisionRecordState.end);
   }
 }
 

@@ -3,7 +3,7 @@ import { cycloBuiltinClass } from '../decorator/legacy/legacy-general-decorator.
 import { AbortController, AbortSignal } from '@cyclonium/abort-controller';
 import { addFrameTask, TaskPriority } from './tasking.ts';
 import { CoroutineRunner, stopCoroutine as stopCoroutineRecord, type Coroutine, type CoroutineIterator, type StartCoroutineOptions } from './coroutine.ts';
-import { prune } from '@cyclonium/algorithm/prune';
+import { retainIf } from '@cyclonium/algorithm/retain-if';
 import { EDITOR_NOT_IN_PREVIEW } from 'cc/env';
 
 class ComponentScheduler {
@@ -24,8 +24,8 @@ class ComponentScheduler {
   }
 
   prune() {
-    prune(this._fixedUpdateRegistry, ({ enabled }) => enabled);
-    prune(this._coroutineUpdateRegistry, ({ enabled }) => enabled);
+    retainIf(this._fixedUpdateRegistry, ({ enabled }) => enabled);
+    retainIf(this._coroutineUpdateRegistry, ({ enabled }) => enabled);
   }
 
   invokeFixedUpdate(deltaTime: number) {

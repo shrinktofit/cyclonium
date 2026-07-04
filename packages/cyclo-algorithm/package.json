@@ -12,7 +12,6 @@
   ],
   "exports": {
     "./partition": "./lib/partition.js",
-    "./prune": "./lib/prune.js",
     "./retain-if": "./lib/retain-if.js",
     "./remove-if": "./lib/remove-if.js",
     "./array/remove": "./lib/array/remove.js"

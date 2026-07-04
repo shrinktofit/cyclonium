@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { prune } from '@cyclonium/algorithm/prune';
+import { retainIf } from '@cyclonium/algorithm/retain-if';
 import type { EventListenerOptions } from './common.js';
 
 export type EventCallback<TEventArgs extends any[]> = (...args: TEventArgs) => void;
@@ -173,7 +173,7 @@ export class EventEmitter<TEventArgs extends any[] = []> {
     if (typeof callbacks === 'function') {
       this._callbacks = undefined;
     } else {
-      prune(callbacks, (callback) => !onceMarks.has(callback));
+      retainIf(callbacks, (callback) => !onceMarks.has(callback));
     }
     this._onceMarks = undefined;
   }

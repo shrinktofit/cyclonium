@@ -1,6 +1,6 @@
 import { Scene } from 'cc';
 import { logger } from '@cyclonium/core/log';
-import { prune } from '@cyclonium/algorithm/prune';
+import { retainIf } from '@cyclonium/algorithm/retain-if';
 import { assert } from '@cyclonium/core/utils';
 import { BodyColliderLink, BodyColliderLinkManager } from './body-collider-link.js';
 import type { Collider2D } from './collider-2d.js';
@@ -484,7 +484,7 @@ export class PhysicsWorld2D {
       }
     });
     // todo: should notify the other side?
-    prune(this._collisionRecords, (record) => record.collider1.impl !== impl && record.collider2.impl !== impl);
+    retainIf(this._collisionRecords, (record) => record.collider1.impl !== impl && record.collider2.impl !== impl);
     this._worldImpl.removeCollider(impl, wakeUp);
   }
 
