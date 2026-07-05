@@ -1,5 +1,12 @@
 # @cyclonium/physics-2d
 
+## 0.0.104
+
+### Patch Changes
+
+- @cyclonium/core@0.0.104
+- @cyclonium/debug-draw@0.0.104
+
 ## 0.0.103
 
 ### Patch Changes
