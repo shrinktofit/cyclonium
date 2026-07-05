@@ -1,5 +1,11 @@
 # @cyclonium/math
 
+## 0.0.104
+
+### Patch Changes
+
+- 9c91746: Add clone, inverted infinity, equality, and growth helpers for 2D bounds.
+
 ## 0.0.103
 
 ### Patch Changes
