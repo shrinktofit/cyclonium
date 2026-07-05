@@ -40,6 +40,27 @@ describe('Bounds2D', () => {
         expect(bounds.yMax).toBeCloseTo(0);
       });
     });
+
+    describe('invertedInfinity', () => {
+      it('should create bounds ready to extend from any point', () => {
+        /// @case
+        /// 1. An inverted infinity bounds is created and then extended by a point.
+        /// @expect
+        /// It starts with inverted infinite min/max values and becomes a point-sized bounds after extension.
+        const bounds = Bounds2D.invertedInfinity();
+
+        expect(bounds.xMin).toBe(Number.POSITIVE_INFINITY);
+        expect(bounds.yMin).toBe(Number.POSITIVE_INFINITY);
+        expect(bounds.xMax).toBe(Number.NEGATIVE_INFINITY);
+        expect(bounds.yMax).toBe(Number.NEGATIVE_INFINITY);
+
+        bounds.extend(new Vec2(1, 2));
+        expect(bounds.xMin).toBe(1);
+        expect(bounds.yMin).toBe(2);
+        expect(bounds.xMax).toBe(1);
+        expect(bounds.yMax).toBe(2);
+      });
+    });
   });
 
   describe('getters and setters', () => {
@@ -223,6 +244,65 @@ describe('Bounds2D', () => {
   });
 
   describe('instance methods', () => {
+    describe('clone', () => {
+      it('should create an independent copy', () => {
+        /// @case
+        /// 1. A bounds is cloned and the clone is mutated afterwards.
+        /// @expect
+        /// The clone preserves the original values initially and does not share vectors with the source bounds.
+        const source = Bounds2D.fromMinMax(new Vec2(1, 2), new Vec2(3, 4));
+        const copy = source.clone();
+
+        expect(copy).not.toBe(source);
+        expect(copy.min).not.toBe(source.min);
+        expect(copy.max).not.toBe(source.max);
+        expect(copy.xMin).toBe(1);
+        expect(copy.yMin).toBe(2);
+        expect(copy.xMax).toBe(3);
+        expect(copy.yMax).toBe(4);
+
+        copy.setMinMax(new Vec2(-1, -2), new Vec2(8, 9));
+        expect(source.xMin).toBe(1);
+        expect(source.yMin).toBe(2);
+        expect(source.xMax).toBe(3);
+        expect(source.yMax).toBe(4);
+      });
+    });
+
+    describe('strictEquals', () => {
+      it('should compare bounds coordinates exactly', () => {
+        /// @case
+        /// 1. Bounds with matching, different, and inverted infinity coordinates are compared exactly.
+        /// @expect
+        /// Only bounds with identical min/max coordinates are strict-equal.
+        const bounds = Bounds2D.fromMinMax(new Vec2(1, 2), new Vec2(3, 4));
+        const same = Bounds2D.fromMinMax(new Vec2(1, 2), new Vec2(3, 4));
+        const differentMin = Bounds2D.fromMinMax(new Vec2(0, 2), new Vec2(3, 4));
+        const differentMax = Bounds2D.fromMinMax(new Vec2(1, 2), new Vec2(3, 5));
+
+        expect(bounds.strictEquals(same)).toBe(true);
+        expect(bounds.strictEquals(differentMin)).toBe(false);
+        expect(bounds.strictEquals(differentMax)).toBe(false);
+        expect(Bounds2D.invertedInfinity().strictEquals(Bounds2D.invertedInfinity())).toBe(true);
+      });
+    });
+
+    describe('equals', () => {
+      it('should compare bounds coordinates approximately', () => {
+        /// @case
+        /// 1. Bounds with near, far, and inverted infinity coordinates are compared approximately.
+        /// @expect
+        /// Near finite values and exact infinities are equal, while values outside epsilon are not.
+        const bounds = Bounds2D.fromMinMax(new Vec2(1, 2), new Vec2(3, 4));
+        const near = Bounds2D.fromMinMax(new Vec2(1.0005, 1.9995), new Vec2(2.9995, 4.0005));
+        const far = Bounds2D.fromMinMax(new Vec2(1.01, 2), new Vec2(3, 4));
+
+        expect(bounds.equals(near, 0.001)).toBe(true);
+        expect(bounds.equals(far, 0.001)).toBe(false);
+        expect(Bounds2D.invertedInfinity().equals(Bounds2D.invertedInfinity())).toBe(true);
+      });
+    });
+
     describe('contains', () => {
       it('should return true when point is inside bounds', () => {
         const bounds = Bounds2D.fromMinMax(new Vec2(0, 0), new Vec2(4, 4));
@@ -335,6 +415,46 @@ describe('Bounds2D', () => {
         expect(bounds.yMin).toBeCloseTo(5);
         expect(bounds.xMax).toBeCloseTo(5);
         expect(bounds.yMax).toBeCloseTo(5);
+      });
+    });
+
+    describe('grow', () => {
+      it('should expand each edge by delta', () => {
+        /// @case
+        /// 1. A bounds is grown by a positive delta.
+        /// @expect
+        /// Each edge moves outward by delta, the center stays fixed, and the method returns this.
+        const bounds = Bounds2D.fromMinMax(new Vec2(1, 2), new Vec2(5, 8));
+        const result = bounds.grow(2);
+
+        expect(result).toBe(bounds);
+        expect(bounds.xMin).toBe(-1);
+        expect(bounds.yMin).toBe(0);
+        expect(bounds.xMax).toBe(7);
+        expect(bounds.yMax).toBe(10);
+        expect(bounds.x).toBe(3);
+        expect(bounds.y).toBe(5);
+        expect(bounds.width).toBe(8);
+        expect(bounds.height).toBe(10);
+      });
+
+      it('should shrink each edge when delta is negative', () => {
+        /// @case
+        /// 1. A bounds is grown by a negative delta.
+        /// @expect
+        /// Each edge moves inward by the absolute delta and the center stays fixed.
+        const bounds = Bounds2D.fromMinMax(new Vec2(0, 0), new Vec2(10, 10));
+
+        bounds.grow(-2);
+
+        expect(bounds.xMin).toBe(2);
+        expect(bounds.yMin).toBe(2);
+        expect(bounds.xMax).toBe(8);
+        expect(bounds.yMax).toBe(8);
+        expect(bounds.x).toBe(5);
+        expect(bounds.y).toBe(5);
+        expect(bounds.width).toBe(6);
+        expect(bounds.height).toBe(6);
       });
     });
   });
