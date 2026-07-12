@@ -13,15 +13,17 @@ vi.mock(import('cc'), async (importOriginal) => {
 });
 
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import { Camera, Color, componentEditorTraits, director, gfx, ImageAsset, Material, Node, Scene, Texture2D } from 'cc';
-import { SpriteRenderer } from '../src/sprite-renderer.component.js';
+import { Camera, Color, componentEditorTraits, director, gfx, ImageAsset, Material, Node, Rect, Scene, SpriteFrame, Texture2D } from 'cc';
+import { Canvas3D } from '@cyclonium/canvas-3d';
 import { getCanvas, setupGame } from '@cyclonium/cc-test/runtime';
 import { page } from 'vitest/browser';
+import { SpriteRenderer } from '../src/sprite-renderer.component.js';
 import '@cyclonium/cc-test/runtime/vitest-canvas-snapshot';
 
 let htmlCanvas: HTMLCanvasElement = undefined!;
 const baseTestLayer = 1 << 2;
 const customTestLayer = 1 << 3;
+const markerTestLayer = 1 << 4;
 const cullingPixelsPerUnit = 64;
 const cullingCameraHalfSize = 1;
 const cullingPixelsPerWorldUnit = 512 / (cullingCameraHalfSize * 2);
@@ -87,6 +89,80 @@ describe.sequential('SpriteRenderer', () => {
     await expectCanvasToMatchSnapshot('simple-rectangle-texture');
   });
 
+  it('renders sprite frame atlas rect UVs instead of the full texture', async () => {
+    /// @case
+    /// 1. Three SpriteFrames share one atlas texture and use a sub-rect, a flipped sub-rect, and a rotated sub-rect.
+    /// 2. Each SpriteFrame is assigned to a SpriteRenderer and rendered through the normal component path.
+    /// @expect
+    /// Rendered quads sample only their SpriteFrame UVs, and bounds use the SpriteFrame rect size.
+    const texture = createAtlasTexture();
+    const normalFrame = new SpriteFrame('atlas normal frame');
+    normalFrame.reset({
+      texture,
+      rect: new Rect(64, 0, 64, 64),
+    });
+    const flippedFrame = new SpriteFrame('atlas flipped frame');
+    flippedFrame.reset({
+      texture,
+      rect: new Rect(64, 0, 64, 64),
+    });
+    flippedFrame.flipUVX = true;
+    const rotatedFrame = new SpriteFrame('atlas rotated frame');
+    rotatedFrame.reset({
+      texture,
+      rect: new Rect(0, 0, 64, 32),
+      isRotate: true,
+    });
+
+    const scene = createScene(undefined, {
+      cameraVisibility: baseTestLayer,
+    });
+    const cases = [
+      {
+        name: 'normal',
+        position: -2,
+        sprite: normalFrame,
+        size: { x: 1, y: 1 },
+      },
+      {
+        name: 'flipped',
+        position: 0,
+        sprite: flippedFrame,
+        size: { x: 1, y: 1 },
+      },
+      {
+        name: 'rotated',
+        position: 2,
+        sprite: rotatedFrame,
+        size: { x: 1, y: 0.5 },
+      },
+    ] as const;
+    const nodes = cases.map((testCase) => {
+      const node = new Node(`atlas-${testCase.name}`);
+      node.layer = baseTestLayer;
+      node.setPosition(testCase.position, 0, 0);
+      scene.addChild(node);
+      return { ...testCase, node };
+    });
+
+    director.runSceneImmediate(scene);
+
+    for (const { node, size, sprite } of nodes) {
+      const renderer = node.addComponent(SpriteRenderer);
+      await Promise.resolve();
+      renderer.sprite = sprite;
+      renderer.pixelsPerUnit = 64;
+
+      expectBounds2DToEqual(renderer.localBounds, {
+        center: { x: 0, y: 0 },
+        size,
+      });
+    }
+
+    await microTick();
+    await expectCanvasToMatchSnapshot('atlas-rect-uvs');
+  });
+
   it('applies color changes to the rendered sprite', async () => {
     const tint = Color.fromHEX(new Color(), '#72e0a8');
     const { renderer } = await renderRectangle({
@@ -106,15 +182,15 @@ describe.sequential('SpriteRenderer', () => {
   });
 
   it('updates the rendered sprite texture, size, and empty sprite state', async () => {
-    const { renderer, texture } = await renderRectangle({
+    const { renderer, sprite } = await renderRectangle({
       nodeLayer: baseTestLayer,
     });
 
-    expect(renderer.sprite).toBe(texture);
+    expect(renderer.sprite).toBe(sprite);
     await microTick();
     await expectCanvasToMatchSnapshot('sprite-before');
 
-    const replacement = createRectangleTexture({
+    const replacement = createRectangleSpriteFrame({
       fillStyle: '#54a7ff',
       height: 128,
       width: 64,
@@ -149,7 +225,7 @@ describe.sequential('SpriteRenderer', () => {
     });
 
     renderer.pixelsPerUnit = 32;
-    renderer.sprite = createRectangleTexture({
+    renderer.sprite = createRectangleSpriteFrame({
       height: 32,
       width: 96,
     });
@@ -189,7 +265,7 @@ describe.sequential('SpriteRenderer', () => {
       size: { x: 2, y: 2 },
     });
 
-    renderer.sprite = createRectangleTexture({
+    renderer.sprite = createRectangleSpriteFrame({
       height: 512,
       width: 512,
     });
@@ -208,7 +284,7 @@ describe.sequential('SpriteRenderer', () => {
       size: { x: 512, y: 512 },
     });
 
-    renderer.sprite = createRectangleTexture({
+    renderer.sprite = createRectangleSpriteFrame({
       height: 32,
       width: 120,
     });
@@ -226,6 +302,79 @@ describe.sequential('SpriteRenderer', () => {
       center: { x: 0, y: 0 },
       size: { x: 2, y: 2 },
     });
+  });
+
+  it('uses sprite frame pivots as each local render origin', async () => {
+    /// @case
+    /// 1. Three sprite frames use pivots (0, 0), (1, 1), and (0.3, 0.8).
+    /// 2. Each renderer draws and reports bounds with the node origin at its sprite frame pivot.
+    /// @expect
+    /// Local bounds, editor bounds, and rendered quads all move relative to their marked node origins.
+    const pivotCases = [
+      {
+        fillStyle: '#ffd166',
+        name: 'bottom-left',
+        pivot: { x: 0, y: 0 },
+        position: { x: -4, y: -2 },
+        expectedLocalCenter: { x: 1, y: 0.5 },
+        expectedWorldCenter: { x: -3, y: -1.5 },
+      },
+      {
+        fillStyle: '#54a7ff',
+        name: 'top-right',
+        pivot: { x: 1, y: 1 },
+        position: { x: 4, y: 2 },
+        expectedLocalCenter: { x: -1, y: -0.5 },
+        expectedWorldCenter: { x: 3, y: 1.5 },
+      },
+      {
+        fillStyle: '#72e0a8',
+        name: 'custom',
+        pivot: { x: 0.3, y: 0.8 },
+        position: { x: 0, y: 0 },
+        expectedLocalCenter: { x: 0.4, y: -0.3 },
+        expectedWorldCenter: { x: 0.4, y: -0.3 },
+      },
+    ] as const;
+
+    const scene = createScene();
+    const nodes = pivotCases.map((pivotCase) => {
+      const node = new Node(`pivoted-sprite-${pivotCase.name}`);
+      node.setPosition(pivotCase.position.x, pivotCase.position.y, 0);
+      scene.addChild(node);
+      return { ...pivotCase, node };
+    });
+    director.runSceneImmediate(scene);
+
+    for (const pivotCase of nodes) {
+      const renderer = pivotCase.node.addComponent(SpriteRenderer);
+      await Promise.resolve();
+
+      renderer.pixelsPerUnit = 64;
+      renderer.sprite = createRectangleSpriteFrame({
+        fillStyle: pivotCase.fillStyle,
+        height: 64,
+        pivot: pivotCase.pivot,
+        width: 128,
+      });
+
+      expectBounds2DToEqual(renderer.localBounds, {
+        center: pivotCase.expectedLocalCenter,
+        size: { x: 2, y: 1 },
+      });
+
+      const bounds = renderer[componentEditorTraits.BoundingComponent.Tags.getBoundingBox]();
+      expect(bounds).toBeDefined();
+      expectAABBToEqual(bounds!, {
+        center: { ...pivotCase.expectedWorldCenter, z: 0 },
+        halfExtents: { x: 1, y: 0.5, z: 0 },
+      });
+    }
+
+    drawWorldPositionMarkers(nodes.map(({ node }) => node));
+
+    await microTick();
+    await expectCanvasToMatchSnapshot('sprite-frame-pivots');
   });
 
   it('updates the rendered sprite size when pixelsPerUnit changes', async () => {
@@ -366,20 +515,20 @@ async function renderRectangle(opts: {
   }));
 
   const renderer = node.addComponent(SpriteRenderer);
-  const texture = createRectangleTexture({
+  const sprite = createRectangleSpriteFrame({
     fillStyle: opts.textureFillStyle,
     height: opts.textureHeight,
     width: opts.textureWidth,
   });
   await Promise.resolve();
-  renderer.sprite = texture;
+  renderer.sprite = sprite;
   renderer.pixelsPerUnit = opts.pixelsPerUnit ?? 64;
   renderer.color = opts.color ?? Color.WHITE;
 
   tick();
   tick();
   tick();
-  return { node, parentNode, renderer, texture };
+  return { node, parentNode, renderer, sprite };
 }
 
 async function renderCullingEdgeRectangles() {
@@ -400,13 +549,13 @@ async function renderCullingEdgeRectangles() {
 
   for (const { edgeCase, node } of nodes) {
     const renderer = node.addComponent(SpriteRenderer);
-    const texture = createRectangleTexture({
+    const sprite = createRectangleSpriteFrame({
       fillStyle: edgeCase.color,
       height: edgeCase.height,
       width: edgeCase.width,
     });
     await Promise.resolve();
-    renderer.sprite = texture;
+    renderer.sprite = sprite;
     renderer.pixelsPerUnit = cullingPixelsPerUnit;
     renderer.color = Color.WHITE;
   }
@@ -446,11 +595,15 @@ function createScene(spriteNode?: Node, opts: {
   cameraOrthoHeight?: number;
   cameraPosition?: { x?: number; y?: number; z?: number };
   cameraVisibility?: number;
+  clearFlags?: gfx.ClearFlagBit;
+  priority?: number;
 } = {}) {
   const scene = new Scene('sprite-renderer');
   scene.addChild(createCamera({
+    clearFlags: opts.clearFlags,
     orthoHeight: opts.cameraOrthoHeight,
     position: opts.cameraPosition,
+    priority: opts.priority,
     visibility: opts.cameraVisibility,
   }));
   if (spriteNode) {
@@ -460,8 +613,10 @@ function createScene(spriteNode?: Node, opts: {
 }
 
 function createCamera(opts: {
+  clearFlags?: gfx.ClearFlagBit;
   orthoHeight?: number;
   position?: { x?: number; y?: number; z?: number };
+  priority?: number;
   visibility?: number;
 } = {}) {
   const cameraNode = new Node('camera');
@@ -469,10 +624,45 @@ function createCamera(opts: {
   const camera = cameraNode.addComponent(Camera);
   camera.projection = Camera.ProjectionType.ORTHO;
   camera.orthoHeight = opts.orthoHeight ?? 6;
+  camera.priority = opts.priority ?? 0;
   camera.visibility = opts.visibility ?? 0xffffffff;
-  camera.clearFlags = gfx.ClearFlagBit.COLOR;
+  camera.clearFlags = opts.clearFlags ?? gfx.ClearFlagBit.COLOR;
   camera.clearColor = Color.fromHEX(new Color(), '#20242a');
   return cameraNode;
+}
+
+function drawWorldPositionMarkers(nodes: readonly Node[]) {
+  const firstNode = nodes[0];
+  const scene = firstNode?.scene;
+  if (!scene) {
+    throw new Error('Can not draw world position markers before the nodes are added to a scene.');
+  }
+
+  scene.addChild(createCamera({
+    clearFlags: gfx.ClearFlagBit.NONE,
+    priority: 1,
+    visibility: markerTestLayer,
+  }));
+
+  const markerNode = new Node('world-position-markers');
+  markerNode.layer = markerTestLayer;
+  scene.addChild(markerNode);
+
+  const canvas = new Canvas3D({ node: markerNode });
+  canvas.w2.fillStyle = '#ff00cc';
+  canvas.w2.strokeStyle = '#ffffff';
+  canvas.w2.lineWidth = 0.025;
+  for (const node of nodes) {
+    if (node.scene !== scene) {
+      throw new Error('Can not draw world position markers for nodes from different scenes.');
+    }
+    const center = node.worldPosition.clone();
+    canvas.w2.beginPath();
+    canvas.w2.circle(center, 0.08);
+    canvas.w2.fill();
+    canvas.w2.stroke();
+  }
+  canvas.commit();
 }
 
 function createRectangleTexture(opts: {
@@ -495,6 +685,45 @@ function createRectangleTexture(opts: {
   texture.image = image;
   texture.uploadData(sourceCanvas);
   return texture;
+}
+
+function createAtlasTexture() {
+  const sourceCanvas = document.createElement('canvas');
+  sourceCanvas.width = 128;
+  sourceCanvas.height = 64;
+
+  const context = sourceCanvas.getContext('2d')!;
+  context.fillStyle = '#ffd166';
+  context.fillRect(0, 0, 16, 64);
+  context.fillStyle = '#ff00cc';
+  context.fillRect(16, 0, 16, 64);
+  context.fillStyle = '#ff4f6d';
+  context.fillRect(32, 0, 32, 64);
+  context.fillStyle = '#54a7ff';
+  context.fillRect(64, 0, 32, 64);
+  context.fillStyle = '#72e0a8';
+  context.fillRect(96, 0, 32, 64);
+
+  const image = new ImageAsset(sourceCanvas);
+  const texture = new Texture2D('atlas texture');
+  texture.image = image;
+  texture.uploadData(sourceCanvas);
+  return texture;
+}
+
+function createRectangleSpriteFrame(opts: {
+  fillStyle?: string;
+  height?: number;
+  pivot?: { x: number; y: number };
+  width?: number;
+} = {}) {
+  const texture = createRectangleTexture(opts);
+  const sprite = new SpriteFrame('simple rectangle');
+  sprite.reset({ texture });
+  if (opts.pivot) {
+    sprite.pivot.set(opts.pivot.x, opts.pivot.y);
+  }
+  return sprite;
 }
 
 function createBuiltinUnlitMaterial() {

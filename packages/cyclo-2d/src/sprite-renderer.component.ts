@@ -2,7 +2,7 @@
 
 import { CycloComponent } from '@cyclonium/core/framework';
 import { designType, editable, executeInEditMode, cycloClass, idem, serializable } from '@cyclonium/core/legacy-decorator';
-import { Texture2D, Material, Color, renderer, RenderingSubMesh, gfx, EffectAsset, Vec2, Vec3, componentEditorTraits, geometry, assetManager, type Asset } from 'cc';
+import { Material, Color, renderer, RenderingSubMesh, gfx, EffectAsset, Vec3, componentEditorTraits, geometry, assetManager, type Asset } from 'cc';
 import { assert, markEnum } from '@cyclonium/core/utils';
 import { logger } from '@cyclonium/core/log';
 import { Bounds2D } from '@cyclonium/core/math/bounds-2d';
@@ -16,6 +16,28 @@ export enum SpriteRenderType {
   simple = 'simple',
 }
 markEnum(SpriteRenderType);
+
+interface RenderRecord {
+  readonly renderScene: renderer.RenderScene;
+  readonly renderingSubMeshes: RenderingSubMesh[];
+  readonly vertexBuffer: gfx.Buffer;
+  readonly localVertexBuffer: Float32Array;
+  readonly model: renderer.scene.Model;
+  dirty: number;
+}
+
+enum RenderRecordDirtyFlag {
+  // Render type changes can alter submesh/model structure, so they require a full record rebuild.
+  renderType = 1 << 0,
+  // Bounds changes keep the same simple quad topology and only rewrite vertex data.
+  bounds = 1 << 1,
+}
+
+interface SpriteRenderMesh {
+  readonly renderingSubMeshes: RenderingSubMesh[];
+  readonly vertexBuffer: gfx.Buffer;
+  readonly localVertexBuffer: Float32Array;
+}
 
 const loadDefaultEffect = (() => {
   let defaultEffect: EffectAsset | Promise<EffectAsset | undefined> | undefined;
@@ -50,13 +72,14 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
   @editable
   @serializable
   @designType(SpriteRenderType)
+  @idem
   get renderType() {
     return this._renderType;
   }
 
   set renderType(value) {
     this._renderType = value;
-    this._constructRenderRecord();
+    this._markRenderRecordDirty(RenderRecordDirtyFlag.renderType);
   }
 
   @editable
@@ -81,10 +104,7 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
     if (this._effectiveMaterial) {
       this._updateMaterialSprite(this._effectiveMaterial);
     }
-    if (this._renderRecord) {
-      this._updateModelBoundingShape(this._renderRecord.model);
-      this._syncRenderRecordEnabled();
-    }
+    this._markRenderRecordDirty(RenderRecordDirtyFlag.bounds);
   }
 
   @editable
@@ -107,12 +127,7 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
 
   set pixelsPerUnit(value) {
     this._pixelsPerUnit = value;
-    if (this._effectiveMaterial) {
-      this._updateMaterialPixelsPerUnit(this._effectiveMaterial);
-    }
-    if (this._renderRecord) {
-      this._updateModelBoundingShape(this._renderRecord.model);
-    }
+    this._markRenderRecordDirty(RenderRecordDirtyFlag.bounds);
   }
 
   @editable(Material)
@@ -186,11 +201,10 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
 
     switch (this.renderType) {
     case SpriteRenderType.simple:
-      if (this._renderRecord) {
-        // nothing
-      } else {
-        this._destroyRenderRecord();
-        this._constructRenderRecord();
+      if (!this._renderRecord || (this._renderRecord.dirty & RenderRecordDirtyFlag.renderType) !== 0) {
+        this._reconstructRenderRecord();
+      } else if ((this._renderRecord.dirty & RenderRecordDirtyFlag.bounds) !== 0) {
+        this._updateRenderRecordBounds(this._renderRecord);
       }
       break;
     default:
@@ -206,7 +220,7 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
   private readonly _color = new Color(Color.WHITE);
 
   @serializable
-  private _sprite: Texture2D | undefined = undefined;
+  private _sprite: Sprite | undefined = undefined;
 
   @serializable
   private _pixelsPerUnit = 100;
@@ -217,11 +231,7 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
   @serializable
   private _sortSettings = new SortSettings();
 
-  private _renderRecord: {
-    renderScene: renderer.RenderScene;
-    renderingSubMeshes: RenderingSubMesh[];
-    model: renderer.scene.Model;
-  } | null = null;
+  private _renderRecord: RenderRecord | null = null;
 
   private _effectiveMaterial: Material | undefined;
 
@@ -300,10 +310,23 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
     model.destroy();
   }
 
-  private _constructRenderRecord() {
+  private _reconstructRenderRecord() {
+    this._destroyRenderRecord();
+
+    switch (this._renderType) {
+    case SpriteRenderType.simple:
+      break;
+    default:
+      return;
+    }
+
     const renderScene = this._getRenderScene();
     const device = renderScene.root.device;
-    const renderingSubMeshes: RenderingSubMesh[] = this._createRenderingSubMeshes(device);
+    const {
+      renderingSubMeshes,
+      vertexBuffer,
+      localVertexBuffer,
+    } = this._createRenderingSubMeshes(device);
     const model = new renderer.scene.Model();
     model.node = this.node;
     model.transform = this.node;
@@ -316,7 +339,10 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
     model.enabled = this._shouldRenderRecordBeEnabled();
     renderScene.addModel(model);
     this._renderRecord = {
+      dirty: 0,
       renderingSubMeshes: renderingSubMeshes,
+      vertexBuffer,
+      localVertexBuffer,
       model: model,
       renderScene,
     };
@@ -325,7 +351,20 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
     }
   }
 
-  private _createRenderingSubMeshes(device: gfx.Device): RenderingSubMesh[] {
+  private _markRenderRecordDirty(flag: RenderRecordDirtyFlag) {
+    if (this._renderRecord) {
+      this._renderRecord.dirty |= flag;
+    }
+  }
+
+  private _updateRenderRecordBounds(renderRecord: RenderRecord) {
+    this._updateSimpleRenderVertexBuffer(renderRecord.vertexBuffer, renderRecord.localVertexBuffer);
+    this._updateModelBoundingShape(renderRecord.model);
+    this._syncRenderRecordEnabled();
+    renderRecord.dirty &= ~RenderRecordDirtyFlag.bounds;
+  }
+
+  private _createRenderingSubMeshes(device: gfx.Device): SpriteRenderMesh {
     switch (this._renderType) {
     case SpriteRenderType.simple:
       return this._createRenderingSubMeshesInSimpleRenderType(device);
@@ -334,37 +373,19 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
     }
   }
 
-  private _createRenderingSubMeshesInSimpleRenderType(device: gfx.Device): RenderingSubMesh[] {
+  private _createRenderingSubMeshesInSimpleRenderType(device: gfx.Device): SpriteRenderMesh {
     const {
-      vertexCount,
-      positions,
-      normals,
       indices,
     } = simpleSpriteQuad;
-
-    const offsetPositionF = 0;
-    const stridePositionF = 2;
-    const offsetNormalF = offsetPositionF + stridePositionF;
-    const strideNormalF = 2;
-    const strideF = offsetNormalF + strideNormalF;
-    const localVertexBuffer = new Float32Array(vertexCount * strideF);
-    let pVerticesF = 0;
-    for (let i = 0; i < vertexCount; i++) {
-      localVertexBuffer[pVerticesF + offsetPositionF] = positions[i * 2];
-      localVertexBuffer[pVerticesF + offsetPositionF + 1] = positions[i * 2 + 1];
-      localVertexBuffer[pVerticesF + offsetNormalF] = normals[i * 2];
-      localVertexBuffer[pVerticesF + offsetNormalF + 1] = normals[i * 2 + 1];
-      pVerticesF += strideF;
-    }
-
+    const localVertexBuffer = new Float32Array(simpleSpriteQuad.vertexCount * simpleSpriteQuad.strideF);
     const vertexBuffer = device.createBuffer(new gfx.BufferInfo(
       gfx.BufferUsageBit.VERTEX,
       gfx.MemoryUsageBit.DEVICE,
       localVertexBuffer.byteLength,
-      Float32Array.BYTES_PER_ELEMENT * strideF,
+      Float32Array.BYTES_PER_ELEMENT * simpleSpriteQuad.strideF,
       gfx.BufferFlagBit.NONE,
     ));
-    updateGfxBuffer(vertexBuffer, localVertexBuffer);
+    this._updateSimpleRenderVertexBuffer(vertexBuffer, localVertexBuffer);
     const indexBuffer = device.createBuffer(new gfx.BufferInfo(
       gfx.BufferUsageBit.INDEX,
       gfx.MemoryUsageBit.DEVICE,
@@ -378,7 +399,7 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
       [
         new gfx.Attribute(
           gfx.AttributeName.ATTR_POSITION,
-          gfx.Format.RGB32F,
+          gfx.Format.RG32F,
           false,
           undefined,
           false,
@@ -406,13 +427,52 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
       null,
       true,
     );
-    return [renderingSubMesh];
+    return {
+      renderingSubMeshes: [renderingSubMesh],
+      vertexBuffer,
+      localVertexBuffer,
+    };
+  }
+
+  private _updateSimpleRenderVertexBuffer(vertexBuffer: gfx.Buffer, localVertexBuffer: Float32Array) {
+    const {
+      offsetNormalF,
+      offsetPositionF,
+      offsetTexCoordF,
+      normals,
+      strideF,
+      texCoords,
+      uvVertexIndices,
+      vertexCount,
+    } = simpleSpriteQuad;
+    const localBounds = this.localBounds;
+    const spriteUV = this.sprite?.uv ?? texCoords;
+
+    localVertexBuffer[offsetPositionF] = localBounds.xMin;
+    localVertexBuffer[offsetPositionF + 1] = localBounds.yMin;
+    localVertexBuffer[strideF + offsetPositionF] = localBounds.xMin;
+    localVertexBuffer[strideF + offsetPositionF + 1] = localBounds.yMax;
+    localVertexBuffer[2 * strideF + offsetPositionF] = localBounds.xMax;
+    localVertexBuffer[2 * strideF + offsetPositionF + 1] = localBounds.yMax;
+    localVertexBuffer[3 * strideF + offsetPositionF] = localBounds.xMax;
+    localVertexBuffer[3 * strideF + offsetPositionF + 1] = localBounds.yMin;
+
+    for (let iVertex = 0; iVertex < vertexCount; iVertex++) {
+      const pVerticesF = iVertex * strideF;
+      const pVectorF = iVertex * 2;
+      const pUVF = uvVertexIndices[iVertex] * 2;
+      localVertexBuffer[pVerticesF + offsetNormalF] = normals[pVectorF];
+      localVertexBuffer[pVerticesF + offsetNormalF + 1] = normals[pVectorF + 1];
+      localVertexBuffer[pVerticesF + offsetTexCoordF] = spriteUV[pUVF];
+      localVertexBuffer[pVerticesF + offsetTexCoordF + 1] = spriteUV[pUVF + 1];
+    }
+
+    updateGfxBuffer(vertexBuffer, localVertexBuffer);
   }
 
   private _updateAllMaterialProperties(material: Material) {
     this._updateMaterialColor(material);
     this._updateMaterialSprite(material);
-    this._updateMaterialPixelsPerUnit(material);
   }
 
   private _updateMaterialColor(material: Material) {
@@ -420,22 +480,7 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
   }
 
   private _updateMaterialSprite(material: Material) {
-    const pixelsPerUnit = this._pixelsPerUnit;
-    let mainTexture: Texture2D | null = null;
-    const spriteSize = new Vec2();
-    if (this.sprite) {
-      mainTexture = this.sprite;
-      spriteSize.set(this.sprite.width / 2, this.sprite.height / 2);
-    } else {
-      mainTexture = null;
-      spriteSize.set(pixelsPerUnit, pixelsPerUnit);
-    }
-    material.setProperty('mainTexture', mainTexture);
-    material.setProperty('spriteSize', spriteSize);
-  }
-
-  private _updateMaterialPixelsPerUnit(material: Material) {
-    material.setProperty('pixelsPerUnit', this._pixelsPerUnit);
+    material.setProperty('mainTexture', this.sprite?.texture ?? null);
   }
 
   private _updateModelBoundingShape(model: renderer.scene.Model) {
@@ -448,21 +493,18 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
   }
 
   private _updateLocalBounds(bounds: Bounds2D) {
-    const halfSize = this._getBoundingHalfSize();
-    bounds.min.set(-halfSize.x, -halfSize.y);
-    bounds.max.set(halfSize.x, halfSize.y);
-    return bounds;
-  }
-
-  private _getBoundingHalfSize() {
     if (!this.sprite) {
-      return new Vec2(1, 1);
+      bounds.min.set(-1, -1);
+      bounds.max.set(1, 1);
+      return bounds;
     }
 
-    return new Vec2(
-      this.sprite.width / 2 / this.pixelsPerUnit,
-      this.sprite.height / 2 / this.pixelsPerUnit,
-    );
+    const width = this.sprite.rect.width / this.pixelsPerUnit;
+    const height = this.sprite.rect.height / this.pixelsPerUnit;
+    const pivot = this.sprite.pivot;
+    bounds.min.set(-pivot.x * width, -pivot.y * height);
+    bounds.max.set((1 - pivot.x) * width, (1 - pivot.y) * height);
+    return bounds;
   }
 
   private _syncRenderRecordEnabled() {
@@ -477,6 +519,13 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
 }
 
 const simpleSpriteQuad = (() => {
+  const offsetPositionF = 0;
+  const stridePositionF = 2;
+  const offsetNormalF = offsetPositionF + stridePositionF;
+  const strideNormalF = 2;
+  const offsetTexCoordF = offsetNormalF + strideNormalF;
+  const strideTexCoordF = 2;
+  const strideF = offsetTexCoordF + strideTexCoordF;
   const positions = new Float32Array([
     -1, -1, // left bottom
     -1, 1, // left top
@@ -487,16 +536,28 @@ const simpleSpriteQuad = (() => {
   const n = Math.sqrt(2);
 
   const normals = positions.map((position) => n * position);
-
+  const texCoords = new Float32Array([
+    0, 0, // left bottom
+    0, 1, // left top
+    1, 1, // right top
+    1, 0, // right bottom
+  ]);
+  // Cocos SpriteFrame.uv is ordered as left-bottom, right-bottom, left-top, right-top.
+  const uvVertexIndices = new Uint8Array([0, 2, 3, 1]);
   const indices = new Uint16Array([
     0, 1, 2,
     0, 2, 3,
   ]);
 
   return {
+    offsetNormalF,
+    offsetPositionF,
+    offsetTexCoordF,
+    strideF,
     vertexCount: 4,
-    positions,
     normals,
+    texCoords,
+    uvVertexIndices,
     indices,
   };
 })();

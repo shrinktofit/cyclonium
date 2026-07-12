@@ -1,1 +1,1 @@
-export { Texture2D as Sprite } from 'cc';
+export { SpriteFrame as Sprite } from 'cc';

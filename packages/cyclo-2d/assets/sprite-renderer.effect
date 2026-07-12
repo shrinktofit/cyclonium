@@ -1,0 +1,65 @@
+// Effect Syntax Guide: https://docs.cocos.com/creator/manual/zh/shader/index.html
+
+CCEffect %{
+  techniques:
+  - name: default
+    passes:
+    - vert: sprite-renderer-vs:vert
+      frag: sprite-renderer-fs:frag
+      properties: &props
+        mainTexture:    { value: white }
+        mainColor:      { value: [1, 1, 1, 1], editor: { type: color } }
+      rasterizerState:
+        cullMode: none
+        cullFace: front
+      depthStencilState:
+        depthTest: true
+        depthWrite: false
+      blendState:
+        targets:
+        - blend: true
+          blendSrc: src_alpha
+          blendDst: one_minus_src_alpha
+          blendSrcAlpha: src_alpha
+          blendDstAlpha: one_minus_src_alpha
+}%
+
+CCProgram sprite-renderer-vs %{
+  precision highp float;
+
+  #include <builtin/uniforms/cc-local>
+  #include <builtin/uniforms/cc-global>
+  #include <builtin/functionalities/world-transform>
+
+  in vec2 a_position;
+  in vec2 a_texCoord;
+
+  out vec2 v_texCoord;
+
+  vec4 vert() {
+    v_texCoord = a_texCoord;
+
+    vec3 position = vec3(a_position, 0.0);
+    return cc_matProj * (cc_matView * cc_matWorld) * vec4(position, 1.0);
+  }
+}%
+
+CCProgram sprite-renderer-fs %{
+  precision highp float;
+  #include <legacy/output>
+  #include <legacy/fog-fs>
+
+  in vec2 v_texCoord;
+  in vec3 v_position;
+
+  uniform sampler2D mainTexture;
+
+  uniform Constant {
+    vec4 mainColor;
+  };
+
+  vec4 frag () {
+    vec4 color = mainColor * texture(mainTexture, vec2(v_texCoord.x, 1.0 - v_texCoord.y));
+    return color;
+  }
+}%
