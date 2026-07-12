@@ -8,17 +8,14 @@
   },
   "type": "module",
   "files": [
-    "lib/**/*{.js,.d.ts}"
+    "lib",
+    "!lib/**/*.map",
+    "assets"
   ],
   "exports": {
-    ".": {
-      "types": "./lib/index.d.ts",
-      "default": "./lib/index.js"
-    },
-    "./editor": {
-      "types": "./lib/editor.d.ts",
-      "default": "./lib/editor.js"
-    }
+    ".": "./lib/index.js",
+    "./editor": "./lib/editor.js",
+    "./assets-meta": "./assets/meta.json"
   },
   "scripts": {
     "prepublishOnly": "npm run build --clean && npm run build",
@@ -39,6 +36,7 @@
     }
   },
   "devDependencies": {
+    "@cyclonium/canvas-3d": "workspace:*",
     "@cyclonium/cc-test": "workspace:*",
     "@cyclonium/editor": "workspace:*",
     "@cyclonium/workflow": "workspace:*",

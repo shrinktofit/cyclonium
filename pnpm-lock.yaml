@@ -205,6 +205,9 @@ importers:
         specifier: workspace:*
         version: link:../cyclo-core
     devDependencies:
+      '@cyclonium/canvas-3d':
+        specifier: workspace:*
+        version: link:../cyclo-canvas-3d
       '@cyclonium/cc-test':
         specifier: workspace:*
         version: link:../cc-test
