@@ -18,7 +18,7 @@ import { Canvas3D } from '@cyclonium/canvas-3d';
 import { getCanvas, setupGame } from '@cyclonium/cc-test/runtime';
 import { page } from 'vitest/browser';
 import { SpriteRenderer } from '../src/sprite-renderer.component.js';
-import '@cyclonium/cc-test/runtime/vitest-canvas-snapshot';
+import { readCanvasPngImageData } from '@cyclonium/cc-test/runtime/vitest-canvas-snapshot';
 
 let htmlCanvas: HTMLCanvasElement = undefined!;
 const baseTestLayer = 1 << 2;
@@ -87,6 +87,33 @@ describe.sequential('SpriteRenderer', () => {
 
     await microTick();
     await expectCanvasToMatchSnapshot('simple-rectangle-texture');
+  });
+
+  it('keeps non-rotated sprite frame UV quadrants upright', async () => {
+    /// @case
+    /// 1. A full-texture SpriteFrame has unique colors in all four quadrants.
+    /// 2. The SpriteFrame is assigned to SpriteRenderer and rendered through the normal component path.
+    /// @expect
+    /// The rendered quad keeps left, right, top, and bottom quadrants in their source positions.
+    const node = new Node('upright-sprite-frame-quadrants');
+    node.layer = baseTestLayer;
+    director.runSceneImmediate(createScene(node, {
+      cameraVisibility: baseTestLayer,
+    }));
+
+    const renderer = node.addComponent(SpriteRenderer);
+    await Promise.resolve();
+    renderer.sprite = createQuadrantSpriteFrame();
+    renderer.pixelsPerUnit = 64;
+
+    await microTick();
+
+    const canvasImage = await readCanvasPngImageData(htmlCanvas);
+    expectCanvasPixelToHaveColor(canvasImage, 'top-left quadrant', 246, 246, '#ff4f6d');
+    expectCanvasPixelToHaveColor(canvasImage, 'top-right quadrant', 266, 246, '#ffd166');
+    expectCanvasPixelToHaveColor(canvasImage, 'bottom-left quadrant', 246, 266, '#54a7ff');
+    expectCanvasPixelToHaveColor(canvasImage, 'bottom-right quadrant', 266, 266, '#72e0a8');
+    await expectCanvasToMatchSnapshot('sprite-frame-upright-quadrants');
   });
 
   it('renders sprite frame atlas rect UVs instead of the full texture', async () => {
@@ -726,6 +753,35 @@ function createRectangleSpriteFrame(opts: {
   return sprite;
 }
 
+function createQuadrantSpriteFrame() {
+  const sourceCanvas = document.createElement('canvas');
+  sourceCanvas.width = 64;
+  sourceCanvas.height = 64;
+
+  const context = sourceCanvas.getContext('2d')!;
+  context.fillStyle = '#ff4f6d';
+  // top-left: red
+  context.fillRect(0, 0, 32, 32);
+  context.fillStyle = '#ffd166';
+  // top-right: yellow
+  context.fillRect(32, 0, 32, 32);
+  context.fillStyle = '#54a7ff';
+  // bottom-left: blue
+  context.fillRect(0, 32, 32, 32);
+  context.fillStyle = '#72e0a8';
+  // bottom-right: green
+  context.fillRect(32, 32, 32, 32);
+
+  const image = new ImageAsset(sourceCanvas);
+  const texture = new Texture2D('quadrant texture');
+  texture.image = image;
+  texture.uploadData(sourceCanvas);
+
+  const sprite = new SpriteFrame('quadrant sprite');
+  sprite.reset({ texture });
+  return sprite;
+}
+
 function createBuiltinUnlitMaterial() {
   const material = new Material();
   material.reset({
@@ -736,6 +792,23 @@ function createBuiltinUnlitMaterial() {
 
 function expectColorToEqual(actual: Color, expected: Color) {
   expect([actual.r, actual.g, actual.b, actual.a]).toEqual([expected.r, expected.g, expected.b, expected.a]);
+}
+
+function expectCanvasPixelToHaveColor(canvasImage: {
+  data: Uint8ClampedArray;
+  width: number;
+}, label: string, x: number, y: number, expectedHex: string) {
+  const iPixel = (y * canvasImage.width + x) * 4;
+  const r = canvasImage.data[iPixel];
+  const g = canvasImage.data[iPixel + 1];
+  const b = canvasImage.data[iPixel + 2];
+  const a = canvasImage.data[iPixel + 3];
+  const expected = Color.fromHEX(new Color(), expectedHex);
+  const tolerance = 4;
+  expect(Math.abs(r - expected.r), `${label} red`).toBeLessThanOrEqual(tolerance);
+  expect(Math.abs(g - expected.g), `${label} green`).toBeLessThanOrEqual(tolerance);
+  expect(Math.abs(b - expected.b), `${label} blue`).toBeLessThanOrEqual(tolerance);
+  expect(a, `${label} alpha`).toBe(255);
 }
 
 function expectBounds2DToEqual(actual: {
