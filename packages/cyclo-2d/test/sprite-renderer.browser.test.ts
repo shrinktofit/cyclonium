@@ -16,15 +16,18 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { Camera, Color, componentEditorTraits, director, gfx, ImageAsset, Material, Node, Rect, Scene, SpriteFrame, Texture2D } from 'cc';
 import { Canvas3D } from '@cyclonium/canvas-3d';
 import { getCanvas, setupGame } from '@cyclonium/cc-test/runtime';
+import { readCanvasPngImageData } from '@cyclonium/cc-test/runtime/vitest-canvas-snapshot';
+import { assert } from '@cyclonium/core/utils';
 import { page } from 'vitest/browser';
 import { SpriteRenderer } from '../src/sprite-renderer.component.js';
-import { readCanvasPngImageData } from '@cyclonium/cc-test/runtime/vitest-canvas-snapshot';
 
 let htmlCanvas: HTMLCanvasElement = undefined!;
+type SpriteFrameResetOptions = NonNullable<Parameters<SpriteFrame['reset']>[0]>;
+
 const baseTestLayer = 1 << 2;
 const customTestLayer = 1 << 3;
 const markerTestLayer = 1 << 4;
-const cullingPixelsPerUnit = 64;
+const cullingPixelsToUnit = 64;
 const cullingCameraHalfSize = 1;
 const cullingPixelsPerWorldUnit = 512 / (cullingCameraHalfSize * 2);
 const cullingEdgeCases = [
@@ -104,7 +107,6 @@ describe.sequential('SpriteRenderer', () => {
     const renderer = node.addComponent(SpriteRenderer);
     await Promise.resolve();
     renderer.sprite = createQuadrantSpriteFrame();
-    renderer.pixelsPerUnit = 64;
 
     await microTick();
 
@@ -123,19 +125,22 @@ describe.sequential('SpriteRenderer', () => {
     /// @expect
     /// Rendered quads sample only their SpriteFrame UVs, and bounds use the SpriteFrame rect size.
     const texture = createAtlasTexture();
-    const normalFrame = new SpriteFrame('atlas normal frame');
-    normalFrame.reset({
+    const normalFrame = createSpriteFrame({
+      name: 'atlas normal frame',
+      pixelsToUnit: 64,
       texture,
       rect: new Rect(64, 0, 64, 64),
     });
-    const flippedFrame = new SpriteFrame('atlas flipped frame');
-    flippedFrame.reset({
+    const flippedFrame = createSpriteFrame({
+      name: 'atlas flipped frame',
+      pixelsToUnit: 64,
       texture,
       rect: new Rect(64, 0, 64, 64),
     });
     flippedFrame.flipUVX = true;
-    const rotatedFrame = new SpriteFrame('atlas rotated frame');
-    rotatedFrame.reset({
+    const rotatedFrame = createSpriteFrame({
+      name: 'atlas rotated frame',
+      pixelsToUnit: 64,
       texture,
       rect: new Rect(0, 0, 64, 32),
       isRotate: true,
@@ -178,7 +183,6 @@ describe.sequential('SpriteRenderer', () => {
       const renderer = node.addComponent(SpriteRenderer);
       await Promise.resolve();
       renderer.sprite = sprite;
-      renderer.pixelsPerUnit = 64;
 
       expectBounds2DToEqual(renderer.localBounds, {
         center: { x: 0, y: 0 },
@@ -251,9 +255,9 @@ describe.sequential('SpriteRenderer', () => {
       halfExtents: { x: 1, y: 1, z: 0 },
     });
 
-    renderer.pixelsPerUnit = 32;
     renderer.sprite = createRectangleSpriteFrame({
       height: 32,
+      pixelsToUnit: 32,
       width: 96,
     });
 
@@ -276,7 +280,12 @@ describe.sequential('SpriteRenderer', () => {
     });
   });
 
-  it('reports local render bounds from sprite size and pixels per unit', async () => {
+  it('reports local render bounds from sprite frame pixels-to-unit', async () => {
+    /// @case
+    /// 1. SpriteFrames with different pixelsToUnit values are assigned to the same SpriteRenderer.
+    /// 2. The renderer keeps its default geometryScale.
+    /// @expect
+    /// Local bounds use each SpriteFrame's pixelsToUnit as the asset scale.
     const node = new Node('local-bounds');
     node.setPosition(7, -11, 0);
     node.setScale(3, 5, 1);
@@ -294,9 +303,9 @@ describe.sequential('SpriteRenderer', () => {
 
     renderer.sprite = createRectangleSpriteFrame({
       height: 512,
+      pixelsToUnit: 512,
       width: 512,
     });
-    renderer.pixelsPerUnit = 512;
 
     expect(renderer.localBounds).toBe(defaultBounds);
     expectBounds2DToEqual(renderer.localBounds, {
@@ -304,7 +313,11 @@ describe.sequential('SpriteRenderer', () => {
       size: { x: 1, y: 1 },
     });
 
-    renderer.pixelsPerUnit = 1;
+    renderer.sprite = createRectangleSpriteFrame({
+      height: 512,
+      pixelsToUnit: 1,
+      width: 512,
+    });
 
     expectBounds2DToEqual(renderer.localBounds, {
       center: { x: 0, y: 0 },
@@ -313,9 +326,9 @@ describe.sequential('SpriteRenderer', () => {
 
     renderer.sprite = createRectangleSpriteFrame({
       height: 32,
+      pixelsToUnit: 8,
       width: 120,
     });
-    renderer.pixelsPerUnit = 8;
 
     expectBounds2DToEqual(renderer.localBounds, {
       center: { x: 0, y: 0 },
@@ -377,7 +390,6 @@ describe.sequential('SpriteRenderer', () => {
       const renderer = pivotCase.node.addComponent(SpriteRenderer);
       await Promise.resolve();
 
-      renderer.pixelsPerUnit = 64;
       renderer.sprite = createRectangleSpriteFrame({
         fillStyle: pivotCase.fillStyle,
         height: 64,
@@ -404,20 +416,25 @@ describe.sequential('SpriteRenderer', () => {
     await expectCanvasToMatchSnapshot('sprite-frame-pivots');
   });
 
-  it('updates the rendered sprite size when pixelsPerUnit changes', async () => {
+  it('updates the rendered sprite size when geometryScale changes', async () => {
+    /// @case
+    /// 1. A SpriteRenderer renders a SpriteFrame using the SpriteFrame's pixelsToUnit.
+    /// 2. geometryScale changes at runtime on the renderer.
+    /// @expect
+    /// The rendered quad and bounds update by multiplying the SpriteFrame-derived size.
     const { renderer } = await renderRectangle({
       nodeLayer: baseTestLayer,
     });
 
-    expect(renderer.pixelsPerUnit).toBe(64);
+    expect(renderer.geometryScale).toBe(1);
     await microTick();
-    await expectCanvasToMatchSnapshot('pixels-per-unit-before');
+    await expectCanvasToMatchSnapshot('geometry-scale-before');
 
-    renderer.pixelsPerUnit = 32;
-    expect(renderer.pixelsPerUnit).toBe(32);
+    renderer.geometryScale = 2;
+    expect(renderer.geometryScale).toBe(2);
 
     await microTick();
-    await expectCanvasToMatchSnapshot('pixels-per-unit-after');
+    await expectCanvasToMatchSnapshot('geometry-scale-after');
   });
 
   it('renders a texture when the sprite and camera use the same custom layer', async () => {
@@ -519,7 +536,8 @@ async function renderRectangle(opts: {
   cameraOrthoHeight?: number;
   cameraPosition?: { x?: number; y?: number; z?: number };
   textureFillStyle?: string;
-  pixelsPerUnit?: number;
+  geometryScale?: number;
+  pixelsToUnit?: number;
   textureHeight?: number;
   textureWidth?: number;
   wrapInParent?: boolean;
@@ -545,11 +563,14 @@ async function renderRectangle(opts: {
   const sprite = createRectangleSpriteFrame({
     fillStyle: opts.textureFillStyle,
     height: opts.textureHeight,
+    pixelsToUnit: opts.pixelsToUnit,
     width: opts.textureWidth,
   });
   await Promise.resolve();
   renderer.sprite = sprite;
-  renderer.pixelsPerUnit = opts.pixelsPerUnit ?? 64;
+  if (opts.geometryScale !== undefined) {
+    renderer.geometryScale = opts.geometryScale;
+  }
   renderer.color = opts.color ?? Color.WHITE;
 
   tick();
@@ -579,11 +600,11 @@ async function renderCullingEdgeRectangles() {
     const sprite = createRectangleSpriteFrame({
       fillStyle: edgeCase.color,
       height: edgeCase.height,
+      pixelsToUnit: cullingPixelsToUnit,
       width: edgeCase.width,
     });
     await Promise.resolve();
     renderer.sprite = sprite;
-    renderer.pixelsPerUnit = cullingPixelsPerUnit;
     renderer.color = Color.WHITE;
   }
 
@@ -591,8 +612,8 @@ async function renderCullingEdgeRectangles() {
 }
 
 function getCullingEdgePosition(edgeCase: typeof cullingEdgeCases[number]) {
-  const halfWidth = edgeCase.width / 2 / cullingPixelsPerUnit;
-  const halfHeight = edgeCase.height / 2 / cullingPixelsPerUnit;
+  const halfWidth = edgeCase.width / 2 / cullingPixelsToUnit;
+  const halfHeight = edgeCase.height / 2 / cullingPixelsToUnit;
   const visibleSize = edgeCase.visiblePixels / cullingPixelsPerWorldUnit;
   switch (edgeCase.edge) {
   case 'left':
@@ -741,16 +762,37 @@ function createAtlasTexture() {
 function createRectangleSpriteFrame(opts: {
   fillStyle?: string;
   height?: number;
+  pixelsToUnit?: number;
   pivot?: { x: number; y: number };
   width?: number;
 } = {}) {
   const texture = createRectangleTexture(opts);
-  const sprite = new SpriteFrame('simple rectangle');
-  sprite.reset({ texture });
+  const sprite = createSpriteFrame({
+    name: 'simple rectangle',
+    pixelsToUnit: opts.pixelsToUnit ?? 64,
+    texture,
+  });
   if (opts.pivot) {
     sprite.pivot.set(opts.pivot.x, opts.pivot.y);
   }
   return sprite;
+}
+
+function createSpriteFrame(opts: SpriteFrameResetOptions & {
+  name?: string;
+  pixelsToUnit: number;
+}) {
+  const { name = 'test sprite frame', pixelsToUnit, ...resetOptions } = opts;
+  const spriteFrame = new SpriteFrame(name);
+  spriteFrame.reset(resetOptions as SpriteFrameResetOptions);
+  // Cocos serializes pixelsToUnit on SpriteFrame assets, but reset() does not expose it.
+  const mutableSpriteFrame = spriteFrame as unknown as { _pixelsToUnit?: unknown };
+  assert(
+    '_pixelsToUnit' in mutableSpriteFrame && typeof mutableSpriteFrame._pixelsToUnit === 'number',
+    'Could not safely set SpriteFrame pixelsToUnit for this test.',
+  );
+  mutableSpriteFrame._pixelsToUnit = pixelsToUnit;
+  return spriteFrame;
 }
 
 function createQuadrantSpriteFrame() {
@@ -777,9 +819,11 @@ function createQuadrantSpriteFrame() {
   texture.image = image;
   texture.uploadData(sourceCanvas);
 
-  const sprite = new SpriteFrame('quadrant sprite');
-  sprite.reset({ texture });
-  return sprite;
+  return createSpriteFrame({
+    name: 'quadrant sprite',
+    pixelsToUnit: 64,
+    texture,
+  });
 }
 
 function createBuiltinUnlitMaterial() {
