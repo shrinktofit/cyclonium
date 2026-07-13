@@ -1,5 +1,11 @@
 # @cyclonium/2d
 
+## 1.1.0
+
+### Minor Changes
+
+- e91a401: Rename the packaged assets metadata manifest to `.meta.json` and update the `./assets-meta` export to the new path.
+
 ## 1.0.0
 
 ### Major Changes
