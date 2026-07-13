@@ -1,5 +1,23 @@
 # @cyclonium/2d
 
+## 2.0.0
+
+### Major Changes
+
+- e46185f: Remove `SpriteRenderer.pixelsPerUnit` and size sprites from `SpriteFrame.pixelsToUnit` instead.
+
+  `SpriteRenderer` now exposes `geometryScale`, which defaults to `1` and multiplies the SpriteFrame-derived geometry size. To migrate old renderer-level scale overrides, use:
+
+  ```ts
+  renderer.geometryScale = spriteFrame.pixelsToUnit / oldPixelsPerUnit;
+  ```
+
+  Existing scenes and prefabs with serialized non-default `_pixelsPerUnit` values are not automatically migrated to `_geometryScale`. Update each affected renderer with the formula above and resave the asset to preserve its previous geometry size.
+
+### Patch Changes
+
+- 832cd5e: Fix SpriteRenderer's default effect so SpriteFrame UVs render upright instead of being flipped vertically.
+
 ## 1.1.0
 
 ### Minor Changes
