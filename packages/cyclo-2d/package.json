@@ -15,7 +15,7 @@
   "exports": {
     ".": "./lib/index.js",
     "./editor": "./lib/editor.js",
-    "./assets-meta": "./assets/meta.json"
+    "./assets-meta": "./assets/.meta.json"
   },
   "scripts": {
     "prepublishOnly": "npm run build --clean && npm run build",
