@@ -121,12 +121,13 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
   }
 
   @editable
-  get pixelsPerUnit() {
-    return this._pixelsPerUnit;
+  @idem
+  get geometryScale() {
+    return this._geometryScale;
   }
 
-  set pixelsPerUnit(value) {
-    this._pixelsPerUnit = value;
+  set geometryScale(value) {
+    this._geometryScale = value;
     this._markRenderRecordDirty(RenderRecordDirtyFlag.bounds);
   }
 
@@ -223,7 +224,7 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
   private _sprite: Sprite | undefined = undefined;
 
   @serializable
-  private _pixelsPerUnit = 100;
+  private _geometryScale = 1;
 
   @serializable
   private _material: Material | null = null;
@@ -499,8 +500,9 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
       return bounds;
     }
 
-    const width = this.sprite.rect.width / this.pixelsPerUnit;
-    const height = this.sprite.rect.height / this.pixelsPerUnit;
+    const spriteScale = this.geometryScale / this.sprite.pixelsToUnit;
+    const width = this.sprite.rect.width * spriteScale;
+    const height = this.sprite.rect.height * spriteScale;
     const pivot = this.sprite.pivot;
     bounds.min.set(-pivot.x * width, -pivot.y * height);
     bounds.max.set((1 - pivot.x) * width, (1 - pivot.y) * height);
