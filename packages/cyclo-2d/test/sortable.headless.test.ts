@@ -13,6 +13,15 @@ vi.mock('cc', async (importOriginal) => {
       Enum: {
         default: 0,
       },
+      getLayerIndex: (layer = 0) => {
+        if (layer === 7) {
+          return 5;
+        }
+        if (layer === 5) {
+          return 6;
+        }
+        return layer;
+      },
     },
   };
 });
@@ -25,6 +34,17 @@ describe('computeLocalSortingKey', () => {
 
     expect(computeLocalSortingKey(lower)).toBeLessThan(computeLocalSortingKey(higher));
     expect(computeLocalSortingKey(higher)).toBeLessThan(computeLocalSortingKey(nextLayer));
+  });
+
+  it('orders layers by configured display index instead of stable layer id', () => {
+    /// @case
+    /// The entity layer has stable ID 7 at display index 5, while the vfx layer has stable ID 5 at display index 6.
+    /// @expect
+    /// The entity layer sorts before the vfx layer even though its stable ID is greater.
+    const entity = sortSettings(7, 0);
+    const vfx = sortSettings(5, 0);
+
+    expect(computeLocalSortingKey(entity)).toBeLessThan(computeLocalSortingKey(vfx));
   });
 });
 
@@ -73,6 +93,29 @@ describe('SortingTree', () => {
       innerChildB.sortSettings,
       outerSibling.sortSettings,
       after.sortSettings,
+    ]);
+  });
+
+  it('orders sorting groups by configured layer index while keeping descendants contiguous', () => {
+    /// @case
+    /// An entity renderer precedes a vfx sorting group by configured layer index, and a vfx renderer follows the group.
+    /// @expect
+    /// The group descendants stay contiguous between the entity renderer and the later vfx renderer.
+    const scene = createScene('configured layer sorting group scene');
+    const entity = addRenderer(createNode(scene, 'entity'), 0, 7);
+    const vfxGroupNode = createNode(scene, 'vfx group');
+    const vfxGroup = addSortingGroup(vfxGroupNode, 0, 5);
+    const vfxSibling = addRenderer(createNode(scene, 'vfx sibling'), 10, 5);
+    const vfxEarly = addRenderer(createNode(vfxGroupNode, 'vfx early'), -100);
+    const vfxLate = addRenderer(createNode(vfxGroupNode, 'vfx late'), 100);
+
+    connectAll(entity, vfxGroup, vfxSibling, vfxEarly, vfxLate);
+
+    expectSortingKeys([
+      entity.sortSettings,
+      vfxEarly.sortSettings,
+      vfxLate.sortSettings,
+      vfxSibling.sortSettings,
     ]);
   });
 

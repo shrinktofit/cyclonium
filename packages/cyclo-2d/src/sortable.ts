@@ -1,4 +1,4 @@
-import type { Component } from 'cc';
+import { SortingLayers, type Component } from 'cc';
 import type { SortSettings } from './sort-settings.js';
 
 export interface SortableRenderer extends Component {
@@ -40,5 +40,6 @@ export const MIN_ORDER_IN_LAYER = -(2 ** (MAX_ORDER_IN_LAYER_POW - 1));
 export const MAX_ORDER_IN_LAYER = 2 ** (MAX_ORDER_IN_LAYER_POW - 1);
 
 export function computeLocalSortingKey(sortSettings: SortSettings) {
-  return (sortSettings.sortingLayer << MAX_ORDER_IN_LAYER_POW) + (sortSettings.orderInLayer + MAX_ORDER_IN_LAYER);
+  const sortingLayerIndex = SortingLayers.getLayerIndex(sortSettings.sortingLayer);
+  return (sortingLayerIndex << MAX_ORDER_IN_LAYER_POW) + (sortSettings.orderInLayer + MAX_ORDER_IN_LAYER);
 }
