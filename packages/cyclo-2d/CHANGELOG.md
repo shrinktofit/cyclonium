@@ -1,5 +1,11 @@
 # @cyclonium/2d
 
+## 2.0.1
+
+### Patch Changes
+
+- a1c79ac: Fix sortable renderers and sorting groups to respect the configured sorting layer order instead of comparing stable layer IDs.
+
 ## 2.0.0
 
 ### Major Changes
