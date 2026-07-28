@@ -33,6 +33,8 @@ export default defineConfig([
             'vitest.workspace.ts',
             'packages/bundle-wasm/static/*.ts',
             'packages/cc-extension-cyclo/*.cjs',
+            'packages/cc-extension-cyclo/*.mjs',
+            'packages/cc-extension-cyclo/test/fixtures/vortex-project/*.mjs',
             'packages/cc-extension-utils/types/vite-plugins/*.d.ts',
             'packages/cyclo-abort-controller/index.d.ts',
             'packages/rapier/@types/*.d.ts',

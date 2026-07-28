@@ -1,0 +1,47 @@
+{
+  "extends": "@cyclonium/workflow/tsconfig/lib",
+  "files": [
+    "src/asset-pipeline.ts",
+    "src/catalog-document.ts",
+    "src/composition.ts",
+    "src/global.ts",
+    "src/index.ts",
+    "src/install.ts"
+  ],
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib",
+    "tsBuildInfoFile": "lib/.tsbuildinfo/entry.tsbuildinfo",
+    "skipLibCheck": true,
+    "types": [
+      "@cyclonium/types-cc/cc",
+      "@cyclonium/types-cc/cc.env"
+    ]
+  },
+  "references": [
+    {
+      "path": "./src/core"
+    },
+    {
+      "path": "./src/sha256"
+    },
+    {
+      "path": "./src/runtime/cocos"
+    },
+    {
+      "path": "./src/platform/web"
+    },
+    {
+      "path": "./src/platform/minigame-shared"
+    },
+    {
+      "path": "./src/platform/wechat"
+    },
+    {
+      "path": "./src/platform/alipay"
+    },
+    {
+      "path": "./src/platform/bytedance"
+    }
+  ]
+}

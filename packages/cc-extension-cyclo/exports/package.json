@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "imports": {
+    "#oms-peer:@cyclonium/core/legacy-decorator/general": "@cyclonium/core/legacy-decorator/general"
+  }
+}

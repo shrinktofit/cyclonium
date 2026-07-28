@@ -15,6 +15,7 @@
     "./framework": "./lib/export/framework.js",
     "./utils": "./lib/export/utils.js",
     "./legacy-decorator": "./lib/export/legacy-decorator.js",
+    "./legacy-decorator/general": "./lib/export/legacy-general-decorator.js",
     "./2d": "./lib/export/2d.js",
     "./log": "./lib/export/log.js",
     "./math/bounds-2d": "./lib/export/math/bounds-2d.js",

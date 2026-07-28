@@ -1,0 +1,40 @@
+{
+  "name": "@cyclonium/asset-pipeline",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shrinktofit/cyclonium",
+    "directory": "packages/cyclo-asset-pipeline"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "lib/**/*{.js,.d.ts}"
+  ],
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm exec tsc -b --clean && pnpm exec tsc -b",
+    "build": "tsc -b",
+    "test": "pnpm exec tsc -b test/tsconfig.json && pnpm exec vitest run --project unit",
+    "test:browser": "vitest run --project browser"
+  },
+  "dependencies": {
+    "@cyclonium/abort-controller": "workspace:^",
+    "@cyclonium/invariant": "workspace:^",
+    "@noble/hashes": "^2.2.0"
+  },
+  "devDependencies": {
+    "@cyclonium/cc-test": "workspace:*",
+    "@cyclonium/types-cc": "workspace:*",
+    "@cyclonium/workflow": "workspace:*",
+    "@types/node": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
+    "minigame-api-typings": "^3.8.11",
+    "playwright": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

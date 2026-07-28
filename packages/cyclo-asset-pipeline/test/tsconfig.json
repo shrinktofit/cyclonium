@@ -1,0 +1,22 @@
+{
+  "extends": "@cyclonium/workflow/tsconfig/test",
+  "include": ["."],
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "lib",
+    "types": [
+      "node",
+      "vitest",
+      "@cyclonium/types-cc/cc"
+    ],
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["../src/*"]
+    }
+  },
+  "references": [
+    {
+      "path": "../tsconfig.json"
+    }
+  ]
+}

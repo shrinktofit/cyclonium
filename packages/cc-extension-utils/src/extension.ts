@@ -43,6 +43,14 @@ export interface ExtensionContributions {
     methods: string[];
   }>;
 
+  'preview'?: Partial<Record<
+    '*' | 'browser' | 'game-view' | 'simulator',
+    {
+      methods: string;
+      hooks?: Partial<Record<'renderData' | 'settings', string>>;
+    }
+  >>;
+
   'scene'?: {
     script: string;
   };

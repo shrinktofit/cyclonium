@@ -1,0 +1,31 @@
+{
+  "extends": "@cyclonium/workflow/tsconfig/lib",
+  "include": [
+    "./**/*.ts"
+  ],
+  "compilerOptions": {
+    "rootDir": "../..",
+    "outDir": "../../../lib",
+    "tsBuildInfoFile": "../../../lib/.tsbuildinfo/web.tsbuildinfo",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "types": [
+      "@cyclonium/types-cc/cc"
+    ]
+  },
+  "references": [
+    {
+      "path": "../../../../invariant"
+    },
+    {
+      "path": "../../core"
+    },
+    {
+      "path": "../../runtime/cocos"
+    }
+  ]
+}

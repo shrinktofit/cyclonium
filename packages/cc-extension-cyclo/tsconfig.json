@@ -1,16 +1,15 @@
 {
   "extends": "@cyclonium/workflow/tsconfig/basic",
-  "include": ["src"],
+  "include": ["src", "test"],
   "compilerOptions": {
     "module": "esnext",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
     "sourceMap": true,
     "types": [
       "@cyclonium/cc-extension-utils/types/vite-plugins/contribution-modules",
-      "sharp",
       "./node_modules/@cocos/creator-types/engine",
       "./node_modules/@cocos/creator-types/editor",
     ],

@@ -19,9 +19,26 @@
     "dist",
     "!dist/**/*.map",
     "public",
-    "mount"
+    "mount",
+    "oms.config.mjs",
+    "exports/package.json",
+    "exports/lib/**/*.js",
+    "exports/lib/**/*.d.ts"
   ],
   "main": "./dist/main.cjs",
+  "panels": {
+    "asset-groups": {
+      "title": "Cyclo Asset Groups",
+      "type": "dockable",
+      "main": "./dist/asset-groups-panel.cjs",
+      "size": {
+        "min-width": 880,
+        "min-height": 520,
+        "width": 1280,
+        "height": 760
+      }
+    }
+  },
   "creator": {
     "extensionName": "cc-extension-cyclo",
     "hookScript": "./dist/hooks.cjs"
@@ -32,8 +49,9 @@
   },
   "scripts": {
     "prepublishOnly": "node --run build",
-    "build": "vite build",
-    "dev": "vite build --watch"
+    "build": "tsc -b exports/tsconfig.json && vite build",
+    "dev": "vite build --watch",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@cocos/creator-types": "^3.8.5",
@@ -43,16 +61,22 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^18.17.1",
     "@vitejs/plugin-vue": "^5.2.1",
+    "less": "4.8.1",
     "primevue": "^4.3.1",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@cyclonium/cc-extension-utils": "workspace:*",
     "fs-extra": "^11.3.0",
     "vue": "^3.5.13",
+    "vuetify": "4.1.7",
     "winston": "^3.17.0",
     "winston-transport": "*",
     "yaml": "^2.7.0"
+  },
+  "peerDependencies": {
+    "@cyclonium/core": "workspace:^"
   }
 }

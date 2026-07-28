@@ -13,8 +13,9 @@ export default defineConfig({
     sourcemap: true,
     lib: {
       entry: {
-        main: './src/main.ts',
-        hooks: './src/hooks.ts',
+        'asset-groups-panel': './src/panels/asset-groups/index.ts',
+        'main': './src/main.ts',
+        'hooks': './src/hooks.ts',
       },
       formats: ['cjs'],
       cssFileName: 'style',

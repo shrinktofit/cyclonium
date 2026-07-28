@@ -1,0 +1,16 @@
+{
+  "extends": "@cyclonium/workflow/tsconfig/lib",
+  "include": [
+    "./**/*.ts"
+  ],
+  "compilerOptions": {
+    "rootDir": "..",
+    "outDir": "../../lib",
+    "tsBuildInfoFile": "../../lib/.tsbuildinfo/sha256.tsbuildinfo",
+    "lib": [
+      "ES2022"
+    ],
+    "skipLibCheck": true,
+    "types": []
+  }
+}

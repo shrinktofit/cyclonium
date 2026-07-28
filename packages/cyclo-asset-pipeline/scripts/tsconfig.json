@@ -1,0 +1,12 @@
+{
+  "extends": "@cyclonium/workflow/tsconfig/node",
+  "include": ["*.mjs"],
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "types": [
+      "node"
+    ]
+  }
+}
