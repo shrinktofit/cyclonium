@@ -121,7 +121,25 @@ export class PhysicsWorld2D {
     this._worldImpl = null!;
   }
 
-  step(_deltaTime: number) {
+  step(deltaTime: number) {
+    this.advanceSubsteps_internal(deltaTime, 1);
+  }
+
+  /**
+   * Advances a batch of physics steps where `deltaTime` is the length of each substep.
+   * @internal
+   */
+  advanceSubsteps_internal(deltaTime: number, substepCount: number) {
+    this._worldImpl.timestep = deltaTime;
+
+    for (let i = 0; i < substepCount; i++) {
+      const remainingSubsteps = substepCount - i;
+      const stepFraction = 1 / remainingSubsteps;
+      this._step(stepFraction, remainingSubsteps === 1);
+    }
+  }
+
+  private _step(stepFraction: number, isLastSubstep: boolean) {
     const outdated = this._outDated;
     this._outDated = false;
 
@@ -130,6 +148,13 @@ export class PhysicsWorld2D {
         continue;
       }
       invokeOnSyncTransforms(component, outdated, outdated);
+    }
+
+    for (const { component } of this._rigidBodies.values()) {
+      if (!component.enabled) {
+        continue;
+      }
+      component.applyKinematicTargetForStep_internal(stepFraction, isLastSubstep);
     }
 
     this._worldImpl.step(this._eventQueue);

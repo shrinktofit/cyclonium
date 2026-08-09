@@ -1,12 +1,12 @@
 import { EDITOR_NOT_IN_PREVIEW } from 'cc/env';
 import { editable, executionOrder, idem, serializable } from '@cyclonium/core/legacy-decorator';
-import { CycloComponent } from '@cyclonium/core/framework';
-import { PhysicsWorld2D } from './physics-world-2d.js';
-import { Physics2DDebugger } from '#physics-2d-debugger';
-import { PredefinedExecutionOrder } from '@cyclonium/core/framework';
+import { CycloComponent, PredefinedExecutionOrder } from '@cyclonium/core/framework';
 import { director } from 'cc';
-import { cycloBuiltinClass } from '@cyclonium/core/internal';
+import { cycloBuiltinClass, TimeAccumulator } from '@cyclonium/core/internal';
+import { logger } from '@cyclonium/core/log';
+import { Physics2DDebugger } from '#physics-2d-debugger';
 import { Physics2DSettings } from './physics-2d-settings.js';
+import { PhysicsWorld2D } from './physics-world-2d.js';
 
 @cycloBuiltinClass('PhysicsWorld2DSceneComponent')
 @executionOrder(PredefinedExecutionOrder.physics)
@@ -40,6 +40,8 @@ export class PhysicsWorld2DSceneComponent extends CycloComponent {
   protected override onAwake(): void {
     if (!EDITOR_NOT_IN_PREVIEW) {
       const settings = this._settings ?? new Physics2DSettings();
+      this._timeAccumulator = new TimeAccumulator(1 / settings.fps);
+      this._maxSubsteps = settings.maxSubsteps;
       this._physicsWorld = new PhysicsWorld2D({
         scene: this.node.scene,
         tags: settings.tags,
@@ -80,13 +82,19 @@ export class PhysicsWorld2DSceneComponent extends CycloComponent {
 
   private _lastUpdateFrame = -1;
 
+  private _maxSubsteps = 4;
+
+  private _timeAccumulator = new TimeAccumulator(1 / 60);
+
+  private _overloading = false;
+
   @serializable
   private _debug = false;
 
   @serializable
   private _settings: Physics2DSettings | null = null;
 
-  private _updateFrame(_deltaTime: number) {
+  private _updateFrame(deltaTime: number) {
     const world = this._physicsWorld;
     if (!world) {
       return;
@@ -97,7 +105,22 @@ export class PhysicsWorld2DSceneComponent extends CycloComponent {
       this._lastUpdateFrame = actualFrame;
       world.setOutdated();
     }
-    world.step(1 / 60);
+
+    const timeAccumulator = this._timeAccumulator;
+    const fixedDeltaTime = timeAccumulator.timeStep;
+    const maxSubsteps = this._maxSubsteps;
+    const actualSubsteps = timeAccumulator.advance(deltaTime, maxSubsteps);
+    const maximumDeltaTime = maxSubsteps * fixedDeltaTime;
+    const overloading = deltaTime > maximumDeltaTime;
+
+    if (overloading && !this._overloading) {
+      logger.warn(
+        `PhysicsWorld2D clamped an update to the ${maxSubsteps}-substep limit.`,
+      );
+    }
+    this._overloading = overloading;
+
+    world.advanceSubsteps_internal(fixedDeltaTime, actualSubsteps);
     this._physicsDebugger?.render();
   }
 }

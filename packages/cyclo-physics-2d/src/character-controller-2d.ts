@@ -210,8 +210,7 @@ export class KinematicCharacterController2D extends PhysicsComponent2DBase {
     } else {
       const currentPosition = fromPx2ImplVec2(rigidBody.impl.nextTranslation());
       const newPosition = fromPx2ImplVec2(currentPosition).add(movement);
-      Transform2DComponent.of(collider).position = newPosition;
-      rigidBody.impl.setNextKinematicTranslation(toPx2ImplVec2(newPosition));
+      rigidBody.setNextKinematicPosition(newPosition);
     }
 
     this._emitCharacterCollisionEvents(impl, world);

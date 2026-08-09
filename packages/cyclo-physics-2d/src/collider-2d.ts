@@ -49,7 +49,6 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
 
   /**
    * Test only.
-   * @internal
    */
   get impl_internal() {
     return this._implCollider;

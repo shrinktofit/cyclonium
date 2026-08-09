@@ -5,6 +5,7 @@ import { addFrameTask, TaskPriority } from './tasking.ts';
 import { CoroutineRunner, stopCoroutine as stopCoroutineRecord, type Coroutine, type CoroutineIterator, type StartCoroutineOptions } from './coroutine.ts';
 import { retainIf } from '@cyclonium/algorithm/retain-if';
 import { EDITOR_NOT_IN_PREVIEW } from 'cc/env';
+import { TimeAccumulator } from './time-accumulator.js';
 
 class ComponentScheduler {
   enableComponent(component: CycloComponent) {
@@ -299,28 +300,23 @@ class FixedUpdateTask {
   update(deltaTime: number) {
     const scene = director.getScene();
     if (!scene) {
-      this._accumulatedTime = 0;
+      this._timeAccumulator.reset();
       return;
     }
 
-    const fixedTimeStep = this._fixedTimeStep;
+    const timeAccumulator = this._timeAccumulator;
+    const fixedTimeStep = timeAccumulator.timeStep;
     const maxSteps = this.maxSteps;
-    const accumulatedTime = this._accumulatedTime + deltaTime;
-    const expectedSteps = Math.floor(accumulatedTime / fixedTimeStep);
-    const overloading = expectedSteps > maxSteps;
+    const actualSteps = timeAccumulator.advance(deltaTime, maxSteps);
+    const overloading = deltaTime > maxSteps * fixedTimeStep;
     const previousOverloading = this._overloading;
     this._overloading = overloading;
 
-    let actualSteps = 0;
     if (overloading) {
-      actualSteps = maxSteps;
-      this._accumulatedTime = 0;
       if (overloading !== previousOverloading) {
-        this._emitOverloadingBegin(expectedSteps);
+        this._emitOverloadingBegin();
       }
     } else {
-      actualSteps = expectedSteps;
-      this._accumulatedTime = accumulatedTime - actualSteps * fixedTimeStep;
       if (overloading !== previousOverloading) {
         this._emitOverloadingEnd();
       }
@@ -331,13 +327,11 @@ class FixedUpdateTask {
     }
   }
 
-  private _fixedTimeStep = 1 / 60;
-  private _accumulatedTime = 0;
+  private _timeAccumulator = new TimeAccumulator(1 / 60);
   private _overloading = false;
 
-  private _emitOverloadingBegin(expectedSteps: number) {
+  private _emitOverloadingBegin() {
     // todo
-    void expectedSteps;
   }
 
   private _emitOverloadingEnd() {

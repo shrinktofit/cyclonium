@@ -10,6 +10,10 @@ export class Physics2DSettings extends Asset {
   @editable
   fps = 60;
 
+  @serializable
+  @editable
+  maxSubsteps = 4;
+
   get tags() {
     return this._tags;
   }
