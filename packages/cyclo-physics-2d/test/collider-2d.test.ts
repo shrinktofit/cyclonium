@@ -1,11 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { director, Node, Quat, Scene, Vec3 } from 'cc';
 import { PhysicsWorld2DSceneComponent } from '@/physics-world-2d-scene-component.js';
-import { CircleCollider2D } from '@/index.js';
+import { BoxCollider2D, CircleCollider2D } from '@/index.js';
 import { RigidBody2D, RigidBody2DType } from '@/rigid-body-2d.js';
 import { toRadians } from '@cyclonium/core/math/trigonometry';
-import { fromPx2ImplVec2 } from '@/exchange.js';
 import { Vec2 } from '@cyclonium/core/math/vec2';
+import type { PhysicsWorld2D } from '@/physics-world-2d.js';
 
 const defaultTickDeltaTime = 1 / 60;
 
@@ -29,19 +29,24 @@ describe('Collider2D', () => {
     scene.addChild(node);
     const collider = node.addComponent(CircleCollider2D);
 
-    expect(collider.impl_internal).toBeUndefined();
+    expect(findColliderAt(physicsScene.physicsWorld!, Vec2.ZERO)).toBeUndefined();
 
     node.active = true;
-    expect(collider.impl_internal!.isEnabled()).toBe(true);
+    director.tick(defaultTickDeltaTime);
+    expect(findColliderAt(physicsScene.physicsWorld!, Vec2.ZERO)).toBe(collider);
 
     collider.enabled = false;
-    expect(collider.impl_internal!.isEnabled()).toBe(false);
+    director.tick(defaultTickDeltaTime);
+    expect(findColliderAt(physicsScene.physicsWorld!, Vec2.ZERO)).toBeUndefined();
 
     collider.enabled = true;
-    expect(collider.impl_internal!.isEnabled()).toBe(true);
+    director.tick(defaultTickDeltaTime);
+    expect(findColliderAt(physicsScene.physicsWorld!, Vec2.ZERO)).toBe(collider);
 
     node.active = false;
-    expect(collider.impl_internal!.isEnabled()).toBe(false);
+    director.tick(defaultTickDeltaTime);
+    expect(findColliderAt(physicsScene.physicsWorld!, Vec2.ZERO)).toBeUndefined();
+    node.destroy();
   });
 
   describe('_updateTransform', () => {
@@ -66,15 +71,16 @@ describe('Collider2D', () => {
         colliderNodeParent.addChild(colliderNode);
         colliderNode.worldPosition = new Vec3(100, 1.85, 0);
         colliderNode.worldRotation = Quat.fromAxisAngle(new Quat(), Vec3.UNIT_Z, toRadians(108));
-        const collider = colliderNode.addComponent(CircleCollider2D);
+        const collider = colliderNode.addComponent(BoxCollider2D);
+        collider.halfExtents = new Vec2(2, 0.1);
         director.tick(defaultTickDeltaTime);
-        const internalCollider = collider.impl_internal;
-        expect(internalCollider).toBeDefined();
-        expect(fromPx2ImplVec2(internalCollider!.translation())).toStrictEqual(new Vec2(
-          100,
-          1.850000023841858,
-        ));
-        expect(internalCollider!.rotation()).toBeCloseTo(toRadians(108), 6);
+        const rotation = toRadians(108);
+        const pointAlongRotatedWidth = new Vec2(
+          100 + Math.cos(rotation) * 1.5,
+          1.85 + Math.sin(rotation) * 1.5,
+        );
+        expect(findColliderAt(physicsScene.physicsWorld!, pointAlongRotatedWidth)).toBe(collider);
+        expect(findColliderAt(physicsScene.physicsWorld!, new Vec2(101.5, 1.85))).toBeUndefined();
         colliderNodeParent.destroy();
       });
 
@@ -84,15 +90,12 @@ describe('Collider2D', () => {
         colliderNode.worldPosition = new Vec3(10, 20, 0);
         const collider = colliderNode.addComponent(CircleCollider2D);
         director.tick(defaultTickDeltaTime);
-        const originalPos = fromPx2ImplVec2(collider.impl_internal!.translation());
-        expect(originalPos.x).toBeCloseTo(10);
-        expect(originalPos.y).toBeCloseTo(20);
+        expect(findColliderAt(physicsScene.physicsWorld!, new Vec2(10, 20))).toBe(collider);
 
         collider.center = new Vec2(5, 10);
         director.tick(defaultTickDeltaTime);
-        const newPos = fromPx2ImplVec2(collider.impl_internal!.translation());
-        expect(newPos.x).toBeCloseTo(15);
-        expect(newPos.y).toBeCloseTo(30);
+        expect(findColliderAt(physicsScene.physicsWorld!, new Vec2(10, 20))).toBeUndefined();
+        expect(findColliderAt(physicsScene.physicsWorld!, new Vec2(15, 30))).toBe(collider);
         colliderNode.destroy();
       });
 
@@ -102,12 +105,11 @@ describe('Collider2D', () => {
         colliderNode.worldPosition = new Vec3(0, 0, 0);
         colliderNode.worldScale = new Vec3(2, 3, 1);
         const collider = colliderNode.addComponent(CircleCollider2D);
+        collider.radius = 0.1;
         collider.center = new Vec2(1, 1);
         director.tick(defaultTickDeltaTime);
-        const internalCollider = collider.impl_internal;
-        const pos = fromPx2ImplVec2(internalCollider!.translation());
-        expect(pos.x).toBeCloseTo(2);
-        expect(pos.y).toBeCloseTo(3);
+        expect(findColliderAt(physicsScene.physicsWorld!, new Vec2(1, 1))).toBeUndefined();
+        expect(findColliderAt(physicsScene.physicsWorld!, new Vec2(2, 3))).toBe(collider);
         colliderNode.destroy();
       });
     });
@@ -118,19 +120,15 @@ describe('Collider2D', () => {
         bodyNode.parent = physicsScene.node;
         bodyNode.worldPosition = new Vec3(50, 60, 0);
         const rigidBody = bodyNode.addComponent(RigidBody2D);
-        rigidBody.type = RigidBody2DType.dynamic;
-        rigidBody.enabled = false;
+        rigidBody.type = RigidBody2DType.fixed;
         const collider = bodyNode.addComponent(CircleCollider2D);
+        collider.radius = 0.1;
         collider.center = new Vec2(10, 20);
         director.tick(defaultTickDeltaTime);
-        const internalCollider = collider.impl_internal;
-        expect(internalCollider).toBeDefined();
         expect(collider.attachedRigidBody).not.toBeNull();
-        const rapierPos = fromPx2ImplVec2(internalCollider!.translation());
         const expectedX = bodyNode.worldPosition.x + 10;
         const expectedY = bodyNode.worldPosition.y + 20;
-        expect(rapierPos.x).toBeCloseTo(expectedX);
-        expect(rapierPos.y).toBeCloseTo(expectedY);
+        expect(findColliderAt(physicsScene.physicsWorld!, new Vec2(expectedX, expectedY))).toBe(collider);
         bodyNode.destroy();
       });
 
@@ -140,23 +138,19 @@ describe('Collider2D', () => {
         bodyNode.worldPosition = new Vec3(10, 20, 0);
         bodyNode.worldScale = new Vec3(1, 1, 1);
         const rigidBody = bodyNode.addComponent(RigidBody2D);
-        rigidBody.type = RigidBody2DType.dynamic;
-        rigidBody.enabled = false;
+        rigidBody.type = RigidBody2DType.fixed;
 
         const childNode = new Node('child');
         childNode.parent = bodyNode;
         childNode.setPosition(5, 6, 0);
         const collider = childNode.addComponent(CircleCollider2D);
+        collider.radius = 0.1;
         collider.center = new Vec2(1, 2);
         director.tick(defaultTickDeltaTime);
-        const internalCollider = collider.impl_internal;
-        expect(internalCollider).toBeDefined();
         expect(collider.attachedRigidBody).not.toBeNull();
-        const rapierPos = fromPx2ImplVec2(internalCollider!.translation());
         const expectedX = childNode.worldPosition.x + 1;
         const expectedY = childNode.worldPosition.y + 2;
-        expect(rapierPos.x).toBeCloseTo(expectedX);
-        expect(rapierPos.y).toBeCloseTo(expectedY);
+        expect(findColliderAt(physicsScene.physicsWorld!, new Vec2(expectedX, expectedY))).toBe(collider);
         bodyNode.destroy();
       });
 
@@ -238,3 +232,14 @@ describe('Collider2D', () => {
     });
   });
 });
+
+function findColliderAt(world: PhysicsWorld2D, position: Vec2) {
+  return world.castCircle({
+    radius: 0.01,
+    position,
+  }, {
+    direction: Vec2.UNIT_X,
+    maxDistance: 0,
+    stopAtPenetration: true,
+  })?.collider;
+}

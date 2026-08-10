@@ -4,6 +4,7 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "lib",
+    "stripInternal": true,
     "types": [
       "vitest",
       "@cyclonium/types-cc/cc",

@@ -12,8 +12,8 @@ import { createCollisionEventEmitter, ContactEventListenerFlagIndex } from './sh
 import { CCString } from 'cc';
 import { EDITOR_NOT_IN_PREVIEW } from 'cc/env';
 import { cycloBuiltinClass } from '@cyclonium/core/internal';
-import { approxEqual } from '@cyclonium/core/math/number';
-import { to0ToPI2 } from '@cyclonium/core/math/trigonometry';
+import { approxEqual, lerp } from '@cyclonium/core/math/number';
+import { lerpAngle, to0ToPI2 } from '@cyclonium/core/math/trigonometry';
 
 export enum RigidBody2DType {
   fixed = 'fixed',
@@ -182,11 +182,17 @@ export class RigidBody2D extends PhysicsComponent2DBase {
     }
   }
 
+  /** Sets the position target reached across the next physics step batch. */
   setNextKinematicPosition(position: Vec2) {
+    this._kinematicPositionTarget.copyFrom(position);
+    this._hasKinematicPositionTarget = true;
     this._rigidBodyControlBlock?.impl.setNextKinematicTranslation(position);
   }
 
+  /** Sets the rotation target reached across the next physics step batch. */
   setNextKinematicRotation(rotation: number) {
+    this._kinematicRotationTarget = rotation;
+    this._hasKinematicRotationTarget = true;
     this._rigidBodyControlBlock?.impl.setNextKinematicRotation(rotation);
   }
 
@@ -240,6 +246,40 @@ export class RigidBody2D extends PhysicsComponent2DBase {
     this._syncToPhysics(forceTransform);
   }
 
+  /** @internal */
+  applyKinematicTargetForStep_internal(stepFraction: number, isLastSubstep: boolean) {
+    const implBody = this._rigidBodyControlBlock?.impl;
+    if (!implBody || this._type !== RigidBody2DType.kinematicPositionBased) {
+      return;
+    }
+
+    if (this._hasKinematicPositionTarget) {
+      const substepTarget = this._substepKinematicPositionTarget;
+      if (isLastSubstep) {
+        substepTarget.copyFrom(this._kinematicPositionTarget);
+        this._hasKinematicPositionTarget = false;
+      } else {
+        const position = this._physicsPosition;
+        const target = this._kinematicPositionTarget;
+        substepTarget.set(
+          lerp(position.x, target.x, stepFraction),
+          lerp(position.y, target.y, stepFraction),
+        );
+      }
+      implBody.setNextKinematicTranslation(substepTarget);
+    }
+
+    if (this._hasKinematicRotationTarget) {
+      const substepTarget = isLastSubstep
+        ? this._kinematicRotationTarget
+        : lerpAngle(this._physicsRotation, this._kinematicRotationTarget, stepFraction);
+      if (isLastSubstep) {
+        this._hasKinematicRotationTarget = false;
+      }
+      implBody.setNextKinematicRotation(substepTarget);
+    }
+  }
+
   protected override onAfterPhysicsStep(): void {
     this._syncFromPhysics();
   }
@@ -264,6 +304,12 @@ export class RigidBody2D extends PhysicsComponent2DBase {
   private _physicsPosition = new Vec2();
   private _physicsRotation = 0.0;
   private _linearVelocity = new Vec2();
+
+  private _kinematicPositionTarget = new Vec2();
+  private _substepKinematicPositionTarget = new Vec2();
+  private _kinematicRotationTarget = 0;
+  private _hasKinematicPositionTarget = false;
+  private _hasKinematicRotationTarget = false;
 
   private _listenerFlags = 0;
 
@@ -346,6 +392,8 @@ export class RigidBody2D extends PhysicsComponent2DBase {
     this._rigidBodyControlBlock = null;
     this._physicsPosition.set(0, 0);
     this._physicsRotation = 0.0;
+    this._hasKinematicPositionTarget = false;
+    this._hasKinematicRotationTarget = false;
   }
 
   private _setPhysicsPosition(position: Vec2) {

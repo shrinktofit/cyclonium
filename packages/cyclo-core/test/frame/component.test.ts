@@ -58,6 +58,27 @@ it('component life cycle method execution order', () => {
   ]);
 });
 
+it('preserves prior fractional fixed-update time when an update is overloaded', () => {
+  /// @case
+  /// 1. A component retains half a fixed step from an earlier update.
+  /// 2. The next update exceeds the two-step workload limit by one and a half steps.
+  /// 3. A final half-step update completes the previously retained time.
+  /// @expect
+  /// The overloaded update runs two fixed updates, drops all of its excess input, and preserves the earlier half-step for the final update.
+  const observer = createObserver().component;
+  let fixedUpdateCount = 0;
+  observer.onFixedUpdateCallback = () => fixedUpdateCount++;
+
+  director.tick(1 / 120);
+  expect(fixedUpdateCount).toBe(0);
+
+  director.tick(7 / 120);
+  expect(fixedUpdateCount).toBe(2);
+
+  director.tick(1 / 120);
+  expect(fixedUpdateCount).toBe(3);
+});
+
 function createObserver(name = 'observer'): { component: ComponentLifeCycleObserver; node: Node } {
   if (!scene) {
     scene = new Scene('component-test');

@@ -14,6 +14,21 @@ describe('Physics2DSettings', () => {
     expect(settings.fps).toBe(120);
   });
 
+  it('should have a default maximum substep count', () => {
+    /// @case A physics settings asset is created without overriding its fixed-step workload limit.
+    /// @expect It permits up to four physics substeps during one engine update.
+    const settings = new Physics2DSettings();
+    expect(settings.maxSubsteps).toBe(4);
+  });
+
+  it('should set the maximum substep count', () => {
+    /// @case A project configures a larger fixed-step workload limit.
+    /// @expect The configured maximum substep count is retained by the settings asset.
+    const settings = new Physics2DSettings();
+    settings.maxSubsteps = 8;
+    expect(settings.maxSubsteps).toBe(8);
+  });
+
   it('should have empty tags by default', () => {
     const settings = new Physics2DSettings();
     expect(settings.tags).toEqual({});
