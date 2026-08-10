@@ -1,5 +1,18 @@
 # @cyclonium/physics-2d
 
+## 0.1.0
+
+### Minor Changes
+
+- 4f36762: Share fixed-rate time accumulation between component and physics updates, run physics at its configured rate, honor each physics step's delta time, and clamp overloaded update input before accumulation while preserving prior fractional time.
+
+### Patch Changes
+
+- 4f36762: Distribute position-based kinematic targets across all substeps in a physics step batch.
+- Updated dependencies [4f36762]
+  - @cyclonium/core@0.0.105
+  - @cyclonium/debug-draw@0.0.105
+
 ## 0.0.104
 
 ### Patch Changes

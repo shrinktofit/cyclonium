@@ -1,5 +1,12 @@
 # @cyclonium/canvas-3d
 
+## 0.0.105
+
+### Patch Changes
+
+- Updated dependencies [4f36762]
+  - @cyclonium/core@0.0.105
+
 ## 0.0.104
 
 ### Patch Changes
