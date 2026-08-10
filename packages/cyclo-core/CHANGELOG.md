@@ -1,5 +1,11 @@
 # @cyclonium/core
 
+## 0.0.105
+
+### Patch Changes
+
+- 4f36762: Share fixed-rate time accumulation between component and physics updates, run physics at its configured rate, honor each physics step's delta time, and clamp overloaded update input before accumulation while preserving prior fractional time.
+
 ## 0.0.104
 
 ### Patch Changes
