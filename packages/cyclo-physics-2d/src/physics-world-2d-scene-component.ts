@@ -8,6 +8,11 @@ import { Physics2DDebugger } from '#physics-2d-debugger';
 import { Physics2DSettings } from './physics-2d-settings.js';
 import { PhysicsWorld2D } from './physics-world-2d.js';
 
+const getDefaultSettings = (() => {
+  let defaultSettings: Physics2DSettings | undefined;
+  return () => defaultSettings ??= new Physics2DSettings();
+})();
+
 @cycloBuiltinClass('PhysicsWorld2DSceneComponent')
 @executionOrder(PredefinedExecutionOrder.physics)
 export class PhysicsWorld2DSceneComponent extends CycloComponent {
@@ -39,9 +44,19 @@ export class PhysicsWorld2DSceneComponent extends CycloComponent {
 
   protected override onAwake(): void {
     if (!EDITOR_NOT_IN_PREVIEW) {
-      const settings = this._settings ?? new Physics2DSettings();
-      this._timeAccumulator = new TimeAccumulator(1 / settings.fps);
-      this._maxSubsteps = settings.maxSubsteps;
+      const settings = this._settings ?? getDefaultSettings();
+      let fps = settings.fps;
+      let maxSubsteps = settings.maxSubsteps;
+      if (!Number.isFinite(fps) || fps <= 0) {
+        logger.error(`Invalid Physics2DSettings.fps (${fps});`);
+        fps = getDefaultSettings().fps;
+      }
+      if (!Number.isInteger(maxSubsteps) || maxSubsteps <= 0) {
+        logger.error(`Invalid Physics2DSettings.maxSubsteps (${maxSubsteps});`);
+        maxSubsteps = getDefaultSettings().maxSubsteps;
+      }
+      this._timeAccumulator = new TimeAccumulator(1 / fps);
+      this._maxSubsteps = maxSubsteps;
       this._physicsWorld = new PhysicsWorld2D({
         scene: this.node.scene,
         tags: settings.tags,
