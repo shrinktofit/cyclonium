@@ -63,15 +63,15 @@ class ComponentScheduler {
     }
   }
 
-  private _fixedUpdateRegistry: {
+  private _fixedUpdateRegistry: Array<{
     component: CycloComponent;
     enabled: boolean;
-  }[] = [];
+  }> = [];
 
-  private _coroutineUpdateRegistry: {
+  private _coroutineUpdateRegistry: Array<{
     component: CycloComponent;
     enabled: boolean;
-  }[] = [];
+  }> = [];
 }
 
 const globalComponentScheduler = new ComponentScheduler();
@@ -129,11 +129,17 @@ export class CycloComponent extends Component {
     return (this._disablingController ??= new AbortController()).signal;
   }
 
-  protected onAwake() {}
+  protected onAwake() {
+    // Optional lifecycle hook for subclasses.
+  }
 
-  protected onEnabled() {}
+  protected onEnabled() {
+    // Optional lifecycle hook for subclasses.
+  }
 
-  protected onDisabled() {}
+  protected onDisabled() {
+    // Optional lifecycle hook for subclasses.
+  }
 
   protected override onDestroy(): void {
     this.stopAllCoroutines();
@@ -141,15 +147,25 @@ export class CycloComponent extends Component {
     this._destroyingController = undefined;
   }
 
-  protected onStart() {}
+  protected onStart() {
+    // Optional lifecycle hook for subclasses.
+  }
 
-  protected onUpdate(_deltaTime: number) {}
+  protected onUpdate(_deltaTime: number) {
+    // Optional lifecycle hook for subclasses.
+  }
 
-  protected onFixedUpdate(_deltaTime: number) {}
+  protected onFixedUpdate(_deltaTime: number) {
+    // Optional lifecycle hook for subclasses.
+  }
 
-  protected onLateUpdate(_deltaTime: number) {}
+  protected onLateUpdate(_deltaTime: number) {
+    // Optional lifecycle hook for subclasses.
+  }
 
-  protected onFrameEnd() {}
+  protected onFrameEnd() {
+    // Optional lifecycle hook for subclasses.
+  }
 
   /**
    * Starts a coroutine owned by this component.
@@ -341,21 +357,23 @@ class FixedUpdateTask {
 
 if (!EDITOR_NOT_IN_PREVIEW) {
   const fixedUpdatePriority = TaskPriority.before(TaskPriority.predefined.componentsLateUpdate);
+  const coroutineUpdateTask = new CoroutineUpdateTask();
+  const fixedUpdateTask = new FixedUpdateTask();
 
   addFrameTask({
-    thisArg: new CoroutineUpdateTask(),
+    thisArg: coroutineUpdateTask,
 
     priority: TaskPriority.between(fixedUpdatePriority, TaskPriority.predefined.componentsLateUpdate),
 
-    fn: CoroutineUpdateTask.prototype.update,
+    fn: coroutineUpdateTask.update.bind(coroutineUpdateTask),
   });
 
   addFrameTask({
-    thisArg: new FixedUpdateTask(),
+    thisArg: fixedUpdateTask,
 
     priority: fixedUpdatePriority,
 
-    fn: FixedUpdateTask.prototype.update,
+    fn: fixedUpdateTask.update.bind(fixedUpdateTask),
   });
 
   addFrameTask({

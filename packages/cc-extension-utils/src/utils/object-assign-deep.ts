@@ -3,7 +3,7 @@ export type RecursivePartial<T> = {
 };
 
 export function objectAssignDeep<T>(target: T, source: RecursivePartial<T>) {
-  for (const [k, v] of (Object.entries(source) as [keyof T, T[keyof T]][])) {
+  for (const [k, v] of (Object.entries(source) as Array<[keyof T, T[keyof T]]>)) {
     if (typeof v === 'object' && v) {
       objectAssignDeep(target[k] ??= (Array.isArray(v) ? [] : {}) as T[typeof k], v);
     } else {

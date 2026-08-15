@@ -1,5 +1,4 @@
-// @ts-expect-error
-import { Asset, Importer, VirtualAsset } from '@editor/asset-db';
+import { Asset, VirtualAsset } from '@editor/asset-db';
 import YAML from 'yaml';
 import { outputFile, readFile } from 'fs-extra';
 import { logger } from '../../../logger.js';
@@ -40,8 +39,8 @@ export default defineAssetHandler({
     },
   },
 
-  async open(_asset: Asset): Promise<boolean> {
-    return false;
+  open(_asset: Asset): Promise<boolean> {
+    return Promise.resolve(false);
   },
 
   importer: {
@@ -49,14 +48,14 @@ export default defineAssetHandler({
 
     migrations: [],
 
-    async before(_asset: Asset) {
+    before(_asset: Asset): Promise<boolean> {
       logger.debug(`[CycloPhysics2DSettingsHandler] before`);
-      return true;
+      return Promise.resolve(true);
     },
 
-    async after(_asset: Asset) {
+    after(_asset: Asset): Promise<boolean> {
       logger.debug(`[CycloPhysics2DSettingsHandler] after`);
-      return true;
+      return Promise.resolve(true);
     },
 
     async import(asset: Asset | VirtualAsset) {
@@ -75,7 +74,7 @@ export default defineAssetHandler({
       if (!(deserialized instanceof Physics2DSettings)) {
         throw new Error('deserialized must be instance of Physics2DSettings');
       }
-      // @ts-expect-error
+      // @ts-expect-error -- EditorExtends.serialize is provided by the Cocos editor runtime with incomplete public typings.
       const serialized = EditorExtends.serialize(deserialized);
       await asset.saveToLibrary('.json', serialized);
       return true;
@@ -90,7 +89,7 @@ async function getDefaultPhysics2DSettingsFileContent() {
     throw new Error('Physics2DSettings not found');
   }
   const defaultPhysics2DSettings = new Physics2DSettings();
-  // @ts-expect-error
+  // @ts-expect-error -- EditorExtends.serialize is provided by the Cocos editor runtime with incomplete public typings.
   const serialized = EditorExtends.serialize(defaultPhysics2DSettings);
   return YAML.stringify(JSON.parse(serialized));
 }

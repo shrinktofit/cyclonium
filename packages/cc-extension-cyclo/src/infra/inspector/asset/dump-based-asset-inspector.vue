@@ -3,7 +3,7 @@ import { provide, ref, useTemplateRef, watch, type PropType } from 'vue';
 import type { AssetInspectorData } from './data.js';
 import type { Dump } from '../../../dump/dump.js';
 import { invokeSelfSceneMethod } from '../../scene/invoke-scene-method.js';
-import { DumpNotifier, injectionKeyDumpNotifier } from '../basic/dump-notifier.js';
+import { DumpNotifier, injectionKeyDumpNotifier, type DumpSubmissionTarget } from '../basic/dump-notifier.js';
 import RawUiProp from '../basic/raw/raw-ui-prop.vue';
 import CycloValueRouter from '../basic/cyclo-value-router.vue';
 import { logger } from '../../../logger.js';
@@ -29,8 +29,8 @@ watch(
   { immediate: true },
 );
 
-const submissionUiPropRef = useTemplateRef('submissionUiProp');
-const dumpNotifier = new DumpNotifier(submissionUiPropRef as any);
+const submissionUiPropRef = useTemplateRef<DumpSubmissionTarget>('submissionUiProp');
+const dumpNotifier = new DumpNotifier(submissionUiPropRef);
 provide(injectionKeyDumpNotifier, dumpNotifier);
 
 function onDumpEvent(event: CustomEvent) {

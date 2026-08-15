@@ -19,6 +19,4 @@ export interface ComponentDump extends BasicDump<Record<string, Dump>> {
   };
 }
 
-export interface Dump extends BasicDump<Record<string, Dump>> {
-  [x: string]: unknown;
-}
+export type Dump = BasicDump<Record<string, Dump>> & Record<string, unknown>;

@@ -34,7 +34,7 @@ export class Downloader {
       function onError(err: ErrorEvent) {
         img.removeEventListener('load', onLoad);
         img.removeEventListener('error', onError);
-        reject(err);
+        reject(new Error(`Failed to download image: ${url}`, { cause: err }));
       }
 
       img.addEventListener('load', onLoad);
@@ -44,13 +44,13 @@ export class Downloader {
     });
   }
 
-  async downloadJson(url: string, opts?: DownloadOptions) {
+  async downloadJson(url: string, _opts?: DownloadOptions) {
     const response = await this._fetchWithCheckedResponse(url);
     return await response.json();
   }
 
-  async downloadScript(url: string) {
-    throw new Error('Script download is not supported.');
+  downloadScript(_url: string): Promise<never> {
+    return Promise.reject(new Error('Script download is not supported.'));
   }
 
   private _baseURL: URL;

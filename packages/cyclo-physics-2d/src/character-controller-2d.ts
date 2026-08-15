@@ -35,7 +35,7 @@ export class KinematicCharacterController2D extends PhysicsComponent2DBase {
   }
 
   @editable
-  @idemBy(Vec2.strictEquals)
+  @idemBy((left: Vec2, right: Vec2) => Vec2.strictEquals(left, right))
   get up() {
     return this._up;
   }
@@ -283,11 +283,11 @@ export class KinematicCharacterController2D extends PhysicsComponent2DBase {
 
   private _lastMovement = Vec2.ZERO.clone();
 
-  private _collisionRecords: {
+  private _collisionRecords: Array<{
     collider: Collider2D;
     colliderName_debug: undefined | string;
     state: CollisionRecordState;
-  }[] = [];
+  }> = [];
 
   private _emitterOnCollisionBegin = new ManagedEventEmitter<[CharacterCollision]>();
   private _emitterOnCollisionStay = new ManagedEventEmitter<[CharacterCollision]>();

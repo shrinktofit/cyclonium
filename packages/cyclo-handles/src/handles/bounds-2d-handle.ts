@@ -66,7 +66,7 @@ export class Bounds2DHandleProvider extends HandleProvider {
     } = essentials;
     const {
       lock = 0,
-    } = opts || {};
+    } = opts ?? {};
 
     const rotationQuat: Quat | undefined = undefined;
     const baseRight = Vec3.UNIT_X;

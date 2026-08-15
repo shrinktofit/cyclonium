@@ -8,7 +8,7 @@ interface GameConstructorWithLoadCCEScripts {
 
 export async function postInit(opts: PostInitOptions): Promise<void> {
   const gameConstructor = opts.cc.game.constructor as GameConstructorWithLoadCCEScripts;
-  gameConstructor.prototype._loadCCEScripts = async () => {};
+  gameConstructor.prototype._loadCCEScripts = () => Promise.resolve();
 
   await sharedPostInit(opts);
 }

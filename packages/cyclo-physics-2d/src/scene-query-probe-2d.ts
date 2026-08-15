@@ -184,6 +184,7 @@ export abstract class SceneQueryProbe2D extends PhysicsComponent2DBase {
   protected abstract drawGizmo(): void;
 
   protected onAttachToWorld(_world: PhysicsWorld2D) {
+    // Scene query probes do not allocate simulation objects.
   }
 
   protected onDetachFromWorld(_world: PhysicsWorld2D) {
@@ -195,6 +196,33 @@ export abstract class SceneQueryProbe2D extends PhysicsComponent2DBase {
       this.drawGizmo();
     }
   }
+
+  @serializable
+  private _targetTags: string[] = [];
+
+  @serializable
+  private _dynamics = true;
+
+  @serializable
+  private _fixed = true;
+
+  @serializable
+  private _kinematics = true;
+
+  @serializable
+  private _sensors = true;
+
+  @serializable
+  private _solids = true;
+
+  private _filterCache: SceneQueryFilter | undefined = undefined;
+
+  private _filterWorld: PhysicsWorld2D | undefined = undefined;
+
+  private _filterDirty = true;
+
+  @requiresComponent(Transform2DComponent)
+  private get _transform(): Transform2DComponent { return undefined!; }
 
   private _getFilter(world: PhysicsWorld2D) {
     if (!this._filterCache || this._filterWorld !== world || this._filterDirty) {
@@ -227,31 +255,4 @@ export abstract class SceneQueryProbe2D extends PhysicsComponent2DBase {
     this._filterWorld = undefined;
     this._filterDirty = true;
   }
-
-  @serializable
-  private _targetTags: string[] = [];
-
-  @serializable
-  private _dynamics = true;
-
-  @serializable
-  private _fixed = true;
-
-  @serializable
-  private _kinematics = true;
-
-  @serializable
-  private _sensors = true;
-
-  @serializable
-  private _solids = true;
-
-  private _filterCache: SceneQueryFilter | undefined = undefined;
-
-  private _filterWorld: PhysicsWorld2D | undefined = undefined;
-
-  private _filterDirty = true;
-
-  @requiresComponent(Transform2DComponent)
-  private get _transform(): Transform2DComponent { return undefined!; }
 }

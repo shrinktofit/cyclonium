@@ -189,12 +189,14 @@ describe('abort signal', () => {
 });
 
 describe('errorBehavior', () => {
-  let originalListeners: ((...args: unknown[]) => void)[];
+  let originalListeners: Array<(...args: unknown[]) => void>;
 
   beforeEach(() => {
-    originalListeners = process.listeners('unhandledRejection') as ((...args: unknown[]) => void)[];
+    originalListeners = process.listeners('unhandledRejection') as Array<(...args: unknown[]) => void>;
     process.removeAllListeners('unhandledRejection');
-    process.on('unhandledRejection', () => {});
+    process.on('unhandledRejection', () => {
+      // Deliberately absorb the rejection while testing deferred error behavior.
+    });
   });
 
   afterEach(async () => {
@@ -332,7 +334,7 @@ describe('captureRejections', () => {
     expect(captureRejections).toBeCalledTimes(0);
   });
 
-  it('should not fail when captureRejections is not set and promise rejects', async () => {
+  it('should not fail when captureRejections is not set and promise rejects', () => {
     const emitter = new EventEmitter();
     const error = new Error('unhandled');
     const callback = vi.fn(() => Promise.reject(error));
@@ -344,7 +346,9 @@ describe('captureRejections', () => {
   it('should capture rejection with errorBehavior combined', async () => {
     const originalListeners = process.listeners('unhandledRejection');
     process.removeAllListeners('unhandledRejection');
-    process.on('unhandledRejection', () => {});
+    process.on('unhandledRejection', () => {
+      // Deliberately absorb the rejection while testing deferred error behavior.
+    });
     try {
       const captureRejections = vi.fn();
       const emitter = new EventEmitter({ errorBehavior: true, captureRejections });

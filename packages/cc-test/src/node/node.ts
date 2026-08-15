@@ -44,13 +44,13 @@ function isEngineScriptUrl(url: string) {
   return new URL(url).pathname.startsWith('/scripting/engine/');
 }
 
-export async function polyfill() {
+export function polyfill(): void {
   const vendorFetch = globalThis.fetch;
   const ENGINE_EXTERNAL_URL_PREFIX = '/engine_external/?url=';
   globalThis.fetch = async (url, ...remainArgs) => {
     if (typeof url === 'string' && url.startsWith(ENGINE_EXTERNAL_URL_PREFIX)) {
       const encoded = `${ENGINE_EXTERNAL_URL_PREFIX}${encodeURIComponent(url.slice(ENGINE_EXTERNAL_URL_PREFIX.length))}`;
-      return vendorFetch(new URL(url, window.location.href), ...remainArgs);
+      return vendorFetch(new URL(encoded, window.location.href), ...remainArgs);
     }
     if (typeof url === 'string' && url.endsWith('.wasm')) {
       const wasmBinary = await fs.readFile(fileURLToPath(url));

@@ -4,18 +4,18 @@ export interface ExtensionContributions {
   'asset-db'?: {
     'script'?: string;
 
-    'asset-handler'?: {
+    'asset-handler'?: Array<{
       handler: string;
       name: string;
       extnames: string[];
-    }[];
+    }>;
 
     'mount'?: {
       path: string;
       readonly?: boolean;
     };
 
-    'global-hook'?: ('beforePreStart' | 'afterPreStart')[];
+    'global-hook'?: Array<'beforePreStart' | 'afterPreStart'>;
   };
 
   'builder'?: string;
@@ -31,13 +31,13 @@ export interface ExtensionContributions {
     };
   };
 
-  'menu'?: {
+  'menu'?: Array<{
     path?: string;
     label?: string;
     message?: string;
     group?: string;
     order?: number;
-  }[];
+  }>;
 
   'messages'?: Record<string, {
     methods: string[];

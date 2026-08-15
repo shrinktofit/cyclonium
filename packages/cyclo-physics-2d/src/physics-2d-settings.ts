@@ -19,16 +19,6 @@ export class Physics2DSettings extends Asset {
   }
 
   @editable
-  @dumpRaw
-  private get tags_editor() {
-    return this._tags;
-  }
-
-  private set tags_editor(value) {
-    this._tags = { ...value };
-  }
-
-  @editable
   get collisionMatrix() {
     return this._collisionMatrix;
   }
@@ -42,4 +32,16 @@ export class Physics2DSettings extends Asset {
 
   @serializable
   private _collisionMatrix = new CollisionMatrix();
+
+  @editable
+  @dumpRaw
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- Cocos editor inspectors consume this serialized compatibility property by name.
+  private get tags_editor() {
+    return this._tags;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- Cocos editor inspectors consume this serialized compatibility property by name.
+  private set tags_editor(value) {
+    this._tags = { ...value };
+  }
 }

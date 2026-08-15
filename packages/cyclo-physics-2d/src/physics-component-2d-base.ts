@@ -28,9 +28,13 @@ export abstract class PhysicsComponent2DBase extends CycloComponent {
 
   protected abstract onDetachFromWorld(world: PhysicsWorld2D): void;
 
-  protected onSyncTransforms(_forceTransform: boolean, _forceScale: boolean): void {}
+  protected onSyncTransforms(_forceTransform: boolean, _forceScale: boolean): void {
+    // Optional synchronization hook for physics components.
+  }
 
-  protected onAfterPhysicsStep(): void {}
+  protected onAfterPhysicsStep(): void {
+    // Optional post-step hook for physics components.
+  }
 
   protected override onAwake(): void {
     if (!this._attached) {
@@ -62,13 +66,13 @@ export abstract class PhysicsComponent2DBase extends CycloComponent {
   private _firstEnabled = true;
   private _attached = false;
 
-  private _handleAncestorChange() {
+  private _handleAncestorChange = () => {
     if (this.node) {
       this._tryAttach();
     } else {
       this._tryDetach();
     }
-  }
+  };
 
   private _tryAttach() {
     const node = this.node;

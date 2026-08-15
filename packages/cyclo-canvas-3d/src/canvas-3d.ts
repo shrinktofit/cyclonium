@@ -299,8 +299,7 @@ export class Canvas3D {
   }
 
   private _canReuseRenderRecord(renderScene: renderer.RenderScene): boolean {
-    return this._renderRecord !== undefined
-      && this._renderRecord.renderScene === renderScene
+    return this._renderRecord?.renderScene === renderScene
       && this._renderRecord.renderingSubMeshRecords.length === this._drawCommands.length;
   }
 

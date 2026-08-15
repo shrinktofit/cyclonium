@@ -4,7 +4,7 @@ export function applyLegacyDecorators<T extends object>(targetClass: new (...arg
 }) {
   const { classDecorators, propertyDecorators } = options;
   if (propertyDecorators) {
-    (Object.entries(propertyDecorators) as [Extract<keyof T, string>, PropertyDecorator[]][]).forEach(([propertyName, decorators]) => {
+    (Object.entries(propertyDecorators) as Array<[Extract<keyof T, string>, PropertyDecorator[]]>).forEach(([propertyName, decorators]) => {
       decorators.forEach((decorator) => decorator(targetClass.prototype, propertyName));
     });
   }

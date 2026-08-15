@@ -292,17 +292,6 @@ export class Canvas3DW2Impl implements Canvas3DW2 {
     this._lineDash = normalizeLineDash(value);
   }
 
-  private _createStrokeStyle(): StrokeStyle {
-    return {
-      lineWidth: this._lineWidth,
-      lineJoin: this._lineJoin,
-      lineCap: this._lineCap,
-      miterLimit: this._miterLimit,
-      lineDash: this.getLineDash(),
-      lineDashOffset: this._lineDashOffset,
-    };
-  }
-
   private _lineWidth = 1;
   private _lineJoin: Canvas3DLineJoin = Canvas3DLineJoin.miter;
   private _lineCap: Canvas3DLineCap = Canvas3DLineCap.butt;
@@ -316,4 +305,15 @@ export class Canvas3DW2Impl implements Canvas3DW2 {
   private readonly _enqueueGeometry: EnqueueGeometry;
   private _currentSubPath: SubPath | undefined = undefined;
   private _hasCurrentPoint = false;
+
+  private _createStrokeStyle(): StrokeStyle {
+    return {
+      lineWidth: this._lineWidth,
+      lineJoin: this._lineJoin,
+      lineCap: this._lineCap,
+      miterLimit: this._miterLimit,
+      lineDash: this.getLineDash(),
+      lineDashOffset: this._lineDashOffset,
+    };
+  }
 }

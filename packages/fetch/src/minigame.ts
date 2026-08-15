@@ -5,7 +5,7 @@ import { minigameGlobal } from '@cyclonium/minigame-globals';
 
 export function fetch(url: string, init: RequestInit) {
   return new Promise<Response>((resolve, reject) => {
-    const requestTask = minigameGlobal.request({
+    minigameGlobal.request({
       url,
       dataType: '其他', // Don't let wx do parsing
       responseType: init._binary ? 'arraybuffer' : 'text',
@@ -115,31 +115,31 @@ class ResponseImpl implements Response {
   /**
    * https://developer.mozilla.org/en-US/docs/Web/API/Response/text
    */
-  async text(): Promise<string> {
+  text(): Promise<string> {
     if (typeof this._data === 'string') {
-      return this._data;
+      return Promise.resolve(this._data);
     }
-    throw new Error('this._data is not string');
+    return Promise.reject(new Error('this._data is not string'));
   }
 
   /**
    * https://developer.mozilla.org/en-US/docs/Web/API/Response/json
    */
-  async json(): Promise<unknown> {
+  json(): Promise<unknown> {
     if (typeof this._data === 'string') {
-      return JSON.parse(this._data);
+      return Promise.resolve().then(() => JSON.parse(this._data as string) as unknown);
     }
-    throw new Error('this._data is not string');
+    return Promise.reject(new Error('this._data is not string'));
   }
 
   /**
    * https://developer.mozilla.org/en-US/docs/Web/API/Response/blob
    */
-  async arrayBuffer(): Promise<ArrayBuffer> {
+  arrayBuffer(): Promise<ArrayBuffer> {
     if (this._data instanceof ArrayBuffer) {
-      return this._data;
+      return Promise.resolve(this._data);
     }
-    throw new Error('this._data is not ArrayBuffer');
+    return Promise.reject(new Error('this._data is not ArrayBuffer'));
   }
 
   private _statusCode: number;

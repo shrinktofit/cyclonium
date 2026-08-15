@@ -30,14 +30,16 @@ interface DebugScene {
 
 vi.mock('cc', () => {
   class FakeBuffer {
-    destroyed = false;
-
     constructor(
       readonly size: number,
       readonly stride: number,
     ) {}
 
-    update(_data: Float32Array, _size: number) {}
+    destroyed = false;
+
+    update(_data: Float32Array, _size: number) {
+      // The test only observes buffer capacity and draw counts.
+    }
 
     destroy() {
       this.destroyed = true;
@@ -69,10 +71,9 @@ vi.mock('cc', () => {
   }
 
   class FakeNode {
-    scene: FakeScene | undefined;
-    private _parent: FakeNode | FakeScene | undefined;
-
     constructor(readonly name = '') {}
+
+    scene: FakeScene | undefined;
 
     set parent(parent: FakeNode | FakeScene | undefined) {
       this._parent = parent;
@@ -89,16 +90,20 @@ vi.mock('cc', () => {
       return component;
     }
 
-    destroy() {}
+    destroy() {
+      // The fake node has no native resources.
+    }
+
+    private _parent: FakeNode | FakeScene | undefined;
   }
 
   class FakeScene extends FakeNode implements DebugScene {
-    readonly renderScene = new FakeRenderScene();
-
     constructor(name: string) {
       super(name);
       this.scene = this;
     }
+
+    readonly renderScene = new FakeRenderScene();
   }
 
   class FakeRenderer {
@@ -112,9 +117,13 @@ vi.mock('cc', () => {
   class FakeMaterial {
     constructor(readonly name: string) {}
 
-    reset(_info: unknown) {}
+    reset(_info: unknown) {
+      // Material state is irrelevant to these renderer tests.
+    }
 
-    setProperty(_name: string, _value: unknown) {}
+    setProperty(_name: string, _value: unknown) {
+      // Material state is irrelevant to these renderer tests.
+    }
   }
 
   class FakeBufferInfo {
@@ -143,24 +152,24 @@ vi.mock('cc', () => {
   }
 
   class FakeRenderingSubMesh {
-    drawInfo: FakeDrawInfo | undefined;
-
     constructor(readonly vertexBuffers: FakeBuffer[]) {}
+
+    drawInfo: FakeDrawInfo | undefined;
   }
 
   class FakeSubModel implements DebugSubModel {
-    readonly inputAssembler: DebugInputAssembler;
-
-    constructor(private readonly subMesh: FakeRenderingSubMesh) {
-      const vertexBuffer = subMesh.vertexBuffers[0];
+    constructor(private readonly _subMesh: FakeRenderingSubMesh) {
+      const vertexBuffer = _subMesh.vertexBuffers[0];
       this.inputAssembler = {
-        vertexCount: subMesh.drawInfo?.vertexCount ?? vertexBuffer.size / vertexBuffer.stride,
+        vertexCount: _subMesh.drawInfo?.vertexCount ?? vertexBuffer.size / vertexBuffer.stride,
       };
     }
 
+    readonly inputAssembler: DebugInputAssembler;
+
     onGeometryChanged() {
-      if (this.subMesh.drawInfo) {
-        this.inputAssembler.vertexCount = this.subMesh.drawInfo.vertexCount;
+      if (this._subMesh.drawInfo) {
+        this.inputAssembler.vertexCount = this._subMesh.drawInfo.vertexCount;
       }
     }
   }
@@ -176,9 +185,13 @@ vi.mock('cc', () => {
       this.subModels[index] = new FakeSubModel(subMesh);
     }
 
-    setSubModelMaterial(_index: number, _material: FakeMaterial) {}
+    setSubModelMaterial(_index: number, _material: FakeMaterial) {
+      // The test does not inspect material replacement.
+    }
 
-    destroy() {}
+    destroy() {
+      // The fake model has no native resources.
+    }
   }
 
   return {

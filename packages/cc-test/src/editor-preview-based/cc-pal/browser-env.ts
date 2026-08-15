@@ -6,6 +6,14 @@ export class BrowserPalEnvController {
     private _containerElement: HTMLDivElement,
     private _canvasElement: HTMLCanvasElement,
   ) {
+    // The constructor parameter properties retain the browser elements.
+  }
+
+  get pal(): ccPalEnv.PalEnvModule {
+    return {
+      findCanvas: this.findCanvas.bind(this),
+      loadJsFile: this.loadJsFile.bind(this),
+    };
   }
 
   findCanvas(): ccPalEnv.FindCanvasResult {
@@ -16,14 +24,7 @@ export class BrowserPalEnvController {
     };
   }
 
-  async loadJsFile(path: string): Promise<void> {
-    throw new Error(`Forbidden to load ${path}.`);
-  }
-
-  get pal(): ccPalEnv.PalEnvModule {
-    return {
-      findCanvas: this.findCanvas.bind(this),
-      loadJsFile: this.loadJsFile.bind(this),
-    };
+  loadJsFile(path: string): Promise<void> {
+    return Promise.reject(new Error(`Forbidden to load ${path}.`));
   }
 }

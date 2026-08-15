@@ -18,18 +18,6 @@ class Physics2DDebugRenderer extends Renderer {
     this._loadMaterial();
   }
 
-  protected override onEnable(): void {
-    if (this._renderRecord) {
-      this._renderRecord.model.enabled = true;
-    }
-  }
-
-  protected override onDisable(): void {
-    if (this._renderRecord) {
-      this._renderRecord.model.enabled = false;
-    }
-  }
-
   render(world: px2Impl.World) {
     const { vertices, colors } = world.debugRender();
     const vertexCount = vertices.length / 2;
@@ -44,6 +32,18 @@ class Physics2DDebugRenderer extends Renderer {
       renderRecord.vertexBuffer.update(vertices, vertices.byteLength);
       // @ts-expect-error Cocos buffer typings omit the runtime Float32Array update overload.
       renderRecord.colorVertexBuffer.update(colors, colors.byteLength);
+    }
+  }
+
+  protected override onEnable(): void {
+    if (this._renderRecord) {
+      this._renderRecord.model.enabled = true;
+    }
+  }
+
+  protected override onDisable(): void {
+    if (this._renderRecord) {
+      this._renderRecord.model.enabled = false;
     }
   }
 

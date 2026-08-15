@@ -3,7 +3,6 @@ import { EDITOR, HTML5 } from 'cc/env';
 export async function importWasmBinary(input: string) {
   if (EDITOR) {
     const r = require;
-    const ps = r('path');
     const fs = r('fs/promises');
     const { fileURLToPath } = r('url');
     const binary = await fs.readFile(fileURLToPath(input));
@@ -22,7 +21,6 @@ export async function importWasmBinary(input: string) {
 export async function importWasmInstance(input: string, imports?: WebAssembly.Imports) {
   if (EDITOR) {
     const r = require;
-    const ps = r('path');
     const fs = r('fs/promises');
     const { fileURLToPath } = r('url');
     const binary = await fs.readFile(fileURLToPath(input));

@@ -22,7 +22,7 @@ function onChange(key: 'x' | 'y', value: number) {
   const componentDump = props.dump.value[key];
   dumpNotifier.emitChange({
     ...componentDump,
-    value: value as any,
+    value,
   }, props.dumpPath);
 }
 </script>

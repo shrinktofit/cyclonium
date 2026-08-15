@@ -35,23 +35,24 @@ const dynamicStyle = computed(() => {
 });
 
 const matrixExtent = ref(16);
+const matrixValues = ref([...props.dump.value.values.value]);
 
 const dumpNotifier = useDumpNotifier();
 
 function onMatrixElementChange(rowTagIndex: number, columnTagIndex: number, value: boolean) {
   console.debug('onMatrixElementChange', rowTagIndex, columnTagIndex);
   setMatrixElement(rowTagIndex, columnTagIndex, value);
-  dumpNotifier.emitChange(props.dump.value.values, concatDumpPath(props.dumpPath, 'values'));
+  emitMatrixChange();
 }
 
 function getMatrixElement(rowTagIndex: number, columnTagIndex: number): boolean {
   const index = locateMatrixElement(rowTagIndex, columnTagIndex);
-  return props.dump.value.values.value[index];
+  return matrixValues.value[index];
 }
 
 function setMatrixElement(rowTagIndex: number, columnTagIndex: number, value: boolean) {
   const index = locateMatrixElement(rowTagIndex, columnTagIndex);
-  props.dump.value.values.value[index] = value;
+  matrixValues.value[index] = value;
 }
 
 function locateMatrixElement(i: number, j: number) {
@@ -78,12 +79,18 @@ function unsetMatrixElementByTag(tagName: string) {
   if (!tag) {
     return;
   }
-  for (let i = 0; i < props.tags.length; i++) {
-    const rowTag = props.tags[i];
+  for (const rowTag of props.tags) {
     setMatrixElement(rowTag.tagIndex, tag.tagIndex, false);
     setMatrixElement(tag.tagIndex, rowTag.tagIndex, false);
   }
-  dumpNotifier.emitChange(props.dump.value.values, concatDumpPath(props.dumpPath, 'values'));
+  emitMatrixChange();
+}
+
+function emitMatrixChange(): void {
+  dumpNotifier.emitChange({
+    ...props.dump.value.values,
+    value: matrixValues.value,
+  }, concatDumpPath(props.dumpPath, 'values'));
 }
 
 defineExpose({

@@ -9,8 +9,6 @@ import { canvasSnapshotCommands } from './node/canvas-snapshot-command.js';
 import type { CanvasOptions, StandaloneConfigure } from './runtime/internal-shared.js';
 import type { InternalInjections } from 'virtual:cyclo-cc-test/internal-injections';
 
-type PluginOption = NonNullable<import('vitest/config').ViteUserConfig['plugins']>[number];
-
 export interface PluginOptions {
   autoInit?: boolean;
   headless?: boolean;
@@ -25,7 +23,7 @@ export interface PluginOptions {
   };
 }
 
-export default (opts: PluginOptions = {}): PluginOption => {
+export default (opts: PluginOptions = {}): Plugin[] => {
   return [
     corePlugin(opts),
     bundleWasm({
@@ -90,8 +88,8 @@ function corePlugin({
     },
 
     configResolved(config) {
-      viteEnvEditorBaseURL = config.env.VITE_CC_TEST_EDITOR_BASE_URL || '';
-      viteEnvStandaloneEngineDir = config.env.VITE_CC_TEST_STANDALONE_ENGINE_DIR || '';
+      viteEnvEditorBaseURL = config.env.VITE_CC_TEST_EDITOR_BASE_URL ?? '';
+      viteEnvStandaloneEngineDir = config.env.VITE_CC_TEST_STANDALONE_ENGINE_DIR ?? '';
     },
 
     resolveId(source, _importer, options) {
@@ -169,7 +167,7 @@ function corePlugin({
         };
       }
       case 'standalone': {
-        const standaloneDir = standaloneOpts?.dir || viteEnvStandaloneEngineDir;
+        const standaloneDir = selectNonEmptyString(standaloneOpts?.dir, viteEnvStandaloneEngineDir);
         if (!standaloneDir) {
           this.error(`Standalone mode requires you specifying the 'standalone.dir' plugin option or 'VITE_CC_TEST_STANDALONE_ENGINE_DIR' plugin option.`);
         }
@@ -232,7 +230,20 @@ function createInternalInjections({
 }
 
 function getEditorBaseURL(editorBased: NonNullable<PluginOptions['editorBased']>, viteEnvEditorBaseURL: string): string {
-  return editorBased.baseURL || viteEnvEditorBaseURL || DEFAULT_EDITOR_BASE_URL;
+  if (editorBased.baseURL) {
+    return editorBased.baseURL;
+  }
+  if (viteEnvEditorBaseURL) {
+    return viteEnvEditorBaseURL;
+  }
+  return DEFAULT_EDITOR_BASE_URL;
+}
+
+function selectNonEmptyString(value: string | undefined, fallback: string): string {
+  if (value === undefined || value.length === 0) {
+    return fallback;
+  }
+  return value;
 }
 
 function renderTemplate(templateFile: string, data: ejs.Data): string {

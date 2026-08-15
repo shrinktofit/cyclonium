@@ -16,9 +16,7 @@ export type {
   HeadersIterator,
 };
 
-export const {
-  fetch,
-}: {
+const implementation: {
   fetch(url: string, init: RequestInit): Promise<Response>;
 } = (() => {
   if (HTML5) {
@@ -31,3 +29,7 @@ export const {
     };
   }
 })();
+
+export function fetch(url: string, init: RequestInit): Promise<Response> {
+  return implementation.fetch(url, init);
+}

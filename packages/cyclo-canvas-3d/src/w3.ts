@@ -104,12 +104,12 @@ export class Canvas3DW3Impl implements Canvas3DW3 {
     return this;
   }
 
+  private readonly _enqueueGeometry: EnqueueGeometry;
+  private readonly _directScope: Canvas3DW3ScopeImpl;
+
   private _drawDirect(draw: (scope: Canvas3DW3ScopeImpl) => void): void {
     draw(this._directScope);
   }
-
-  private readonly _enqueueGeometry: EnqueueGeometry;
-  private readonly _directScope: Canvas3DW3ScopeImpl;
 }
 
 class Canvas3DW3ScopeImpl implements Canvas3DW3Scope {

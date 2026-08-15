@@ -477,13 +477,13 @@ function setEnabledInHierarchy(component: Component, enabledInHierarchy: boolean
   componentEnabledInHierarchy.set(component, enabledInHierarchy);
 }
 
-function connectAll(...components: (TestSortableRenderer | SortingGroup)[]) {
+function connectAll(...components: Array<TestSortableRenderer | SortingGroup>) {
   for (const component of components) {
     component.sortSettings.connect(component);
   }
 }
 
-function createSortingGroupTree(parent: Node, name: string, orderInLayer: number, rendererEntries: readonly (readonly [name: string, orderInLayer: number])[]) {
+function createSortingGroupTree(parent: Node, name: string, orderInLayer: number, rendererEntries: ReadonlyArray<readonly [name: string, orderInLayer: number]>) {
   const node = createNode(parent, name);
   const group = addSortingGroup(node, orderInLayer);
   const renderers = rendererEntries.map(([rendererName, rendererOrderInLayer]) => {

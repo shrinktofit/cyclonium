@@ -68,7 +68,7 @@ export const drawCircleXY = (() => {
       color,
       segments,
       depthTest,
-      true,
+      wireframe,
       transform,
     );
   };
@@ -167,7 +167,7 @@ export const drawCircle2D = (() => {
       color,
       segments,
       depthTest,
-      true,
+      wireframe,
       transformMatrix,
     );
   };

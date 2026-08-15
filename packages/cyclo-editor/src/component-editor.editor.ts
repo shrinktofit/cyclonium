@@ -35,14 +35,15 @@ export class ComponentEditor<TTarget extends Component = Component> {
   }
 
   protected onAttached(): void {
-
+    // Optional lifecycle hook for component editors.
   }
 
   protected onDetached(): void {
-
+    // Optional lifecycle hook for component editors.
   }
 
   protected onDestroy(): void {
+    // Optional lifecycle hook for component editors.
   }
 
   protected onSceneGUI(ctx: SceneGuiContext): void {
@@ -149,7 +150,7 @@ function getSelectedNodes() {
 
 const handlesRenderRootNodeName = '::handles-render-root::';
 
-export async function startComponentEditor() {
+export function startComponentEditor(): void {
   if (!isSceneEditorEnv()) {
     return;
   }

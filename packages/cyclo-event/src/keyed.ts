@@ -3,7 +3,7 @@
 import type { EventListenerOptions } from './common.js';
 import { EventEmitter } from './emitter.js';
 
-export type EventCallback<TEventArgs extends any[]> = (...args: TEventArgs) => void;
+export type EventCallback<TEventArgs extends any[]> = (...args: TEventArgs) => unknown;
 
 export type EventEmitterKey = string | number;
 
@@ -93,13 +93,10 @@ export interface KeyedEventListenerRegistry<TEventArgsMap extends Record<EventEm
 
 export class ManagedKeyedEventEmitter<TEventArgsMap extends Record<EventEmitterKey, [...any[]]>> extends KeyedEventEmitter<TEventArgsMap> {
   get registry() {
-    if (!this._registry) {
-      this._registry = {
-        add: this.add.bind(this),
-        remove: this.remove.bind(this),
-      };
-    }
-    return this._registry;
+    return this._registry ??= {
+      add: this.add.bind(this),
+      remove: this.remove.bind(this),
+    };
   }
 
   private _registry: undefined | KeyedEventListenerRegistry<TEventArgsMap>;

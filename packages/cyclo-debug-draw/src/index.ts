@@ -17,11 +17,11 @@ export class DebugDrawTarget extends CycloComponent {
 }
 
 export function tryGetDebugGeometryRenderer(camera?: Camera): GeometryRenderer | null | undefined {
-  let renderCamera: renderer.scene.Camera | undefined = undefined;
+  let renderCamera: renderer.scene.Camera | undefined;
   if (camera) {
     renderCamera = camera.camera;
   } else if (EDITOR_NOT_IN_PREVIEW) {
-    renderCamera = (globalThis as any).cce?.Camera.camera.camera as renderer.scene.Camera;
+    renderCamera = getEditorCamera()?.camera;
   } else {
     renderCamera = find('World/Main Camera')?.getComponent(Camera)?.camera;
   }
@@ -62,7 +62,7 @@ const cacheAABB = new geometry.AABB();
 
 export class DebugDrawContext {
   static fromEditorCamera() {
-    const camera = (globalThis as any).cce?.Camera.camera as Camera;
+    const camera = getEditorCamera();
     if (!camera) {
       return undefined;
     }
@@ -121,7 +121,7 @@ export class DebugDrawContext {
     Vec3.scaleAndAdd(v2, v2, right, -hx);
     const v3 = Vec3.scaleAndAdd(vec3Caches[iVec3Cache++], center, up, -hy);
     Vec3.scaleAndAdd(v3, v3, right, -hx);
-    const v4 = Vec3.scaleAndAdd(vec3Caches[iVec3Cache++], center, right, hx);
+    const v4 = Vec3.scaleAndAdd(vec3Caches[iVec3Cache], center, right, hx);
     Vec3.scaleAndAdd(v4, v4, up, -hy);
     if (transform) {
       Vec3.transformMat4(v1, v1, transform);
@@ -318,7 +318,7 @@ export class DebugDrawContext {
       Mat4.multiply(finalTransform, transform, finalTransform);
     }
     this._geometryRenderers.forEach((g) => {
-      g.addArc(Vec3.ZERO, radius, color, toDegrees(startAngle), toDegrees(endAngle), segments, depthTest, true, finalTransform);
+      g.addArc(Vec3.ZERO, radius, color, toDegrees(startAngle), toDegrees(endAngle), segments, depthTest, wireframe, finalTransform);
     });
   }
 
@@ -336,7 +336,7 @@ export class DebugDrawContext {
     unlit?: boolean;
   }) {
     let iCacheMat4 = 0;
-    let iCacheQuat = 0;
+    const iCacheQuat = 0;
     let iCacheVec3 = 0;
 
     const {
@@ -364,9 +364,9 @@ export class DebugDrawContext {
       const inputNormal = Vec3.normalize(vec3Caches[iCacheVec3++], normal);
       const cross = Vec3.cross(vec3Caches[iCacheVec3++], inputHalfVector, inputNormal).normalize();
       const newY = Vec3.cross(vec3Caches[iCacheVec3++], cross, inputHalfVector).normalize();
-      const newX = Vec3.transformQuat(vec3Caches[iCacheVec3++], inputHalfVector, Quat.fromAxisAngle(quatCaches[iCacheQuat++], newY, halfAngle));
-      const newZ = Vec3.cross(vec3Caches[iCacheVec3++], newX, newY).normalize();
-      const newMat4 = mat4FromAxes(mat4Caches[iCacheMat4++], newX, newY, newZ);
+      const newX = Vec3.transformQuat(vec3Caches[iCacheVec3++], inputHalfVector, Quat.fromAxisAngle(quatCaches[iCacheQuat], newY, halfAngle));
+      const newZ = Vec3.cross(vec3Caches[iCacheVec3], newX, newY).normalize();
+      const newMat4 = mat4FromAxes(mat4Caches[iCacheMat4], newX, newY, newZ);
 
       Mat4.multiply(finalTransform, newMat4, finalTransform);
     }
@@ -399,6 +399,17 @@ export class DebugDrawContext {
   }
 
   private _geometryRenderers: GeometryRenderer[];
+}
+
+function getEditorCamera(): Camera | undefined {
+  const editorGlobal = globalThis as typeof globalThis & {
+    cce?: {
+      Camera: {
+        camera: Camera;
+      };
+    };
+  };
+  return editorGlobal.cce?.Camera.camera;
 }
 
 function mat4FromAxes(mat4: Mat4, xAxis: Vec3, yAxis: Vec3, zAxis: Vec3) {

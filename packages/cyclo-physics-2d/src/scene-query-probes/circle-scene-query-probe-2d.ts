@@ -53,6 +53,9 @@ export class CircleSceneQueryProbe2D extends SceneQueryProbe2D {
     drawCircleSceneQueryProbe2DGizmo(this);
   }
 
+  @serializable
+  private _radius = 1;
+
   private _getScaledRadius() {
     const scale = this.queryScale;
     if (scale.x !== scale.y) {
@@ -60,7 +63,4 @@ export class CircleSceneQueryProbe2D extends SceneQueryProbe2D {
     }
     return this._radius * scale.x;
   }
-
-  @serializable
-  private _radius = 1;
 }

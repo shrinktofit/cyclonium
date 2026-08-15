@@ -1,13 +1,13 @@
 <script setup lang="ts">
-const props = defineProps({
+defineProps({
   inspectorData: {
     type: Object as PropType<{ dump: Dump | null }>,
     required: true,
   },
 });
 
-const submissionUiPropRef = useTemplateRef('submissionUiProp');
-const dumpNotifier = new DumpNotifier(submissionUiPropRef as any);
+const submissionUiPropRef = useTemplateRef<DumpSubmissionTarget>('submissionUiProp');
+const dumpNotifier = new DumpNotifier(submissionUiPropRef);
 provide(injectionKeyDumpNotifier, dumpNotifier);
 
 function onDumpEvent(event: CustomEvent) {
@@ -26,7 +26,7 @@ import Component from './scene-graph/cyclo-scene-graph-inspector-app.vue';
 import { wrapVueInspector } from './utils/vue-inspector-wrapper.js';
 import CycloValueRouter from './basic/cyclo-value-router.vue';
 import RawUiProp from './basic/raw/raw-ui-prop.vue';
-import { DumpNotifier, injectionKeyDumpNotifier } from './basic/dump-notifier.js';
+import { DumpNotifier, injectionKeyDumpNotifier, type DumpSubmissionTarget } from './basic/dump-notifier.js';
 import type { Dump } from '../../dump/dump.js';
 
 export const {

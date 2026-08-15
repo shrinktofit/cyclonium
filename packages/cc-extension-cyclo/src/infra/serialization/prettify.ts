@@ -1,8 +1,8 @@
 interface PrettifyContext {
-  refInfos: {
+  refInfos: Array<{
     ref: { __id__: number };
     count: number;
-  }[];
+  }>;
   objects: unknown[];
 }
 

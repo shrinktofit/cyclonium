@@ -26,12 +26,12 @@ export default defineConfig({
   plugins: [
     {
       name: 'make-it-work',
-      transform(code, id, options) {
+      transform(_code, id, _options) {
         if (id.replace(/\\/g, '/').endsWith('rapier2d/rapier_wasm2d.js')) {
           return 'export * from "./rapier_wasm2d_bg.js";';
         }
       },
-      async buildEnd(error) {
+      async buildEnd(_error) {
         this.emitFile({
           type: 'asset',
           fileName: 'rapier_wasm2d_bg.wasm',

@@ -17,14 +17,6 @@ export class HandleInputContext {
     return this._hostInput.mouse.position;
   }
 
-  mouseButtonDown(button: HandleMouseButton) {
-    return (this._hostInput.mouse.buttons & (1 << button)) !== 0;
-  }
-
-  mouseRay() {
-    return this._hostInput.mouse.mouseRay();
-  }
-
   get mouseAltKey() {
     return this._hostInput.mouse.altKey;
   }
@@ -35,6 +27,14 @@ export class HandleInputContext {
 
   get mouseShiftKey() {
     return this._hostInput.mouse.shiftKey;
+  }
+
+  mouseButtonDown(button: HandleMouseButton) {
+    return (this._hostInput.mouse.buttons & (1 << button)) !== 0;
+  }
+
+  mouseRay() {
+    return this._hostInput.mouse.mouseRay();
   }
 
   startFrame_internal(_opts: HandleContext.FrameStartOptions) {

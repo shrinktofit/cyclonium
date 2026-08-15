@@ -7,7 +7,7 @@ export * from '@cyclonium/math/bounds-2d';
 applyLegacyDecorators(Bounds2D, {
   classDecorators: [cycloBuiltinClass('Bounds2D')],
   propertyDecorators: {
-    // @ts-expect-error
+    // @ts-expect-error -- Legacy decorators intentionally target Bounds2D's private serialized fields.
     _min: [serializable, editable],
     _max: [serializable, editable],
   },

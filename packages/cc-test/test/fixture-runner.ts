@@ -23,7 +23,7 @@ export async function runTestFixture(opts: {
   await installFixtureDependencies(opts.fixtureDir);
 
   const mockedEnvs = {
-    entries: [] as { key: string; previous: string | undefined }[],
+    entries: [] as Array<{ key: string; previous: string | undefined }>,
     [Symbol.dispose]() {
       for (const { key, previous } of mockedEnvs.entries) {
         if (previous === undefined) {
@@ -177,7 +177,7 @@ export class FixtureReporter extends DefaultReporter {
       return messages;
     }
     if (typeof messages[0] === 'string') {
-      return messages.map((m) => `[${this._fixtureName}] ${m}`);
+      return messages.map((message) => `[${this._fixtureName}] ${String(message)}`);
     }
     return [`[${this._fixtureName}]`, ...messages];
   }
@@ -233,6 +233,6 @@ export class FixtureRunResult {
   }
 
   private _collectErrorsInTestCase(testCase: TestCase) {
-    this._errors.push(...(testCase.result().errors || []));
+    this._errors.push(...(testCase.result().errors ?? []));
   }
 }

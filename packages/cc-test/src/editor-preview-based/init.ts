@@ -56,12 +56,12 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
     'pal/env',
     'pal/screen-adapter',
   ]);
-  const vendorResolve = systemJsPrototype.resolve ?? System.resolve;
+  const vendorResolve = systemJsPrototype.resolve?.bind(systemJsPrototype) ?? System.resolve.bind(System);
   systemJsPrototype.resolve = function (id: string, parentUrl?: string) {
     if (virtualPalModules.has(id)) {
       return id;
     }
-    return vendorResolve.call(this, id, parentUrl);
+    return vendorResolve(id, parentUrl);
   };
 
   const vendorSystemInstantiate = systemJsPrototype.instantiate;
@@ -90,7 +90,9 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
         [],
         () => {
           return {
-            execute: () => {},
+            execute: () => {
+              // Virtual prerequisite modules intentionally have no side effects.
+            },
           };
         },
       ];
@@ -163,7 +165,7 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
         url = `assets/${bundleName}`;
       }
     }
-    const version = opts?.version || downloader.bundleVers[bundleName];
+    const version = opts?.version ?? downloader.bundleVers[bundleName];
     const config = `${url}/config.${version ? `${version}.` : ''}json`;
     const configJson = await internalDownloader.downloadJson(config, opts) as BundleConfigOptions;
     const configJsonModified: BundleConfigOptions = {

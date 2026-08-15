@@ -1,8 +1,9 @@
+import process from 'node:process';
 import { describe, expect, it } from 'vitest';
 import thisPlugin from '@/vitest-plugin.js';
 import { runTestFixture, fixtureOf } from './fixture-runner.js';
 
-const standaloneEngineDir = process.env.VITE_CC_TEST_STANDALONE_ENGINE_DIR || '';
+const standaloneEngineDir = process.env.VITE_CC_TEST_STANDALONE_ENGINE_DIR ?? '';
 const canvasSnapshotFixtureDir = fixtureOf`canvas-snapshot`;
 const canvasSnapshotMissingFixtureDir = fixtureOf`canvas-snapshot-missing`;
 const canvasSnapshotMismatchFixtureDir = fixtureOf`canvas-snapshot-mismatch`;

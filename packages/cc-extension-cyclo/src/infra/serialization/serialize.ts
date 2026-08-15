@@ -15,8 +15,8 @@ declare namespace EditorExtends {
     compressUuid?: boolean;
     discardInvalid?: boolean;
     dontStripDefault?: boolean;
-    missingClassReporter?: any;
-    missingObjectReporter?: any;
+    missingClassReporter?: (...args: unknown[]) => void;
+    missingObjectReporter?: (...args: unknown[]) => void;
     reserveContentsForSyncablePrefab?: boolean;
     _exporting?: boolean;
     keepNodeUuid?: boolean;

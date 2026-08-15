@@ -45,16 +45,14 @@ const loadDefaultEffect = (() => {
     if (defaultEffect instanceof Promise) {
       return defaultEffect;
     }
-    if (!defaultEffect) {
-      defaultEffect = (async () => {
-        const loadedEffect = await loadAsset<EffectAsset>('230b4535-10a9-475d-843a-05cbf87b2227');
-        defaultEffect = loadedEffect;
-        return loadedEffect;
-      })().catch((error) => {
-        logger.error('Failed to load default effect', error);
-        return undefined;
-      });
-    }
+    defaultEffect ??= (async () => {
+      const loadedEffect = await loadAsset<EffectAsset>('230b4535-10a9-475d-843a-05cbf87b2227');
+      defaultEffect = loadedEffect;
+      return loadedEffect;
+    })().catch((error) => {
+      logger.error('Failed to load default effect', error);
+      return undefined;
+    });
     return defaultEffect;
   };
 })();
@@ -68,6 +66,10 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
       throw new Error('Failed to load default sprite renderer effect');
     }
   }
+
+  @editable
+  @serializable
+  debugShowNormals = false;
 
   @editable
   @serializable
@@ -106,10 +108,6 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
     }
     this._markRenderRecordDirty(RenderRecordDirtyFlag.bounds);
   }
-
-  @editable
-  @serializable
-  debugShowNormals = false;
 
   @editable
   get sortSettings() {

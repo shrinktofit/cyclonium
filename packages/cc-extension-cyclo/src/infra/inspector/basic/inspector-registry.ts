@@ -5,9 +5,9 @@ import RawUiProp from './raw/raw-ui-prop.vue';
 import CycloObjectInspector from './cyclo-object-inspector.vue';
 import type { Dump } from '../../../dump/dump.js';
 
-const componentByValueTypeRegistry = new Map<string, Component<{ dump: any }>>();
+const componentByValueTypeRegistry = new Map<string, Component>();
 
-function registerInspectorComponentByValueType(valueType: string, component: Component<{ dump: any }>) {
+function registerInspectorComponentByValueType(valueType: string, component: Component) {
   componentByValueTypeRegistry.set(valueType, component);
 }
 
