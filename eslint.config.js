@@ -9,26 +9,21 @@ export default defineConfig([
   {
     settings: {
       node: {
-        version: '>=22.17.0',
+        version: '>=26.0.0',
       },
     },
   },
   globalIgnores([
-    'node_modules',
-    'packages/*/lib',
+    '**/lib/',
   ]),
   stf.configs.recommended,
+  stf.configs.conventions,
   vue.configs.recommended,
   node.configs.recommended,
   {
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
-        project: [
-          'packages/*/tsconfig.json',
-          'packages/*/test/tsconfig.json',
-          'packages/*/scripts/tsconfig.json',
-        ],
         projectService: {
           allowDefaultProject: [
             'env.d.ts',
