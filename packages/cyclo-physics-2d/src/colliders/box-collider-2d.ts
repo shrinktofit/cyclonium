@@ -42,7 +42,7 @@ export class BoxCollider2D extends Collider2D {
     this._updateExtents();
   }
 
-  protected override getShape(): px2Impl.Shape | undefined {
+  protected override getShape(): px2Impl.Shape {
     const scale = this.sceneGraphScale;
     return new px2Impl.Cuboid(this._halfWidth * scale.x, this._halfHeight * scale.y);
   }

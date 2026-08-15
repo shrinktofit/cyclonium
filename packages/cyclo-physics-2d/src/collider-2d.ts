@@ -208,7 +208,7 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
    * @internal
    */
   _responseToAttachedRigidBodyChanged() {
-    this.recreateCollider();
+    this._recreateCollider();
   }
 
   protected get _implCollider(): px2Impl.Collider | undefined {
@@ -219,27 +219,6 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
     return this._transform.scale;
   }
 
-  protected recreateCollider() {
-    this._destroyCollider();
-    const handle = this._handle;
-    if (!handle) {
-      return;
-    }
-    const shape = this._acquireShape();
-    if (!shape) {
-      return;
-    }
-    const desc = new px2Impl.ColliderDesc(shape);
-    desc.setSensor(this._isSensor);
-    desc.setActiveEvents(this._getActiveEvents());
-    const collider = handle.createCollider(desc);
-    collider.setActiveCollisionTypes(this._bodyActiveCollisionTypes);
-    collider.setCollisionGroups(this._bodyCollisionGroups);
-    collider.setSolverGroups(this._bodySolverGroups);
-    this._updateTransform();
-    collider.setEnabled(this.enabledInHierarchy);
-  }
-
   protected onAttachToWorld(): void {
     if (!this.world) {
       return;
@@ -247,7 +226,7 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
     this._transformChangeFlagsObserver.observe(this._transform);
     this._sceneGraphScaleCache.copyFrom(this.sceneGraphScale);
     this._handle = this.world._addColliderHandle(this);
-    this.recreateCollider();
+    this._recreateCollider();
   }
 
   protected onDetachFromWorld(): void {
@@ -277,22 +256,17 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
     }
   }
 
-  protected abstract getShape(): px2Impl.Shape | undefined;
+  protected abstract getShape(): px2Impl.Shape;
 
   protected abstract computeShapeBounds(out: Bounds2D): void;
 
   protected updateSceneGraphScale(): void {
     const implCollider = this._implCollider;
     if (!implCollider) {
-      this.recreateCollider();
+      this._recreateCollider();
       return;
     }
-    const shape = this.getShape();
-    if (!shape) {
-      this.recreateCollider();
-      return;
-    }
-    implCollider.setShape(shape);
+    implCollider.setShape(this.getShape());
   }
 
   @serializable
@@ -310,22 +284,29 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
   private _transformChangeFlagsObserver = new TransformChangeFlagsObserver();
   private _sceneGraphScaleCache = new Vec2(1, 1);
 
-  private _shape: px2Impl.Shape | undefined = undefined;
-
-  /**
-   * `false` if we acquired the shape but the shape is invalid,
-   * otherwise either we have not acquired the shape or the shape is valid.
-   */
-  private _shapeAcquired = false;
-
   private _boundsCache = new Bounds2D();
 
   @requiresComponent(Transform2DComponent)
   private get _transform(): Transform2DComponent { return undefined!; }
 
+  private _recreateCollider() {
+    this._destroyCollider();
+    const handle = this._handle;
+    if (!handle) {
+      return;
+    }
+    const desc = new px2Impl.ColliderDesc(this.getShape());
+    desc.setSensor(this._isSensor);
+    desc.setActiveEvents(this._getActiveEvents());
+    const collider = handle.createCollider(desc);
+    collider.setActiveCollisionTypes(this._bodyActiveCollisionTypes);
+    collider.setCollisionGroups(this._bodyCollisionGroups);
+    collider.setSolverGroups(this._bodySolverGroups);
+    this._updateTransform();
+    collider.setEnabled(this.enabledInHierarchy);
+  }
+
   private _destroyCollider() {
-    this._shape = undefined;
-    this._shapeAcquired = false;
     this._handle?.removeCollider(true);
   }
 
@@ -344,19 +325,6 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
     return this._listenerFlags === 0
       ? px2Impl.ActiveEvents.NONE
       : px2Impl.ActiveEvents.COLLISION_EVENTS;
-  }
-
-  private _acquireShape() {
-    if (this._shapeAcquired) {
-      return undefined;
-    }
-    if (!this._shape) {
-      this._shape = this.getShape();
-      if (!this._shape) {
-        this._shapeAcquired = true;
-      }
-    }
-    return this._shape;
   }
 
   private _updateTransform() {

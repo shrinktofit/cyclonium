@@ -41,7 +41,7 @@ describe('PolygonCollider2D', () => {
     expect(collider.points.length).toBe(4);
   });
 
-  describe('runtime transform scale', () => {
+  describe('runtime updates', () => {
     let scene: Scene = undefined!;
     let physicsScene: PhysicsWorld2DSceneComponent = undefined!;
 
@@ -55,6 +55,21 @@ describe('PolygonCollider2D', () => {
 
     afterAll(() => {
       scene.destroy();
+    });
+
+    it('should create a collider with zero vertices', () => {
+      /// @case
+      /// A polygon collider with its default empty points is added to the physics world.
+      /// @expect
+      /// Creating the physics shape accepts the empty vertex set without throwing.
+      const targetNode = new Node('empty-polygon');
+      targetNode.parent = physicsScene.node;
+      targetNode.addComponent(Transform2DComponent);
+      try {
+        expect(() => targetNode.addComponent(PolygonCollider2D)).not.toThrow();
+      } finally {
+        targetNode.destroy();
+      }
     });
 
     it('should update physics queries after transform scale changes', () => {
