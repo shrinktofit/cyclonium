@@ -26,7 +26,7 @@ function editable(options?: EditableDecoratorOptions): PropertyDecorator;
 
 function editable(type?: Function): PropertyDecorator;
 
-function editable(type?: typeof CCInteger | typeof CCBoolean | typeof CCFloat | typeof CCString): PropertyDecorator;
+function editable(type?: typeof CCInteger | typeof CCBoolean | typeof CCString): PropertyDecorator;
 
 function editable(target: object, propertyKey: string | symbol): void;
 

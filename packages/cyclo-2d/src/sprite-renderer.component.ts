@@ -10,7 +10,7 @@ import { Sprite } from './sprite.js';
 import { SortableRenderer } from './sortable.js';
 import { SortSettings } from './sort-settings.js';
 
-const ENABLE_RENDERING: boolean = true;
+const ENABLE_RENDERING = true;
 
 export enum SpriteRenderType {
   simple = 'simple',

@@ -141,7 +141,7 @@ export class EventEmitter<TEventArgs extends any[] = []> {
 
   private _onceMarks: Set<EventCallback<TEventArgs>> | undefined = undefined;
 
-  private _flags: number = 0;
+  private _flags = 0;
 
   private _captureRejections: ((error: unknown, ...args: TEventArgs) => void) | undefined = undefined;
 

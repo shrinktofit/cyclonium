@@ -24,9 +24,7 @@ interface InternalSharedState {
   cc: undefined | typeof import('cc');
 }
 
-interface InternalSharedGlobal {
-  [key: symbol]: InternalSharedState | undefined;
-}
+type InternalSharedGlobal = Record<symbol, InternalSharedState | undefined>;
 
 const internalSharedKey = Symbol.for('@cyclonium/cc-test/runtime/internal-shared');
 const internalSharedGlobal = globalThis as typeof globalThis & InternalSharedGlobal;

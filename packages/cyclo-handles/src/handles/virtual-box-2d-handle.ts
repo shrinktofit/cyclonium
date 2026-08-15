@@ -81,8 +81,8 @@ export class VirtualBox2DHandleProvider extends HandleProvider {
     return positionMoved;
   }
 
-  private _livingRecords: Map<HandleKey, VirtualBoxRecord> = new Map();
-  private _pendingRecords: Map<HandleKey, VirtualBoxRecord> = new Map();
+  private _livingRecords = new Map<HandleKey, VirtualBoxRecord>();
+  private _pendingRecords = new Map<HandleKey, VirtualBoxRecord>();
   private _queuedFrameEndTask = false;
 
   private _onFrameEnd() {
@@ -150,7 +150,7 @@ export class VirtualBox2DHandleProvider extends HandleProvider {
 class VirtualBoxRecord {
   bounds: Bounds2D = new Bounds2D();
 
-  liveFrames: number = 0;
+  liveFrames = 0;
 
   mouse: VirtualBoxButtonState = new VirtualBoxButtonState();
 
@@ -158,13 +158,13 @@ class VirtualBoxRecord {
 }
 
 class DragRecord {
-  started: boolean = false;
+  started = false;
   startPosition: Vec3 = new Vec3();
   startPlane = new geometry.Plane();
 }
 
 class VirtualBoxButtonState {
-  entered: boolean = false;
+  entered = false;
   position: Vec2 = new Vec2();
   buttons: Record<HandleMouseButton, MouseButtonState> = {
     [HandleMouseButton.left]: new MouseButtonState(),
@@ -174,7 +174,7 @@ class VirtualBoxButtonState {
 }
 
 class MouseButtonState {
-  down: boolean = false;
-  alterTime: number = 0;
-  previousDown: boolean = false;
+  down = false;
+  alterTime = 0;
+  previousDown = false;
 }

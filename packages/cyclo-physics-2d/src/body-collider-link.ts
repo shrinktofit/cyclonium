@@ -27,7 +27,7 @@ export class BodyColliderLink {
   }
 
   linkCollider(collider: Collider2D) {
-    if (this._colliders.indexOf(collider) >= 0) {
+    if (this._colliders.includes(collider)) {
       throw new Error(`Collider ${collider.name} already joined to body ${this._rigidBody?.name}.`);
     }
     this._colliders.push(collider);
@@ -79,9 +79,9 @@ export class BodyColliderLink {
   private _rigidBody: RigidBody2D;
   private _colliders: Collider2D[] = [];
   private _isBodyRequiresCollisionEvents = false;
-  private _bodyActiveCollisionTypes: number = 0;
-  private _bodyCollisionGroups: number = 0;
-  private _bodySolverGroups: number = 0;
+  private _bodyActiveCollisionTypes = 0;
+  private _bodyCollisionGroups = 0;
+  private _bodySolverGroups = 0;
 }
 
 export class BodyColliderLinkManager {

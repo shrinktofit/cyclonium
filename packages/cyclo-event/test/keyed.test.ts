@@ -198,10 +198,10 @@ describe('abort signal', () => {
 });
 
 describe('errorBehavior', () => {
-  let originalListeners: Array<(...args: unknown[]) => void>;
+  let originalListeners: ((...args: unknown[]) => void)[];
 
   beforeEach(() => {
-    originalListeners = process.listeners('unhandledRejection') as Array<(...args: unknown[]) => void>;
+    originalListeners = process.listeners('unhandledRejection') as ((...args: unknown[]) => void)[];
     process.removeAllListeners('unhandledRejection');
     process.on('unhandledRejection', () => {});
   });
@@ -210,7 +210,7 @@ describe('errorBehavior', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     process.removeAllListeners('unhandledRejection');
     for (const listener of originalListeners) {
-      process.on('unhandledRejection', listener as (...args: unknown[]) => void);
+      process.on('unhandledRejection', listener);
     }
   });
 

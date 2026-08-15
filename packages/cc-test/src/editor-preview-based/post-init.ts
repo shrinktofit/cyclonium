@@ -29,5 +29,5 @@ function evaluateSettingsScript(script: string): SettingsJSON {
     throw new Error(`Invalid editor preview settings script.`);
   }
 
-  return window._CCSettings as SettingsJSON;
+  return window._CCSettings;
 }

@@ -14,7 +14,7 @@ export class ComponentEditor<TTarget extends Component = Component> {
     if (!this._target) {
       throw new Error(`Target is not set`);
     }
-    return this._target as TTarget;
+    return this._target;
   }
 
   destroy() {
@@ -137,7 +137,7 @@ class ComponentEditorSystem extends System {
     }
   }
 
-  private _componentEditors: Map<Component, ComponentEditor> = new Map();
+  private _componentEditors = new Map<Component, ComponentEditor>();
   private _handleInput: HandleEditorInput;
   private _sceneGuiContext: SceneGuiContext;
   private _controllerOnDestroy: AbortController;

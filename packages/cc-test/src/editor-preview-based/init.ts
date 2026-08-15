@@ -285,20 +285,20 @@ function polyfill(opts: InitOptionsEditorPreviewBased) {
 
 function polyfillCanvasSelectors() {
   const vendorGetElementById = document.getElementById.bind(document);
-  document.getElementById = ((elementId: string) => {
+  document.getElementById = (elementId: string) => {
     if (elementId === 'GameCanvas') {
       return getCurrentGameCanvas() ?? vendorGetElementById(elementId);
     }
     return vendorGetElementById(elementId);
-  }) as typeof document.getElementById;
+  };
 
   const vendorQuerySelector = document.querySelector.bind(document);
-  document.querySelector = ((selectors: string) => {
+  document.querySelector = (selectors: string) => {
     if (selectors === '#GameCanvas') {
       return getCurrentGameCanvas() ?? vendorQuerySelector(selectors);
     }
     return vendorQuerySelector(selectors);
-  }) as typeof document.querySelector;
+  };
 }
 
 function getCurrentGameCanvas(): HTMLCanvasElement | undefined {

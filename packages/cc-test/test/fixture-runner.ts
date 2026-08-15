@@ -23,7 +23,7 @@ export async function runTestFixture(opts: {
   await installFixtureDependencies(opts.fixtureDir);
 
   const mockedEnvs = {
-    entries: [] as Array<{ key: string; previous: string | undefined }>,
+    entries: [] as { key: string; previous: string | undefined }[],
     [Symbol.dispose]() {
       for (const { key, previous } of mockedEnvs.entries) {
         if (previous === undefined) {

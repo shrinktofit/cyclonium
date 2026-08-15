@@ -229,11 +229,11 @@ class EventEmitter<TEventMap extends Record<string, (...args: unknown[]) => void
   }
 
   private _listeners: {
-    [key in keyof TEventMap]?: Array<{
+    [key in keyof TEventMap]?: {
       callback: TEventMap[keyof TEventMap];
       target?: unknown;
       once?: boolean;
-    }>;
+    }[];
   } = {};
 }
 

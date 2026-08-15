@@ -34,7 +34,7 @@ export default defineConfig({
     ],
   },
   plugins: [
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
     ccTest({
       autoInit: false,
       headless: false,

@@ -169,7 +169,7 @@ export class Bounds2D {
     const { _min: { x: xMin, y: yMin }, _max: { x: xMax, y: yMax } } = this;
     if (typeof _x === 'number') {
       const x = _x;
-      const y = _y as number;
+      const y = _y!;
       return xMin <= x && x <= xMax && yMin <= y && y <= yMax;
     } else if (_x instanceof Bounds2D) {
       const { _min: { x: otherXMin, y: otherYMin }, _max: { x: otherXMax, y: otherYMax } } = _x;

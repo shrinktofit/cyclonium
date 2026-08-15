@@ -250,7 +250,7 @@ describe.sequential('SpriteRenderer', () => {
     const bounds = renderer[componentEditorTraits.BoundingComponent.Tags.getBoundingBox]();
 
     expect(bounds).toBeDefined();
-    expectAABBToEqual(bounds!, {
+    expectAABBToEqual(bounds, {
       center: { x: 2, y: -3, z: 0 },
       halfExtents: { x: 1, y: 1, z: 0 },
     });
@@ -264,7 +264,7 @@ describe.sequential('SpriteRenderer', () => {
     const spriteBounds = renderer[componentEditorTraits.BoundingComponent.Tags.getBoundingBox]();
 
     expect(spriteBounds).toBeDefined();
-    expectAABBToEqual(spriteBounds!, {
+    expectAABBToEqual(spriteBounds, {
       center: { x: 2, y: -3, z: 0 },
       halfExtents: { x: 1.5, y: 0.5, z: 0 },
     });
@@ -274,7 +274,7 @@ describe.sequential('SpriteRenderer', () => {
     const restoredDefaultBounds = renderer[componentEditorTraits.BoundingComponent.Tags.getBoundingBox]();
 
     expect(restoredDefaultBounds).toBeDefined();
-    expectAABBToEqual(restoredDefaultBounds!, {
+    expectAABBToEqual(restoredDefaultBounds, {
       center: { x: 2, y: -3, z: 0 },
       halfExtents: { x: 1, y: 1, z: 0 },
     });
@@ -404,7 +404,7 @@ describe.sequential('SpriteRenderer', () => {
 
       const bounds = renderer[componentEditorTraits.BoundingComponent.Tags.getBoundingBox]();
       expect(bounds).toBeDefined();
-      expectAABBToEqual(bounds!, {
+      expectAABBToEqual(bounds, {
         center: { ...pivotCase.expectedWorldCenter, z: 0 },
         halfExtents: { x: 1, y: 0.5, z: 0 },
       });
@@ -784,7 +784,7 @@ function createSpriteFrame(opts: SpriteFrameResetOptions & {
 }) {
   const { name = 'test sprite frame', pixelsToUnit, ...resetOptions } = opts;
   const spriteFrame = new SpriteFrame(name);
-  spriteFrame.reset(resetOptions as SpriteFrameResetOptions);
+  spriteFrame.reset(resetOptions);
   // Cocos serializes pixelsToUnit on SpriteFrame assets, but reset() does not expose it.
   const mutableSpriteFrame = spriteFrame as unknown as { _pixelsToUnit?: unknown };
   assert(

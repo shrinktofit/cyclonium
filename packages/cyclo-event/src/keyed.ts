@@ -7,7 +7,7 @@ export type EventCallback<TEventArgs extends any[]> = (...args: TEventArgs) => v
 
 export type EventEmitterKey = string | number;
 
-type EventArgsMap = { [key in EventEmitterKey]: [...any[]] };
+type EventArgsMap = Record<EventEmitterKey, [...any[]]>;
 
 type EventArgs<TEventArgsMap extends EventArgsMap, TKey extends keyof TEventArgsMap> = TEventArgsMap[TKey];
 
@@ -85,13 +85,13 @@ export class KeyedEventEmitter<TEventArgsMap extends EventArgsMap> {
   private _captureRejections: ((error: unknown, key: EventEmitterKey, ...args: any[]) => void) | undefined;
 }
 
-export interface KeyedEventListenerRegistry<TEventArgsMap extends { [key in EventEmitterKey]: [...any[]] }> {
+export interface KeyedEventListenerRegistry<TEventArgsMap extends Record<EventEmitterKey, [...any[]]>> {
   add<TKey extends keyof TEventArgsMap>(key: TKey, callback: EventCallback<TEventArgsMap[TKey]>, options?: EventListenerOptions): void;
 
   remove<TKey extends keyof TEventArgsMap>(key: TKey, callback: EventCallback<TEventArgsMap[TKey]>): void;
 }
 
-export class ManagedKeyedEventEmitter<TEventArgsMap extends { [key in EventEmitterKey]: [...any[]] }> extends KeyedEventEmitter<TEventArgsMap> {
+export class ManagedKeyedEventEmitter<TEventArgsMap extends Record<EventEmitterKey, [...any[]]>> extends KeyedEventEmitter<TEventArgsMap> {
   get registry() {
     if (!this._registry) {
       this._registry = {

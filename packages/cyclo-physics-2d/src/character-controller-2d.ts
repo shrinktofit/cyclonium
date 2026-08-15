@@ -185,7 +185,7 @@ export class KinematicCharacterController2D extends PhysicsComponent2DBase {
       return;
     }
     const collider = Collider2D.ofOrNull(this);
-    if (!collider || !collider.impl_internal) {
+    if (!collider?.impl_internal) {
       return;
     }
     const world = this.world;
@@ -201,7 +201,7 @@ export class KinematicCharacterController2D extends PhysicsComponent2DBase {
     const movement = fromPx2ImplVec2(impl.computedMovement());
     Vec2.assign(this._lastMovement, movement);
     const rigidBody = collider.attachedRigidBody;
-    if (!rigidBody || !rigidBody.impl) {
+    if (!rigidBody?.impl) {
       const newPosition = fromPx2ImplVec2(collider.impl_internal.translation()).add(movement);
       Transform2DComponent.of(collider).position = newPosition;
       collider.impl_internal.setTranslation(toPx2ImplVec2(newPosition));
@@ -283,11 +283,11 @@ export class KinematicCharacterController2D extends PhysicsComponent2DBase {
 
   private _lastMovement = Vec2.ZERO.clone();
 
-  private _collisionRecords: Array<{
+  private _collisionRecords: {
     collider: Collider2D;
     colliderName_debug: undefined | string;
     state: CollisionRecordState;
-  }> = [];
+  }[] = [];
 
   private _emitterOnCollisionBegin = new ManagedEventEmitter<[CharacterCollision]>();
   private _emitterOnCollisionStay = new ManagedEventEmitter<[CharacterCollision]>();

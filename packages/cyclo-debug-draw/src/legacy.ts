@@ -1,7 +1,7 @@
-import { Mat3 } from "@cyclonium/core/math/mat3";
-import { decomposeSRTMat3 } from "@cyclonium/core/math/transform-2d";
-import { Vec2 } from "@cyclonium/core/math/vec2";
-import { Mat4, Quat, type GeometryRenderer, type Color, Vec3 } from "cc";
+import { Mat3 } from '@cyclonium/core/math/mat3';
+import { decomposeSRTMat3 } from '@cyclonium/core/math/transform-2d';
+import { Vec2 } from '@cyclonium/core/math/vec2';
+import { Mat4, Quat, type GeometryRenderer, type Color, Vec3 } from 'cc';
 
 export const drawBox2D = (() => {
   return (

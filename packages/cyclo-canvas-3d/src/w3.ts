@@ -179,12 +179,12 @@ class Canvas3DW3ScopeImpl implements Canvas3DW3Scope {
     return this;
   }
 
-  depthTest(value: boolean = true): this {
+  depthTest(value = true): this {
     this._state.depthTest = value;
     return this;
   }
 
-  depthWrite(value: boolean = true): this {
+  depthWrite(value = true): this {
     this._state.depthWrite = value;
     return this;
   }
@@ -219,7 +219,7 @@ class Canvas3DW3ScopeImpl implements Canvas3DW3Scope {
     return this;
   }
 
-  translate(x: number, y: number, z: number = 0): this {
+  translate(x: number, y: number, z = 0): this {
     Mat4.transform(this._state.transform, this._state.transform, new Vec3(x, y, z));
     return this;
   }

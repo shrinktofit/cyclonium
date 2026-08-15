@@ -477,7 +477,7 @@ function setEnabledInHierarchy(component: Component, enabledInHierarchy: boolean
   componentEnabledInHierarchy.set(component, enabledInHierarchy);
 }
 
-function connectAll(...components: Array<TestSortableRenderer | SortingGroup>) {
+function connectAll(...components: (TestSortableRenderer | SortingGroup)[]) {
   for (const component of components) {
     component.sortSettings.connect(component);
   }

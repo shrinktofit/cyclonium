@@ -163,7 +163,7 @@ export class Canvas3DW2Impl implements Canvas3DW2 {
     return this;
   }
 
-  rect(x: number, y: number, width: number, height: number, z: number = 0): this {
+  rect(x: number, y: number, width: number, height: number, z = 0): this {
     const subPath: SubPath = {
       points: [
         new Vec3(x, y, z),
@@ -183,7 +183,7 @@ export class Canvas3DW2Impl implements Canvas3DW2 {
     return this;
   }
 
-  arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise: boolean = false, z: number = 0): this {
+  arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise = false, z = 0): this {
     if (radius <= 0) {
       return this;
     }
@@ -303,12 +303,12 @@ export class Canvas3DW2Impl implements Canvas3DW2 {
     };
   }
 
-  private _lineWidth: number = 1;
+  private _lineWidth = 1;
   private _lineJoin: Canvas3DLineJoin = Canvas3DLineJoin.miter;
   private _lineCap: Canvas3DLineCap = Canvas3DLineCap.butt;
-  private _miterLimit: number = 10;
+  private _miterLimit = 10;
   private _lineDash: number[] = [];
-  private _lineDashOffset: number = 0;
+  private _lineDashOffset = 0;
   private readonly _strokeColor: Color = Color.WHITE.clone();
   private readonly _fillColor: Color = Color.WHITE.clone();
   private readonly _pathEntries: PathEntry[] = [];

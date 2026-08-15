@@ -130,10 +130,10 @@ interface Vec3ScratchCache {
   borrowed: boolean;
 }
 
-const circleTopologyCache: Map<number, CircleTopology> = new Map();
-const sphereTopologyCache: Map<string, SphereTopology> = new Map();
-const cylinderIndexTopologyCache: Map<string, CylinderIndexTopology> = new Map();
-const hemisphereTopologyCache: Map<string, HemisphereTopology> = new Map();
+const circleTopologyCache = new Map<number, CircleTopology>();
+const sphereTopologyCache = new Map<string, SphereTopology>();
+const cylinderIndexTopologyCache = new Map<string, CylinderIndexTopology>();
+const hemisphereTopologyCache = new Map<string, HemisphereTopology>();
 
 export function createMeshGeometry(): MeshGeometry {
   return {
@@ -930,7 +930,7 @@ function appendCylinderWireStroke(geometry: MeshGeometry, from: Vec3, to: Vec3, 
   }
 }
 
-function appendCylinderFill(geometry: MeshGeometry, from: Vec3, to: Vec3, radius: number, radialSegments: number, transform: Mat4, color: Color, includeCaps: boolean = true): void {
+function appendCylinderFill(geometry: MeshGeometry, from: Vec3, to: Vec3, radius: number, radialSegments: number, transform: Mat4, color: Color, includeCaps = true): void {
   const basis = createAxisBasis(from, to);
   if (!basis) {
     return;

@@ -30,7 +30,7 @@ export class HandleContext {
   }
 
   forEach<T>(
-    iterable: ReadonlyArray<T>,
+    iterable: readonly T[],
     keyGenerator: (item: T) => string,
     callback: (item: T, index: number) => void,
   ) {

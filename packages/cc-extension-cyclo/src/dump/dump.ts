@@ -1,6 +1,4 @@
-export interface BasicDump<TValueDump = {
-  [x: string]: Dump;
-}> {
+export interface BasicDump<TValueDump = Record<string, Dump>> {
   type: string;
   readonly: boolean;
   visible: boolean;

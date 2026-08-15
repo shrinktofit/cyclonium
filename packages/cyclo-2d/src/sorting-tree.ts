@@ -223,7 +223,7 @@ export class SortingTreeNode {
     const startSceneNode = SortingTreeGroup.is(component) ? component.node.parent : component.node;
     for (let currentNode: Node | null = startSceneNode; currentNode; currentNode = currentNode.parent) {
       const sortingGroup = this._getSortingGroup(currentNode);
-      if (sortingGroup && sortingGroup.enabledInHierarchy) {
+      if (sortingGroup?.enabledInHierarchy) {
         const sortingTreeNode = this._getOrCreateNode(sceneSortingRecord, sortingGroup);
         return sortingTreeNode;
       }
@@ -295,7 +295,7 @@ export class SortingTreeNode {
       // If child scene node is a sorting group, then itself is our child,
       // but its child scene nodes are not our children.
       const childSortingGroup = this._getSortingGroup(childSceneNode);
-      if (childSortingGroup && childSortingGroup.enabledInHierarchy) {
+      if (childSortingGroup?.enabledInHierarchy) {
         let childTreeNode = sceneSortingRecord.treeNodeMap.get(childSortingGroup);
         if (childTreeNode) {
           // Add component to a node already involved in sorting tree.

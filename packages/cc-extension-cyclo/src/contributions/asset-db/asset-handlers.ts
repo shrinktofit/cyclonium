@@ -1,10 +1,10 @@
 import type { AssetHandler } from '@cocos/creator-types/editor/packages/asset-db/@types/protected.js';
 
-const assetHandlerRegistry: Array<{
+const assetHandlerRegistry: {
   handlerType: () => Promise<AssetHandler>;
   name: string;
   extnames: string[];
-}> = [
+}[] = [
   {
     name: 'cyclo-physics-2d-settings',
     extnames: ['.cyclo-px2-settings'],
@@ -14,12 +14,12 @@ const assetHandlerRegistry: Array<{
   },
 ];
 
-export const assetHandlers: Array<{
+export const assetHandlers: {
   register: string;
   handlerType: () => Promise<AssetHandler>;
   name: string;
   extnames: string[];
-}> = assetHandlerRegistry.map((handlerInfo) => {
+}[] = assetHandlerRegistry.map((handlerInfo) => {
   return {
     register: `register_${handlerInfo.name}`,
     handlerType: handlerInfo.handlerType,

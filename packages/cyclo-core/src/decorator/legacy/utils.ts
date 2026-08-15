@@ -1,6 +1,6 @@
 export interface ShortenPropertyDecorator<TArgs extends any[]> {
   (...args: TArgs): PropertyDecorator;
-  (target: Object, propertyKey: string | symbol): void;
+  (target: object, propertyKey: string | symbol): void;
 }
 
 export function defineShortenPropertyDecorator<TArgs extends any[]>(

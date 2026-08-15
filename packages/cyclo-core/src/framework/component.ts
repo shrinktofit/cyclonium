@@ -63,15 +63,15 @@ class ComponentScheduler {
     }
   }
 
-  private _fixedUpdateRegistry: Array<{
+  private _fixedUpdateRegistry: {
     component: CycloComponent;
     enabled: boolean;
-  }> = [];
+  }[] = [];
 
-  private _coroutineUpdateRegistry: Array<{
+  private _coroutineUpdateRegistry: {
     component: CycloComponent;
     enabled: boolean;
-  }> = [];
+  }[] = [];
 }
 
 const globalComponentScheduler = new ComponentScheduler();
