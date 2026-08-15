@@ -24,24 +24,6 @@ export class Bounds2D {
     }
   }
 
-  clone() {
-    return Bounds2D.fromMinMax(this._min, this._max);
-  }
-
-  strictEquals(other: Bounds2D): boolean {
-    return this.xMin === other.xMin
-      && this.yMin === other.yMin
-      && this.xMax === other.xMax
-      && this.yMax === other.yMax;
-  }
-
-  equals(other: Bounds2D, epsilon = EPSILON): boolean {
-    return equalNumber(this.xMin, other.xMin, epsilon)
-      && equalNumber(this.yMin, other.yMin, epsilon)
-      && equalNumber(this.xMax, other.xMax, epsilon)
-      && equalNumber(this.yMax, other.yMax, epsilon);
-  }
-
   get min() {
     return this._min;
   }
@@ -91,7 +73,7 @@ export class Bounds2D {
   }
 
   get center() {
-    return (this._center_cache ??= new Vec2()).copyFrom(this._min).addSelf(this._max).mulSelfScalar(0.5);
+    return (this._centerCache ??= new Vec2()).copyFrom(this._min).addSelf(this._max).mulSelfScalar(0.5);
   }
 
   set center(value) {
@@ -127,7 +109,7 @@ export class Bounds2D {
   }
 
   get size() {
-    return (this._size_cache ??= new Vec2()).copyFrom(this._max).subSelf(this._min);
+    return (this._sizeCache ??= new Vec2()).copyFrom(this._max).subSelf(this._min);
   }
 
   set size(value) {
@@ -162,6 +144,24 @@ export class Bounds2D {
     this._max.y = value + sizeY;
   }
 
+  clone() {
+    return Bounds2D.fromMinMax(this._min, this._max);
+  }
+
+  strictEquals(other: Bounds2D): boolean {
+    return this.xMin === other.xMin
+      && this.yMin === other.yMin
+      && this.xMax === other.xMax
+      && this.yMax === other.yMax;
+  }
+
+  equals(other: Bounds2D, epsilon = EPSILON): boolean {
+    return equalNumber(this.xMin, other.xMin, epsilon)
+      && equalNumber(this.yMin, other.yMin, epsilon)
+      && equalNumber(this.xMax, other.xMax, epsilon)
+      && equalNumber(this.yMax, other.yMax, epsilon);
+  }
+
   contains(point: Vec2): boolean;
   contains(x: number, y: number): boolean;
   contains(other: Bounds2D): boolean;
@@ -169,7 +169,7 @@ export class Bounds2D {
     const { _min: { x: xMin, y: yMin }, _max: { x: xMax, y: yMax } } = this;
     if (typeof _x === 'number') {
       const x = _x;
-      const y = _y as number;
+      const y = _y!;
       return xMin <= x && x <= xMax && yMin <= y && y <= yMax;
     } else if (_x instanceof Bounds2D) {
       const { _min: { x: otherXMin, y: otherYMin }, _max: { x: otherXMax, y: otherYMax } } = _x;
@@ -223,8 +223,8 @@ export class Bounds2D {
 
   private readonly _min = new Vec2();
   private readonly _max = new Vec2();
-  private _center_cache: undefined | Vec2 = undefined;
-  private _size_cache: undefined | Vec2 = undefined;
+  private _centerCache: undefined | Vec2 = undefined;
+  private _sizeCache: undefined | Vec2 = undefined;
 }
 
 function equalNumber(a: number, b: number, epsilon: number) {

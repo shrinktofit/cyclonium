@@ -93,7 +93,7 @@ async function runTestFixture(fixtureDir: string, opts: FixtureRunOptions): Prom
 }
 
 interface FixtureRunOptions {
-  inlineDependencies: boolean | (string | RegExp)[];
+  inlineDependencies: boolean | Array<string | RegExp>;
 }
 
 async function installFixtureDependencies(fixtureDir: string): Promise<void> {
@@ -139,7 +139,7 @@ class FixtureReporter extends DefaultReporter {
       return messages;
     }
     if (typeof messages[0] === 'string') {
-      return messages.map((m) => `[${this._fixtureName}] ${m}`);
+      return messages.map((message) => `[${this._fixtureName}] ${String(message)}`);
     }
     return [`[${this._fixtureName}]`, ...messages];
   }
@@ -196,7 +196,7 @@ class FixtureRunResult {
   }
 
   private _collectErrorsInTestCase(testCase: TestCase): void {
-    this._errors.push(...(testCase.result().errors || []));
+    this._errors.push(...(testCase.result().errors ?? []));
   }
 }
 

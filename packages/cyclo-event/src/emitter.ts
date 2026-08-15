@@ -3,7 +3,7 @@
 import { retainIf } from '@cyclonium/algorithm/retain-if';
 import type { EventListenerOptions } from './common.js';
 
-export type EventCallback<TEventArgs extends any[]> = (...args: TEventArgs) => void;
+export type EventCallback<TEventArgs extends any[]> = (...args: TEventArgs) => unknown;
 
 enum ErrorBehavior {
   throwImmediately = 'throwImmediately',
@@ -137,11 +137,11 @@ export class EventEmitter<TEventArgs extends any[] = []> {
     this._removeOnceCallbacks();
   }
 
-  private _callbacks: undefined | EventCallback<TEventArgs> | EventCallback<TEventArgs>[] = undefined;
+  private _callbacks: undefined | EventCallback<TEventArgs> | Array<EventCallback<TEventArgs>> = undefined;
 
   private _onceMarks: Set<EventCallback<TEventArgs>> | undefined = undefined;
 
-  private _flags: number = 0;
+  private _flags = 0;
 
   private _captureRejections: ((error: unknown, ...args: TEventArgs) => void) | undefined = undefined;
 
@@ -199,13 +199,10 @@ export interface EventListenerRegistry<TEventArgs extends any[] = []> {
 
 export class ManagedEventEmitter<TEventArgs extends any[] = []> extends EventEmitter<TEventArgs> {
   get registry() {
-    if (!this._registry) {
-      this._registry = {
-        add: this.add.bind(this),
-        remove: this.remove.bind(this),
-      };
-    }
-    return this._registry;
+    return this._registry ??= {
+      add: this.add.bind(this),
+      remove: this.remove.bind(this),
+    };
   }
 
   private _registry: undefined | EventListenerRegistry<TEventArgs>;

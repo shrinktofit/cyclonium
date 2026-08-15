@@ -1,7 +1,7 @@
 import { _decorator } from 'cc';
 
 export function createDecoratorForSetEditableMetadata(opts: Parameters<typeof _decorator.property>[0]): PropertyDecorator {
-  return (target: object, propertyKey: string | symbol, descriptor?: TypedPropertyDescriptor<any>) => {
+  return (target: object, propertyKey: string | symbol, descriptor?: PropertyDescriptor) => {
     const normalizedOptions: Parameters<typeof _decorator.property>[0] = {
       ...opts,
     };

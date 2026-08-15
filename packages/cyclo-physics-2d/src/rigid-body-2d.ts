@@ -172,6 +172,10 @@ export class RigidBody2D extends PhysicsComponent2DBase {
     }
   }
 
+  get impl() {
+    return this._rigidBodyControlBlock?.impl;
+  }
+
   hasTag(tag: string) {
     return this._tags.includes(tag);
   }
@@ -196,8 +200,38 @@ export class RigidBody2D extends PhysicsComponent2DBase {
     this._rigidBodyControlBlock?.impl.setNextKinematicRotation(rotation);
   }
 
-  get impl() {
-    return this._rigidBodyControlBlock?.impl;
+  /** @internal */
+  applyKinematicTargetForStep_internal(stepFraction: number, isLastSubstep: boolean) {
+    const implBody = this._rigidBodyControlBlock?.impl;
+    if (!implBody || this._type !== RigidBody2DType.kinematicPositionBased) {
+      return;
+    }
+
+    if (this._hasKinematicPositionTarget) {
+      const substepTarget = this._substepKinematicPositionTarget;
+      if (isLastSubstep) {
+        substepTarget.copyFrom(this._kinematicPositionTarget);
+        this._hasKinematicPositionTarget = false;
+      } else {
+        const position = this._physicsPosition;
+        const target = this._kinematicPositionTarget;
+        substepTarget.set(
+          lerp(position.x, target.x, stepFraction),
+          lerp(position.y, target.y, stepFraction),
+        );
+      }
+      implBody.setNextKinematicTranslation(substepTarget);
+    }
+
+    if (this._hasKinematicRotationTarget) {
+      const substepTarget = isLastSubstep
+        ? this._kinematicRotationTarget
+        : lerpAngle(this._physicsRotation, this._kinematicRotationTarget, stepFraction);
+      if (isLastSubstep) {
+        this._hasKinematicRotationTarget = false;
+      }
+      implBody.setNextKinematicRotation(substepTarget);
+    }
   }
 
   protected override onDestroy(): void {
@@ -244,40 +278,6 @@ export class RigidBody2D extends PhysicsComponent2DBase {
 
   protected override onSyncTransforms(forceTransform: boolean, _forceScale: boolean): void {
     this._syncToPhysics(forceTransform);
-  }
-
-  /** @internal */
-  applyKinematicTargetForStep_internal(stepFraction: number, isLastSubstep: boolean) {
-    const implBody = this._rigidBodyControlBlock?.impl;
-    if (!implBody || this._type !== RigidBody2DType.kinematicPositionBased) {
-      return;
-    }
-
-    if (this._hasKinematicPositionTarget) {
-      const substepTarget = this._substepKinematicPositionTarget;
-      if (isLastSubstep) {
-        substepTarget.copyFrom(this._kinematicPositionTarget);
-        this._hasKinematicPositionTarget = false;
-      } else {
-        const position = this._physicsPosition;
-        const target = this._kinematicPositionTarget;
-        substepTarget.set(
-          lerp(position.x, target.x, stepFraction),
-          lerp(position.y, target.y, stepFraction),
-        );
-      }
-      implBody.setNextKinematicTranslation(substepTarget);
-    }
-
-    if (this._hasKinematicRotationTarget) {
-      const substepTarget = isLastSubstep
-        ? this._kinematicRotationTarget
-        : lerpAngle(this._physicsRotation, this._kinematicRotationTarget, stepFraction);
-      if (isLastSubstep) {
-        this._hasKinematicRotationTarget = false;
-      }
-      implBody.setNextKinematicRotation(substepTarget);
-    }
   }
 
   protected override onAfterPhysicsStep(): void {

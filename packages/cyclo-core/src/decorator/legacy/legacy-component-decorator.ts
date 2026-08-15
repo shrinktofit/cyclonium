@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
-import { _decorator, Component } from 'cc';
+import { _decorator, Component, type Constructor } from 'cc';
 import { CycloComponent } from '../../framework/component.ts';
 import { getExecutionOrder, setExecutionOrder } from '../../framework/execution-order.ts';
-import { logger } from '../../utils/logger.ts';
 
 export function executionOrder(order: number) {
   return defineComponentDecorator((target) => {
@@ -24,7 +23,7 @@ export const executeInEditMode = defineComponentDecoratorWithOptionalBoolean((ta
   _decorator.executeInEditMode(value)(target);
 });
 
-function addRequiredComponent(target: new (...args: never[]) => CycloComponent, componentType: new (...args: never[]) => Component) {
+function addRequiredComponent(target: new (...args: never[]) => CycloComponent, componentType: Constructor<Component>) {
   let _requireComponent = Reflect.getOwnPropertyDescriptor(target.constructor, '_requireComponent')?.value;
   if (_requireComponent === undefined) {
     _requireComponent = [];
@@ -38,27 +37,21 @@ function addRequiredComponent(target: new (...args: never[]) => CycloComponent, 
   _requireComponent.push(componentType);
 }
 
-export function requiresComponent<T extends Component>(componentType: new (...args: never[]) => T) {
+export function requiresComponent<T extends Component>(componentType: Constructor<T>) {
   return defineComponentMethodDecorator((target, propertyKey, descriptor) => {
     addRequiredComponent(target, componentType);
 
-    const {
-      get,
-      set,
-      value,
-      ...remain
-    } = descriptor;
-    if (set) {
+    if (descriptor.set !== undefined) {
       throw new Error(`Property ${String(propertyKey)} of should not has set`);
     }
-    if (value !== undefined) {
+    if (descriptor.value !== undefined) {
       throw new Error(`Property ${String(propertyKey)} of should not has value`);
     }
     return {
-      ...remain,
+      configurable: descriptor.configurable,
+      enumerable: descriptor.enumerable,
       get(this: CycloComponent) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const component = this.getComponent(componentType as new (...args: any[]) => T);
+        const component = this.getComponent(componentType);
         if (!component) {
           throw new Error(`Component ${componentType.name} is not found.`);
         }
@@ -97,7 +90,7 @@ function defineComponentDecoratorWithOptionalBoolean(decorate: (target: CycloCom
 function defineComponentMethodDecorator(decorate: (target: CycloComponentClass, propertyKey: string | symbol, descriptor: PropertyDescriptor) => PropertyDescriptor | undefined): MethodDecorator {
   return (target: unknown, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
     if (!(target instanceof CycloComponent)) {
-      throw new Error(`Class ${target} is not a subclass of CycloComponent.`);
+      throw new Error(`Class ${String(target)} is not a subclass of CycloComponent.`);
     }
     return decorate(target as unknown as CycloComponentClass, propertyKey, descriptor);
   };

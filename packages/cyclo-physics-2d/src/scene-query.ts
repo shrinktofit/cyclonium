@@ -4,9 +4,6 @@ import { px2Impl } from './px2-impl.js';
 import { fromPx2ImplVec2 } from './exchange.js';
 
 export class SceneQueryFilter {
-  constructor() {
-  }
-
   get dynamics() {
     return this._getIncludesFlag(px2Impl.QueryFilterFlags.EXCLUDE_DYNAMIC);
   }
@@ -47,11 +44,6 @@ export class SceneQueryFilter {
     this._setIncludesFlag(px2Impl.QueryFilterFlags.EXCLUDE_SOLIDS, value);
   }
 
-  addTargetTag(tag: number) {
-    this._filterGroupFilter |= 1 << tag;
-    return this;
-  }
-
   get _filterFlags_internal() {
     return this._filterFlags;
   }
@@ -60,6 +52,11 @@ export class SceneQueryFilter {
     // TODO
     // return composeCollisionGroup(GROUP_MEMBERSHIP_ALLOW_SCENE_QUERY, this._filterGroupFilter);
     return composeCollisionGroup(0xFFFF, this._filterGroupFilter);
+  }
+
+  addTargetTag(tag: number) {
+    this._filterGroupFilter |= 1 << tag;
+    return this;
   }
 
   private _filterGroupFilter = 0;

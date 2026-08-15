@@ -1,9 +1,12 @@
 import { inject, type InjectionKey, type Ref } from 'vue';
-import type RawUIProp from './raw/raw-ui-prop.vue';
-import type { BasicDump, Dump } from '../../../dump/dump.js';
+import type { BasicDump } from '../../../dump/dump.js';
+
+export interface DumpSubmissionTarget {
+  submit<T>(type: 'change-dump' | 'confirm-dump', dump: BasicDump<T>, dumpPath: string): void;
+}
 
 export class DumpNotifier {
-  constructor(private _uiPropRef: Ref<InstanceType<typeof RawUIProp>>) {
+  constructor(private _uiPropRef: Readonly<Ref<DumpSubmissionTarget | null>>) {
   }
 
   emitChange<T>(dump: BasicDump<T>, path: string) {

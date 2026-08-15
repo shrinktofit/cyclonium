@@ -33,7 +33,7 @@ const matrixTags = computed(() => {
 const matrix = useTemplateRef('matrix');
 
 function onTagChange(index: number, value: string) {
-  const existing = Object.entries(tags.value).find(([_, tagIndex]) => tagIndex === index)?.[0];
+  const existing = Object.entries(tags.value).find((entry) => entry[1] === index)?.[0];
   if (existing) {
     delete tags.value[existing];
   }
@@ -44,8 +44,10 @@ function onTagChange(index: number, value: string) {
       matrix.value.unsetMatrixElementByTag(existing);
     }
   }
-  props.dump.value.tags_editor.value = tags.value;
-  dumpNotifier.emitChange(props.dump.value.tags_editor, 'tags_editor');
+  dumpNotifier.emitChange({
+    ...props.dump.value.tags_editor,
+    value: tags.value,
+  }, 'tags_editor');
 }
 </script>
 

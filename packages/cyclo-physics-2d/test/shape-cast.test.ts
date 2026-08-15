@@ -170,14 +170,14 @@ describe('PhysicsWorld2D shape cast', () => {
         targetNode?.destroy();
       });
 
-      type ExpectedHit = {
+      interface ExpectedHit {
         distance: number;
         point: Vec2;
         localPoint1: Vec2;
         localPoint2: Vec2;
         localNormal1: Vec2;
         localNormal2: Vec2;
-      };
+      }
 
       const expectShapeCastHit = (expected: ExpectedHit, collider: BoxCollider2D | PolygonCollider2D, stopAtPenetration: boolean) => {
         director.tick(defaultTickDeltaTime);

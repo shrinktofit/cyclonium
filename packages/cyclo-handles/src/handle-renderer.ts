@@ -12,6 +12,7 @@ export class HandleRenderer {
   }
 
   startFrame() {
+    // Canvas3D does not require explicit per-frame initialization.
   }
 
   endFrame() {
@@ -27,6 +28,7 @@ export class HandleRenderer {
     unlit?: boolean;
     wireframe?: boolean;
   }) {
+    // Rectangle rendering is reserved for the editor handle implementation.
   }
 
   drawLine2D(opts: {

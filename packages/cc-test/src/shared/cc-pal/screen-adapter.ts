@@ -15,6 +15,8 @@ export interface ScreenOptions {
 
 export type ScreenEventType = 'window-resize' | 'orientation-change' | 'fullscreen-change';
 
+// The names mirror Cocos' public PAL enum exactly.
+/* eslint-disable @typescript-eslint/naming-convention */
 export enum Orientation {
   PORTRAIT = 1,
   PORTRAIT_UPSIDE_DOWN = PORTRAIT << 1,
@@ -23,6 +25,7 @@ export enum Orientation {
   LANDSCAPE = LANDSCAPE_LEFT | LANDSCAPE_RIGHT,
   AUTO = PORTRAIT | LANDSCAPE,
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export interface Size {
   width: number;

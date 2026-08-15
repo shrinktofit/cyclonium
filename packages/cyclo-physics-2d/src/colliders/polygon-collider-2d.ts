@@ -27,8 +27,7 @@ export class PolygonCollider2D extends Collider2D {
     const scale = this.sceneGraphScale;
     out.setMinMax(Vec2.POSITIVE_INFINITY, Vec2.NEGATIVE_INFINITY);
     const p = new Vec2();
-    for (let i = 0; i < this._points.length; i++) {
-      const point = this._points[i];
+    for (const point of this._points) {
       out.extend(p.copyFrom(point).mulSelf(scale));
     }
   }

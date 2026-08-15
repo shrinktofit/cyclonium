@@ -483,7 +483,7 @@ function connectAll(...components: Array<TestSortableRenderer | SortingGroup>) {
   }
 }
 
-function createSortingGroupTree(parent: Node, name: string, orderInLayer: number, rendererEntries: readonly (readonly [name: string, orderInLayer: number])[]) {
+function createSortingGroupTree(parent: Node, name: string, orderInLayer: number, rendererEntries: ReadonlyArray<readonly [name: string, orderInLayer: number]>) {
   const node = createNode(parent, name);
   const group = addSortingGroup(node, orderInLayer);
   const renderers = rendererEntries.map(([rendererName, rendererOrderInLayer]) => {

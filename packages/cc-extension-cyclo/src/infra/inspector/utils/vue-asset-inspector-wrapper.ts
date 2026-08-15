@@ -1,12 +1,12 @@
 import { createApp, h, reactive, type Reactive } from 'vue';
 import { logger } from '../../../logger.js';
 import fs from 'fs-extra';
-// @ts-expect-error
+// @ts-expect-error -- Vite replaces this virtual style-location module during the extension build.
 import styleLocation from '@/style-location';
 import PrimeVue from 'primevue/config';
 import type { AssetInspectorData, InspectorAsset, InspectorMeta } from '../asset/data.js';
 
-export function wrapVueAssetInspector<TComponent extends new (...args: any[]) => any>(componentAccessor: () => TComponent) {
+export function wrapVueAssetInspector<TComponent extends abstract new (...args: never[]) => object>(componentAccessor: () => TComponent) {
   const template = '<div id="container"></div>';
 
   const $ = {
@@ -35,7 +35,7 @@ export function wrapVueAssetInspector<TComponent extends new (...args: any[]) =>
         return h(componentAccessor(), { inspectorData: this._inspectorData });
       },
     });
-    // @ts-expect-error
+    // @ts-expect-error -- PrimeVue's plugin type currently conflicts with Vue's duplicated App type in this extension workspace.
     app.use(PrimeVue);
     this._instance = app.mount(this.$.container) as InstanceType<TComponent>;
   }

@@ -14,7 +14,7 @@ export class ComponentEditor<TTarget extends Component = Component> {
     if (!this._target) {
       throw new Error(`Target is not set`);
     }
-    return this._target as TTarget;
+    return this._target;
   }
 
   destroy() {
@@ -35,14 +35,15 @@ export class ComponentEditor<TTarget extends Component = Component> {
   }
 
   protected onAttached(): void {
-
+    // Optional lifecycle hook for component editors.
   }
 
   protected onDetached(): void {
-
+    // Optional lifecycle hook for component editors.
   }
 
   protected onDestroy(): void {
+    // Optional lifecycle hook for component editors.
   }
 
   protected onSceneGUI(ctx: SceneGuiContext): void {
@@ -137,7 +138,7 @@ class ComponentEditorSystem extends System {
     }
   }
 
-  private _componentEditors: Map<Component, ComponentEditor> = new Map();
+  private _componentEditors = new Map<Component, ComponentEditor>();
   private _handleInput: HandleEditorInput;
   private _sceneGuiContext: SceneGuiContext;
   private _controllerOnDestroy: AbortController;
@@ -149,7 +150,7 @@ function getSelectedNodes() {
 
 const handlesRenderRootNodeName = '::handles-render-root::';
 
-export async function startComponentEditor() {
+export function startComponentEditor(): void {
   if (!isSceneEditorEnv()) {
     return;
   }

@@ -9,13 +9,18 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emit = defineEmits<{
+  change: [value: number | null];
+}>();
 </script>
 
 <template>
   <InputNumber
-    v-model:value="dump.value"
+    :value="props.dump.value"
     :readonly="dump.readonly"
     :min="dump.min"
     :max="dump.max"
+    @update:value="emit('change', $event)"
   />
 </template>

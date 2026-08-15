@@ -23,7 +23,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
     "@cyclonium/workflow": "workspace:*",
-    "@shrinktofit/eslint-config": "^0.0.8",
+    "@shrinktofit/eslint-config": "^0.0.10",
     "eslint": "^9.39.5",
     "lint-staged": "^17.3.0",
     "turbo": "^2.9.12",

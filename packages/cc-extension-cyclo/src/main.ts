@@ -3,7 +3,7 @@ import { selfExtensionName } from './self-info.js';
 
 export const methods = {};
 
-export async function load() {
+export function load(): void {
   logger.debug(`${selfExtensionName} loaded`);
 }
 

@@ -54,10 +54,10 @@ export class SortSettings {
   }
 
   @serializable
-  private _sortingLayer: number = 0;
+  private _sortingLayer = 0;
 
   @serializable
-  private _orderInLayer: number = 0;
+  private _orderInLayer = 0;
 
   private _sortingTreeNode: SortingTreeNode | undefined = undefined;
 

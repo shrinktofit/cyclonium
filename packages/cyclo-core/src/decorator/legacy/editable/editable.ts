@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
-import { CCInteger, type CCBoolean, type CCFloat, type CCString } from 'cc';
+import { CCInteger, type CCBoolean, type CCString } from 'cc';
 import { isSubClassOfInclusive } from '../../../utils/inheritance.ts';
 import { logger } from '../../../utils/logger.ts';
 import { createDecoratorForSetEditableMetadata } from './common.ts';
@@ -26,7 +26,7 @@ function editable(options?: EditableDecoratorOptions): PropertyDecorator;
 
 function editable(type?: Function): PropertyDecorator;
 
-function editable(type?: typeof CCInteger | typeof CCBoolean | typeof CCFloat | typeof CCString): PropertyDecorator;
+function editable(type?: typeof CCInteger | typeof CCBoolean | typeof CCString): PropertyDecorator;
 
 function editable(target: object, propertyKey: string | symbol): void;
 
@@ -74,9 +74,7 @@ function editableWithOptions(options: EditableDecoratorOptions): PropertyDecorat
         modifiedOptions.min = 0;
         modifiedOptions.max = Math.PI * 2;
       }
-      if (modifiedOptions.step === undefined) {
-        modifiedOptions.step = 1;
-      }
+      modifiedOptions.step ??= 1;
     }
     createDecoratorForSetEditableMetadata(modifiedOptions)(...args);
   };

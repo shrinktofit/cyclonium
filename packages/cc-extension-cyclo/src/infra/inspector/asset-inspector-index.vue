@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps({
+defineProps({
   inspectorData: {
     type: Object as PropType<{ dump: Dump | null }>,
     required: true,

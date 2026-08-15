@@ -53,13 +53,13 @@ export class BoxSceneQueryProbe2D extends SceneQueryProbe2D {
     drawBoxSceneQueryProbe2DGizmo(this);
   }
 
-  private _getScaledHalfExtents() {
-    const scale = this.queryScale;
-    return Vec2.set(this._scaledHalfExtents, this._halfExtents.x * scale.x, this._halfExtents.y * scale.y);
-  }
-
   @serializable
   private _halfExtents = new Vec2(1, 1);
 
   private _scaledHalfExtents = new Vec2();
+
+  private _getScaledHalfExtents() {
+    const scale = this.queryScale;
+    return Vec2.set(this._scaledHalfExtents, this._halfExtents.x * scale.x, this._halfExtents.y * scale.y);
+  }
 }

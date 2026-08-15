@@ -14,6 +14,8 @@ export default defineConfig([
     },
   },
   globalIgnores([
+    '**/built/',
+    '**/dist/',
     '**/lib/',
   ]),
   stf.configs.recommended,
@@ -29,11 +31,17 @@ export default defineConfig([
             'env.d.ts',
             'eslint.config.js',
             'vitest.workspace.ts',
+            'packages/bundle-wasm/static/*.ts',
+            'packages/cc-extension-cyclo/*.cjs',
+            'packages/cc-extension-utils/types/vite-plugins/*.d.ts',
+            'packages/cyclo-abort-controller/index.d.ts',
+            'packages/rapier/@types/*.d.ts',
             'packages/*/vite.config.ts',
             'packages/*/vitest.config.ts',
             'packages/eslint/*.js',
             'packages/stf-eslint/*.js',
           ],
+          maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 32,
         },
       },
     },
@@ -41,6 +49,21 @@ export default defineConfig([
   {
     rules: {
       'n/no-extraneous-import': 'off',
+    },
+  },
+  {
+    files: [
+      'packages/cc-extension-cyclo/*.cjs',
+    ],
+    languageOptions: {
+      globals: {
+        module: 'readonly',
+        require: 'readonly',
+      },
+      sourceType: 'commonjs',
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
   {

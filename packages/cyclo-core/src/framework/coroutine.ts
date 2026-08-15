@@ -156,6 +156,18 @@ export function waitWhile(predicate: CoroutinePredicate): CoroutineInstruction {
 }
 
 export class CoroutineRunner {
+  get frame(): number {
+    return this._frame;
+  }
+
+  get deltaTime(): number {
+    return this._deltaTime;
+  }
+
+  get empty(): boolean {
+    return this._records.length === 0;
+  }
+
   start(coroutine: CoroutineIterator, opts?: StartCoroutineOptions): Coroutine {
     const record = new CoroutineRecord(this, coroutine, opts);
     this._records.push(record);
@@ -194,18 +206,6 @@ export class CoroutineRunner {
     } finally {
       this._endPruneDeferral();
     }
-  }
-
-  get frame(): number {
-    return this._frame;
-  }
-
-  get deltaTime(): number {
-    return this._deltaTime;
-  }
-
-  get empty(): boolean {
-    return this._records.length === 0;
   }
 
   private _records: CoroutineRecord[] = [];
@@ -251,13 +251,13 @@ interface MutableCoroutineFrame {
 }
 
 class CoroutineRecord implements Coroutine {
-  declare readonly [CoroutineBrand]: never;
-
   constructor(runner: CoroutineRunner, coroutine: CoroutineIterator, opts?: StartCoroutineOptions) {
     this._runner = runner;
     this._coroutine = coroutine;
     this._signal = opts?.signal;
   }
+
+  declare readonly [CoroutineBrand]: never;
 
   get running(): boolean {
     return !this._done && !this._stopping;
@@ -327,6 +327,7 @@ class CoroutineRecord implements Coroutine {
   private _done = false;
   private _executing = false;
   private _stopping = false;
+  private _onAbort: (() => void) | undefined = undefined;
 
   private _advance(frame?: CoroutineFrame): void {
     let result: IteratorResult<CoroutineYield, void>;
@@ -425,6 +426,4 @@ class CoroutineRecord implements Coroutine {
     this._signal.removeEventListener('abort', this._onAbort);
     this._onAbort = undefined;
   }
-
-  private _onAbort: (() => void) | undefined = undefined;
 }

@@ -55,8 +55,8 @@ export function decomposeSRTMat3(mat3: Mat3) {
   const sx = Math.sqrt(m11 ** 2 + m21 ** 2);
   const sy = Math.sqrt(m12 ** 2 + m22 ** 2);
 
-  let ssx = 0;
-  let ssy = 0;
+  let ssx: number;
+  let ssy: number;
   const signCos = signOfCos(r, 1e-16);
   if (signCos !== 0) {
     ssx = Math.sign(m11) / signCos;

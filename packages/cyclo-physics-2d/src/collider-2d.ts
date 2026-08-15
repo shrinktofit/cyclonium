@@ -17,6 +17,18 @@ import { Bounds2D } from '@cyclonium/core/math/bounds-2d';
 
 @cycloBuiltinClass({ abstract: true })
 export abstract class Collider2D extends PhysicsComponent2DBase {
+  onContactBegin = createCollisionEventEmitter<[Collider2D, Collider2D, Contact2DInfo]>((hasAnyListener) => {
+    this._updateListenerFlag(ContactEventListenerFlagIndex.begin, hasAnyListener);
+  });
+
+  onContactStay = createCollisionEventEmitter<[Collider2D, Collider2D, Contact2DInfo]>((hasAnyListener) => {
+    this._updateListenerFlag(ContactEventListenerFlagIndex.stay, hasAnyListener);
+  });
+
+  onContactEnd = createCollisionEventEmitter<[Collider2D, Collider2D, Contact2DInfo]>((hasAnyListener) => {
+    this._updateListenerFlag(ContactEventListenerFlagIndex.end, hasAnyListener);
+  });
+
   get attachedRigidBody() {
     return this._handle?.attachedRigidBody ?? null;
   }
@@ -54,18 +66,6 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
   get impl_internal() {
     return this._implCollider;
   }
-
-  onContactBegin = createCollisionEventEmitter<[Collider2D, Collider2D, Contact2DInfo]>((hasAnyListener) => {
-    this._updateListenerFlag(ContactEventListenerFlagIndex.begin, hasAnyListener);
-  });
-
-  onContactStay = createCollisionEventEmitter<[Collider2D, Collider2D, Contact2DInfo]>((hasAnyListener) => {
-    this._updateListenerFlag(ContactEventListenerFlagIndex.stay, hasAnyListener);
-  });
-
-  onContactEnd = createCollisionEventEmitter<[Collider2D, Collider2D, Contact2DInfo]>((hasAnyListener) => {
-    this._updateListenerFlag(ContactEventListenerFlagIndex.end, hasAnyListener);
-  });
 
   intersect(opts: ShapeIntersectionQueryOptions) {
     const world = this.world;
@@ -215,6 +215,10 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
     return this._handle?.impl ?? undefined;
   }
 
+  protected get sceneGraphScale() {
+    return this._transform.scale;
+  }
+
   protected recreateCollider() {
     this._destroyCollider();
     const handle = this._handle;
@@ -276,10 +280,6 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
   protected abstract getShape(): px2Impl.Shape | undefined;
 
   protected abstract computeShapeBounds(out: Bounds2D): void;
-
-  protected get sceneGraphScale() {
-    return this._transform.scale;
-  }
 
   protected updateSceneGraphScale(): void {
     const implCollider = this._implCollider;

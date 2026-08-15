@@ -130,10 +130,10 @@ interface Vec3ScratchCache {
   borrowed: boolean;
 }
 
-const circleTopologyCache: Map<number, CircleTopology> = new Map();
-const sphereTopologyCache: Map<string, SphereTopology> = new Map();
-const cylinderIndexTopologyCache: Map<string, CylinderIndexTopology> = new Map();
-const hemisphereTopologyCache: Map<string, HemisphereTopology> = new Map();
+const circleTopologyCache = new Map<number, CircleTopology>();
+const sphereTopologyCache = new Map<string, SphereTopology>();
+const cylinderIndexTopologyCache = new Map<string, CylinderIndexTopology>();
+const hemisphereTopologyCache = new Map<string, HemisphereTopology>();
 
 export function createMeshGeometry(): MeshGeometry {
   return {
@@ -617,7 +617,7 @@ function appendDashedLine3DStroke(geometry: MeshGeometry, from: Vec3, to: Vec3, 
   const direction = Vec3.subtract(vec3Cache[pVec3Cache++], to, from).normalize();
   const dashState = createDashState(style.lineDash, style.lineDashOffset);
   const startPoint = vec3Cache[pVec3Cache++];
-  const endPoint = vec3Cache[pVec3Cache++];
+  const endPoint = vec3Cache[pVec3Cache];
   let traveled = 0;
   while (segmentLength - traveled > epsilon) {
     const step = Math.min(segmentLength - traveled, dashState.remaining);
@@ -649,7 +649,7 @@ function appendSolidLine3DStroke(geometry: MeshGeometry, from: Vec3, to: Vec3, s
   let pVec3Cache = 0;
   const start = vec3Cache[pVec3Cache++].set(from);
   const end = vec3Cache[pVec3Cache++].set(to);
-  const direction = Vec3.subtract(vec3Cache[pVec3Cache++], end, start).normalize();
+  const direction = Vec3.subtract(vec3Cache[pVec3Cache], end, start).normalize();
 
   const halfWidth = style.lineWidth * 0.5;
   if (style.lineCap === Canvas3DLineCap.square) {
@@ -704,7 +704,7 @@ function appendDiscFill(geometry: MeshGeometry, center: Vec3, normal: Vec3, radi
   const vec3Cache = borrowVec3ScratchCache(vec3Caches_appendDiscFill);
   let pVec3Cache = 0;
   const point = vec3Cache[pVec3Cache++];
-  const transformedPoint = vec3Cache[pVec3Cache++];
+  const transformedPoint = vec3Cache[pVec3Cache];
   const basis = createNormalBasis(normal);
   const centerVertex = appendVertex(geometry, transformPointInto(transformedPoint, center, transform), color);
   const firstRingVertex = geometry.vertices.length / vertexStrideF;
@@ -759,7 +759,7 @@ function appendRingFill(geometry: MeshGeometry, center: Vec3, normal: Vec3, inne
   const transformedOuterPoint = vec3Cache[pVec3Cache++];
   const transformedInnerPoint = vec3Cache[pVec3Cache++];
   const transformedInnerNextPoint = vec3Cache[pVec3Cache++];
-  const transformedOuterNextPoint = vec3Cache[pVec3Cache++];
+  const transformedOuterNextPoint = vec3Cache[pVec3Cache];
   for (let iPoint = 0; iPoint < segments; iPoint++) {
     const nextPoint = (iPoint + 1) % segments;
     setPlaneCirclePoint(outerPoint, center, outerRadius, basis.axisA, basis.axisB, iPoint, segments);
@@ -796,7 +796,7 @@ function appendSphereFill(geometry: MeshGeometry, center: Vec3, radius: number, 
   const vec3Cache = borrowVec3ScratchCache(vec3Caches_appendSphereFill);
   let pVec3Cache = 0;
   const point = vec3Cache[pVec3Cache++];
-  const transformedPoint = vec3Cache[pVec3Cache++];
+  const transformedPoint = vec3Cache[pVec3Cache];
   const topology = getSphereTopology(latitudeSegments, longitudeSegments);
   const baseVertex = geometry.vertices.length / vertexStrideF;
   for (let pPosition = 0; pPosition < topology.positions.length; pPosition += 3) {
@@ -855,7 +855,7 @@ function appendHemisphereWireStroke(geometry: MeshGeometry, center: Vec3, axis: 
   const radialDirection = vec3Cache[pVec3Cache++];
   const point = vec3Cache[pVec3Cache++];
   const transformedPoint = vec3Cache[pVec3Cache++];
-  const ringCenter = vec3Cache[pVec3Cache++];
+  const ringCenter = vec3Cache[pVec3Cache];
   for (let iMeridian = 0; iMeridian < 4; iMeridian++) {
     const phi = iMeridian / 4 * Math.PI * 2;
     setBasisDirection(radialDirection, basis.normalA, basis.normalB, phi);
@@ -890,7 +890,7 @@ function appendHemisphereFill(geometry: MeshGeometry, center: Vec3, axis: Vec3, 
   const vec3Cache = borrowVec3ScratchCache(vec3Caches_appendHemisphereFill);
   let pVec3Cache = 0;
   const point = vec3Cache[pVec3Cache++];
-  const transformedPoint = vec3Cache[pVec3Cache++];
+  const transformedPoint = vec3Cache[pVec3Cache];
   const topology = getHemisphereTopology(radialSegments, capSegments);
   const baseVertex = geometry.vertices.length / vertexStrideF;
   for (let pPosition = 0; pPosition < topology.positions.length; pPosition += 3) {
@@ -930,7 +930,7 @@ function appendCylinderWireStroke(geometry: MeshGeometry, from: Vec3, to: Vec3, 
   }
 }
 
-function appendCylinderFill(geometry: MeshGeometry, from: Vec3, to: Vec3, radius: number, radialSegments: number, transform: Mat4, color: Color, includeCaps: boolean = true): void {
+function appendCylinderFill(geometry: MeshGeometry, from: Vec3, to: Vec3, radius: number, radialSegments: number, transform: Mat4, color: Color, includeCaps = true): void {
   const basis = createAxisBasis(from, to);
   if (!basis) {
     return;
@@ -939,7 +939,7 @@ function appendCylinderFill(geometry: MeshGeometry, from: Vec3, to: Vec3, radius
   const vec3Cache = borrowVec3ScratchCache(vec3Caches_appendCylinderFill);
   let pVec3Cache = 0;
   const point = vec3Cache[pVec3Cache++];
-  const transformedPoint = vec3Cache[pVec3Cache++];
+  const transformedPoint = vec3Cache[pVec3Cache];
   const topology = getCircleTopology(radialSegments);
   const baseVertex = geometry.vertices.length / vertexStrideF;
   for (let iPoint = 0; iPoint < radialSegments; iPoint++) {
@@ -1493,7 +1493,7 @@ export function createOrUpdateRenderingSubMeshRecord(device: gfx.Device, geometr
   const vertexBufferData = Float32Array.from(geometry.vertices);
   const indexBufferData = createIndexBufferData(geometry.indices, vertexCount);
 
-  if (record && record.indexBytesPerElement === indexBufferData.BYTES_PER_ELEMENT) {
+  if (record?.indexBytesPerElement === indexBufferData.BYTES_PER_ELEMENT) {
     updateRenderingSubMeshRecord(record, vertexBufferData, indexBufferData);
     return record;
   }

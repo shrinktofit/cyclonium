@@ -47,13 +47,7 @@ interface BrowserScreenAdapterOptions {
 
 class BrowserScreenAdapter implements ccPalScreenAdapter.ScreenAdapter {
   constructor(private _options: BrowserScreenAdapterOptions) {
-  }
-
-  init(options: ccPalScreenAdapter.ScreenOptions, cbToRebuildFrameBuffer: () => void): void {
-    this._cbToUpdateFrameBuffer = cbToRebuildFrameBuffer;
-    this._orientation = orientationMap[options.configOrientation];
-    this._syncFromCanvas();
-    this._eventEmitter.emit('window-resize', this._windowSize.width, this._windowSize.height);
+    // The constructor parameter property retains the adapter options.
   }
 
   get isFrameRotated(): boolean {
@@ -148,6 +142,13 @@ class BrowserScreenAdapter implements ccPalScreenAdapter.ScreenAdapter {
     return this._safeAreaEdge;
   }
 
+  init(options: ccPalScreenAdapter.ScreenOptions, cbToRebuildFrameBuffer: () => void): void {
+    this._cbToUpdateFrameBuffer = cbToRebuildFrameBuffer;
+    this._orientation = orientationMap[options.configOrientation];
+    this._syncFromCanvas();
+    this._eventEmitter.emit('window-resize', this._windowSize.width, this._windowSize.height);
+  }
+
   requestFullScreen(): Promise<void> {
     return Promise.resolve();
   }
@@ -193,9 +194,6 @@ class BrowserScreenAdapter implements ccPalScreenAdapter.ScreenAdapter {
 }
 
 class EventEmitter<TEventMap extends Record<string, (...args: unknown[]) => void>> {
-  constructor() {
-  }
-
   on(event: keyof TEventMap, cb: TEventMap[keyof TEventMap], target?: unknown): void {
     this._listeners[event] = this._listeners[event] || [];
     this._listeners[event].push({ callback: cb, target, once: false });
@@ -242,11 +240,11 @@ export class BrowserPalScreenAdapterController {
     this._screenAdapter = new BrowserScreenAdapter(options);
   }
 
-  private _screenAdapter: BrowserScreenAdapter;
-
   get pal(): ccPalScreenAdapter.PalScreenAdapterModule {
     return {
       screenAdapter: this._screenAdapter,
     };
   }
+
+  private _screenAdapter: BrowserScreenAdapter;
 }

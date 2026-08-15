@@ -8,16 +8,6 @@ const EXTENT = 16;
 export class CollisionMatrix {
   static readonly EXTENT = EXTENT;
 
-  @editable
-  @dumpRaw
-  private get values() {
-    return this._values;
-  }
-
-  private set values(values) {
-    this._values = [...values];
-  }
-
   clone() {
     const clone = new CollisionMatrix();
     clone._values = this._values.slice();
@@ -50,6 +40,18 @@ export class CollisionMatrix {
 
   @serializable
   private _values: boolean[] = new Array<boolean>(EXTENT * (EXTENT + 1) / 2).fill(false);
+
+  @editable
+  @dumpRaw
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- The private accessor name is part of the serialized editor dump schema.
+  private get values() {
+    return this._values;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention -- The private accessor name is part of the serialized editor dump schema.
+  private set values(values) {
+    this._values = [...values];
+  }
 
   private _locate(i: number, j: number) {
     if (i < 0 || i >= EXTENT || j < 0 || j >= EXTENT) {

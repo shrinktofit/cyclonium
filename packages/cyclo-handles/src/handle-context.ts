@@ -30,7 +30,7 @@ export class HandleContext {
   }
 
   forEach<T>(
-    iterable: ReadonlyArray<T>,
+    iterable: readonly T[],
     keyGenerator: (item: T) => string,
     callback: (item: T, index: number) => void,
   ) {
@@ -82,7 +82,7 @@ export class HandleContext {
   private readonly _currentScope: Scope[] = [];
   private _inputContext: HandleInputContext;
   private _now: number = Date.now();
-  private _endFrameCallbacks: (() => void)[] = [];
+  private _endFrameCallbacks: Array<() => void> = [];
   private _renderer: HandleRenderer;
 
   private _pushScope(key: string) {

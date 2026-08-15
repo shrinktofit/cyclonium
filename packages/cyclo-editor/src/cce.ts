@@ -33,13 +33,7 @@ declare global {
     export const Operation: InstanceType<typeof OperationManager>;
 
     export namespace Operation {
-      export type EventMap = {
-        [x in 'mousedown' | 'mousemove' | 'mouseup' | 'mousewheel']: [OperationMouseEvent];
-      } & {
-        [x in 'keydown' | 'keyup']: [KeyboardEvent];
-      } & {
-        [x in 'onDragOver' | 'onDrop']: [DragEvent];
-      };
+      export type EventMap = Record<'mousedown' | 'mousemove' | 'mouseup' | 'mousewheel', [OperationMouseEvent]> & Record<'keydown' | 'keyup', [KeyboardEvent]> & Record<'onDragOver' | 'onDrop', [DragEvent]>;
 
       export type OperationMouseEvent = Omit<MouseEvent, 'type'>;
     }

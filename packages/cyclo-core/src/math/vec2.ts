@@ -5,7 +5,7 @@ import * as cc from 'cc';
 
 applyLegacyDecorators(Vec2, {
   classDecorators: [cycloBuiltinClass('Vec2')],
-  // @ts-expect-error
+  // @ts-expect-error -- Legacy decorators require metadata for Vec2 fields declared by another package.
   propertyDecorators: {
     x: [serializable, editable],
     y: [serializable, editable],

@@ -19,19 +19,6 @@ export class Vec2 {
     return new Vec2(x, x);
   }
 
-  constructor(x = 0, y = 0) {
-    this.x = x;
-    this.y = y;
-  }
-
-  get magnitude() {
-    return Math.sqrt(this.magnitudeSquared);
-  }
-
-  get magnitudeSquared() {
-    return this.x * this.x + this.y * this.y;
-  }
-
   static clone(a: Vec2) {
     return new Vec2(a.x, a.y);
   }
@@ -149,9 +136,22 @@ export class Vec2 {
     return a.clone().rotateSelf(angle);
   }
 
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+  }
+
   x = 0;
 
   y = 0;
+
+  get magnitude() {
+    return Math.sqrt(this.magnitudeSquared);
+  }
+
+  get magnitudeSquared() {
+    return this.x * this.x + this.y * this.y;
+  }
 
   toString() {
     return `Vec2(${this.x}, ${this.y})`;

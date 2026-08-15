@@ -5,7 +5,6 @@ import { Mat3 } from '../math/mat3.ts';
 import { mat3FromSRT } from '../math/transform-2d.ts';
 import { Vec2 } from '../math/vec2.ts';
 import { to0ToPI2 } from '../math/trigonometry.ts';
-import { logger } from '../utils/logger.ts';
 import { clamp } from '../math/number.ts';
 
 export enum TransformFlag {
@@ -15,11 +14,11 @@ export enum TransformFlag {
 }
 
 class TransformChangeFlags {
+  frontValue = 0;
+
   get token() {
     return this._token;
   }
-
-  frontValue = 0;
 
   get backValue() {
     return this._backValue;

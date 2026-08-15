@@ -5,11 +5,9 @@ export { px2Impl };
 export const initializePx2Impl = (() => {
   let promise: Promise<void> | null = null;
   return async () => {
-    if (!promise) {
-      promise = (async () => {
-        await px2Impl.__init__();
-      })();
-    }
+    promise ??= (async () => {
+      await px2Impl.__init__();
+    })();
     await promise;
   };
 })();

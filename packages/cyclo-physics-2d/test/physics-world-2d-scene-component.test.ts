@@ -15,7 +15,9 @@ vi.mock('#physics-2d-debugger', () => ({
   Physics2DDebugger: class {
     destroy = debuggerDestroy;
 
-    render() {}
+    render() {
+      // Rendering is outside this scene-component test's scope.
+    }
   },
 }));
 
@@ -174,7 +176,7 @@ describe('PhysicsWorld2DSceneComponent', () => {
   it.each([0, -60, Number.NaN, Number.POSITIVE_INFINITY])('should log and fall back from invalid physics fps %s', (fps) => {
     /// @case A physics scene starts with a non-positive or non-finite configured FPS.
     /// @expect The error is logged and one 1/30-second update emits two contact events at the default 60-Hz setting.
-    const error = vi.spyOn(logger, 'error').mockImplementation(() => {});
+    const error = vi.spyOn(logger, 'error').mockImplementation(() => undefined);
     const fixture = createContactingPositionBodyFixture({ fps });
     try {
       director.tick(1 / 30);
@@ -189,7 +191,7 @@ describe('PhysicsWorld2DSceneComponent', () => {
   it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY])('should log and fall back from invalid maximum substep count %s', (maxSubsteps) => {
     /// @case A physics scene starts with a non-positive, fractional, or non-finite maximum substep count.
     /// @expect The error is logged and an overloaded update is clamped with the default four-substep limit.
-    const error = vi.spyOn(logger, 'error').mockImplementation(() => {});
+    const error = vi.spyOn(logger, 'error').mockImplementation(() => undefined);
     const fixture = createMovingBodyFixture({ maxSubsteps });
     try {
       director.tick(5 / 60);

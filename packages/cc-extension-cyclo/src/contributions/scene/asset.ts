@@ -2,9 +2,9 @@ import { Asset, assetManager } from 'cc';
 import { promisify } from 'node:util';
 
 export async function loadAsset<TAsset extends Asset = Asset>(uuid: string, type?: new () => TAsset) {
-  const asset = await promisify(assetManager.loadAny)(uuid);
+  const asset = await promisify(assetManager.loadAny.bind(assetManager))(uuid);
   if (type && !(asset instanceof type)) {
-    throw new Error(`Expect asset ${uuid} to be of type ${type}`);
+    throw new Error(`Expect asset ${uuid} to be of type ${type.name}`);
   }
   return asset as TAsset;
 }

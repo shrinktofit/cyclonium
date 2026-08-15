@@ -18,26 +18,39 @@ export const TaskPriority = {
   },
 };
 
-interface Task<TThis = any> {
+interface Task<TThis> {
   fn: (this: TThis, deltaTime: number) => void;
   thisArg: TThis;
   priority: number;
 }
 
+interface TaskIdentity {
+  fn: unknown;
+  thisArg: unknown;
+}
+
+interface ScheduledTask extends TaskIdentity {
+  execute(deltaTime: number): void;
+  priority: number;
+}
+
 class TaskCluster {
-  add(task: Task) {
+  add<TThis>(task: Task<TThis>) {
     const taskIndex = this._find(task);
     if (taskIndex >= 0) {
       return false;
     }
     this._tasks.push({
-      ...task,
+      fn: task.fn,
+      thisArg: task.thisArg,
+      priority: task.priority,
+      execute: (deltaTime: number) => task.fn.call(task.thisArg, deltaTime),
     });
     this._tasks.sort((a, b) => b.priority - a.priority);
     return true;
   }
 
-  remove(task: Task) {
+  remove(task: TaskIdentity) {
     const taskIndex = this._find(task);
     if (taskIndex < 0) {
       return false;
@@ -48,24 +61,24 @@ class TaskCluster {
 
   execute(deltaTime: number) {
     for (const task of this._tasks) {
-      task.fn.call(task.thisArg, deltaTime);
+      task.execute(deltaTime);
     }
   }
 
-  private _tasks: Task[] = [];
+  private _tasks: ScheduledTask[] = [];
 
-  private _find(task: Task) {
+  private _find(task: TaskIdentity) {
     return this._tasks.findIndex((t) => t.fn === task.fn && t.thisArg === task.thisArg);
   }
 }
 
 class CycloTaskScheduler extends cc.System {
-  add(task: Task) {
+  add<TThis>(task: Task<TThis>) {
     const cluster = this._getCluster(task.priority);
     cluster.add(task);
   }
 
-  remove(task: Task) {
+  remove(task: TaskIdentity) {
     for (const cluster of [this._clusterBeforeComponentsLateUpdate, this._clusterAfterComponentsLateUpdate]) {
       const removed = cluster.remove(task);
       if (removed) {

@@ -139,36 +139,6 @@ export class PhysicsWorld2D {
     }
   }
 
-  private _step(stepFraction: number, isLastSubstep: boolean) {
-    const outdated = this._outDated;
-    this._outDated = false;
-
-    for (const component of this._physicsComponents) {
-      if (!component.enabled) {
-        continue;
-      }
-      invokeOnSyncTransforms(component, outdated, outdated);
-    }
-
-    for (const { component } of this._rigidBodies.values()) {
-      if (!component.enabled) {
-        continue;
-      }
-      component.applyKinematicTargetForStep_internal(stepFraction, isLastSubstep);
-    }
-
-    this._worldImpl.step(this._eventQueue);
-
-    for (const component of this._physicsComponents) {
-      if (!component.enabled) {
-        continue;
-      }
-      invokeOnAfterStep(component);
-    }
-
-    this._emitEvents();
-  }
-
   setOutdated() {
     this._outDated = true;
   }
@@ -421,10 +391,10 @@ export class PhysicsWorld2D {
       destroy(wakeUp: boolean) {
         this.removeCollider(wakeUp);
         if (!world._physicsComponents.delete(component)) {
-          logger.warn(`Collider ${component} not found in physics components`);
+          logger.warn(`Collider ${component.name} not found in physics components`);
         }
         if (!world._linkManager.removeCollider(component)) {
-          logger.warn(`Collider ${component} not found in link manager`);
+          logger.warn(`Collider ${component.name} not found in link manager`);
         }
       },
 
@@ -480,6 +450,36 @@ export class PhysicsWorld2D {
   private _outDated = false;
 
   private _emitterForWillDestroy = new ManagedEventEmitter();
+
+  private _step(stepFraction: number, isLastSubstep: boolean) {
+    const outdated = this._outDated;
+    this._outDated = false;
+
+    for (const component of this._physicsComponents) {
+      if (!component.enabled) {
+        continue;
+      }
+      invokeOnSyncTransforms(component, outdated, outdated);
+    }
+
+    for (const { component } of this._rigidBodies.values()) {
+      if (!component.enabled) {
+        continue;
+      }
+      component.applyKinematicTargetForStep_internal(stepFraction, isLastSubstep);
+    }
+
+    this._worldImpl.step(this._eventQueue);
+
+    for (const component of this._physicsComponents) {
+      if (!component.enabled) {
+        continue;
+      }
+      invokeOnAfterStep(component);
+    }
+
+    this._emitEvents();
+  }
 
   private _getTagBit(tag: string) {
     return this._tags[tag] ?? -1;

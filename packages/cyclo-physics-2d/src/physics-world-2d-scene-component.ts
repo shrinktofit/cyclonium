@@ -42,6 +42,10 @@ export class PhysicsWorld2DSceneComponent extends CycloComponent {
     this._settings = value;
   }
 
+  get physicsWorld() {
+    return this._physicsWorld;
+  }
+
   protected override onAwake(): void {
     if (!EDITOR_NOT_IN_PREVIEW) {
       const settings = this._settings ?? getDefaultSettings();
@@ -85,10 +89,6 @@ export class PhysicsWorld2DSceneComponent extends CycloComponent {
 
   protected override onUpdate(deltaTime: number): void {
     this._updateFrame(deltaTime);
-  }
-
-  get physicsWorld() {
-    return this._physicsWorld;
   }
 
   private _physicsWorld: PhysicsWorld2D | null = null;

@@ -74,6 +74,12 @@ export class CapsuleSceneQueryProbe2D extends SceneQueryProbe2D {
     drawCapsuleSceneQueryProbe2DGizmo(this);
   }
 
+  @serializable
+  private _radius = 1;
+
+  @serializable
+  private _halfHeight = 1;
+
   private _getUniformScale() {
     const scale = this.queryScale;
     if (scale.x !== scale.y) {
@@ -89,10 +95,4 @@ export class CapsuleSceneQueryProbe2D extends SceneQueryProbe2D {
       radius: this._radius * scale,
     };
   }
-
-  @serializable
-  private _radius = 1;
-
-  @serializable
-  private _halfHeight = 1;
 }

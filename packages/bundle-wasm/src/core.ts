@@ -79,7 +79,7 @@ export function core(opts: {
     async load(id) {
       if (id.startsWith(wasmBinaryPathPrefix)) {
         const wasmBinaryPath = id.slice(wasmBinaryPathPrefix.length);
-        let wasmBinaryRef = '';
+        let wasmBinaryRef: string;
         if (opts.test) {
           wasmBinaryRef = JSON.stringify('/@fs/' + wasmBinaryPath.replaceAll('\\', '/'));
         } else {

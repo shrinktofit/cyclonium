@@ -56,12 +56,12 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
     'pal/env',
     'pal/screen-adapter',
   ]);
-  const vendorResolve = systemJsPrototype.resolve ?? System.resolve;
+  const vendorResolve = systemJsPrototype.resolve?.bind(systemJsPrototype) ?? System.resolve.bind(System);
   systemJsPrototype.resolve = function (id: string, parentUrl?: string) {
     if (virtualPalModules.has(id)) {
       return id;
     }
-    return vendorResolve.call(this, id, parentUrl);
+    return vendorResolve(id, parentUrl);
   };
 
   const vendorSystemInstantiate = systemJsPrototype.instantiate;
@@ -90,7 +90,9 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
         [],
         () => {
           return {
-            execute: () => {},
+            execute: () => {
+              // Virtual prerequisite modules intentionally have no side effects.
+            },
           };
         },
       ];
@@ -163,7 +165,7 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
         url = `assets/${bundleName}`;
       }
     }
-    const version = opts?.version || downloader.bundleVers[bundleName];
+    const version = opts?.version ?? downloader.bundleVers[bundleName];
     const config = `${url}/config.${version ? `${version}.` : ''}json`;
     const configJson = await internalDownloader.downloadJson(config, opts) as BundleConfigOptions;
     const configJsonModified: BundleConfigOptions = {
@@ -285,20 +287,20 @@ function polyfill(opts: InitOptionsEditorPreviewBased) {
 
 function polyfillCanvasSelectors() {
   const vendorGetElementById = document.getElementById.bind(document);
-  document.getElementById = ((elementId: string) => {
+  document.getElementById = (elementId: string) => {
     if (elementId === 'GameCanvas') {
       return getCurrentGameCanvas() ?? vendorGetElementById(elementId);
     }
     return vendorGetElementById(elementId);
-  }) as typeof document.getElementById;
+  };
 
   const vendorQuerySelector = document.querySelector.bind(document);
-  document.querySelector = ((selectors: string) => {
+  document.querySelector = (selectors: string) => {
     if (selectors === '#GameCanvas') {
       return getCurrentGameCanvas() ?? vendorQuerySelector(selectors);
     }
     return vendorQuerySelector(selectors);
-  }) as typeof document.querySelector;
+  };
 }
 
 function getCurrentGameCanvas(): HTMLCanvasElement | undefined {

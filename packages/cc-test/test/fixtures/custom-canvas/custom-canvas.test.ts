@@ -116,7 +116,7 @@ function snapshotCanvas(element: HTMLElement | null | undefined): object {
 
 function snapshotElementStyle(element: HTMLElement | null | undefined): object {
   expect(element).toBeInstanceOf(HTMLElement);
-  const style = (element as HTMLElement).style;
+  const style = (element!).style;
   return {
     margin: style.margin,
     padding: style.padding,

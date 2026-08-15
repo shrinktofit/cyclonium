@@ -23,11 +23,12 @@ function evaluateSettingsScript(script: string): SettingsJSON {
     _CCSettings?: unknown;
   };
   // Cocos preview returns JS like `window._CCSettings = {...}`, not a JSON response.
+  // eslint-disable-next-line @typescript-eslint/no-implied-eval -- The editor endpoint deliberately returns executable JavaScript rather than JSON.
   new Function('window', script)(window);
 
   if (!window._CCSettings || typeof window._CCSettings !== 'object') {
     throw new Error(`Invalid editor preview settings script.`);
   }
 
-  return window._CCSettings as SettingsJSON;
+  return window._CCSettings;
 }

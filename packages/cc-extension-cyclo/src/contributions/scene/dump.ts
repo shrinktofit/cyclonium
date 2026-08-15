@@ -21,7 +21,7 @@ export function dumpEncode(value: unknown) {
   } else if (value instanceof Asset) {
     return encodeAsset(value as unknown as Record<PropertyKey, unknown>);
   }
-  throw new Error(`Can not dump ${value}`);
+  throw new Error(`Can not dump ${String(value)}`);
 }
 
 export function applyDumpPatch(target: unknown, patch: Dump, path: string) {
@@ -31,7 +31,7 @@ export function applyDumpPatch(target: unknown, patch: Dump, path: string) {
 function dumpEncodeComponent(input: Record<PropertyKey, unknown>) {
   const constructor = input.constructor;
   if (typeof constructor !== 'function') {
-    throw new Error(`Can not dump ${constructor} since it has no constructor.`);
+    throw new Error(`Can not dump ${String(constructor)} since it has no constructor.`);
   }
   const attrs = CCClass.Attr.getClassAttrs(constructor);
   return encodeObject(input, attrs);
@@ -40,10 +40,10 @@ function dumpEncodeComponent(input: Record<PropertyKey, unknown>) {
 function encodeAsset(input: Record<PropertyKey, unknown>) {
   const constructor = input.constructor;
   if (typeof constructor !== 'function') {
-    throw new Error(`Can not dump ${constructor} since it has no constructor.`);
+    throw new Error(`Can not dump ${String(constructor)} since it has no constructor.`);
   }
   if (!('__props__' in constructor) || !Array.isArray(constructor.__props__)) {
-    throw new Error(`Can not dump ${constructor} since it has no __props__`);
+    throw new Error(`Can not dump ${constructor.name} since it has no __props__`);
   }
 
   const data: Dump = {

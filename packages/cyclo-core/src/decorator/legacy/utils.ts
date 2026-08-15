@@ -1,9 +1,9 @@
-export interface ShortenPropertyDecorator<TArgs extends any[]> {
+export interface ShortenPropertyDecorator<TArgs extends unknown[]> {
   (...args: TArgs): PropertyDecorator;
-  (target: Object, propertyKey: string | symbol): void;
+  (target: object, propertyKey: string | symbol): void;
 }
 
-export function defineShortenPropertyDecorator<TArgs extends any[]>(
+export function defineShortenPropertyDecorator<TArgs extends unknown[]>(
   decorator: (...args: TArgs) => PropertyDecorator,
   ...defaultArgs: TArgs
 ): ShortenPropertyDecorator<TArgs> {
@@ -11,7 +11,7 @@ export function defineShortenPropertyDecorator<TArgs extends any[]>(
     if (args.length === 0) {
       // @x()
       return decorator(...defaultArgs);
-    } else if (!(typeof args[0] === 'object' && args[0] && typeof args[1] === 'string' || typeof args[1] === 'symbol')) {
+    } else if (!((typeof args[0] === 'object' && args[0] && typeof args[1] === 'string') || typeof args[1] === 'symbol')) {
       // @x(opts)
       return decorator(...(args as TArgs));
     } else {

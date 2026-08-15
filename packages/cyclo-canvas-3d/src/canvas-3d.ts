@@ -252,7 +252,7 @@ export class Canvas3D {
   private readonly _w2: Canvas3DW2Impl;
   private readonly _w3: Canvas3DW3Impl;
   private readonly _drawCommands: DrawCommand[] = [];
-  private readonly _materials: Map<string, Material> = new Map();
+  private readonly _materials = new Map<string, Material>();
   private _renderRecord: RenderRecord | undefined = undefined;
 
   private readonly _enqueueGeometry: EnqueueGeometry = (geometry, options = defaultDrawOptions) => {
@@ -299,8 +299,7 @@ export class Canvas3D {
   }
 
   private _canReuseRenderRecord(renderScene: renderer.RenderScene): boolean {
-    return this._renderRecord !== undefined
-      && this._renderRecord.renderScene === renderScene
+    return this._renderRecord?.renderScene === renderScene
       && this._renderRecord.renderingSubMeshRecords.length === this._drawCommands.length;
   }
 

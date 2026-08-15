@@ -177,7 +177,7 @@ export class FixtureReporter extends DefaultReporter {
       return messages;
     }
     if (typeof messages[0] === 'string') {
-      return messages.map((m) => `[${this._fixtureName}] ${m}`);
+      return messages.map((message) => `[${this._fixtureName}] ${String(message)}`);
     }
     return [`[${this._fixtureName}]`, ...messages];
   }
@@ -233,6 +233,6 @@ export class FixtureRunResult {
   }
 
   private _collectErrorsInTestCase(testCase: TestCase) {
-    this._errors.push(...(testCase.result().errors || []));
+    this._errors.push(...(testCase.result().errors ?? []));
   }
 }

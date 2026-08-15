@@ -15,9 +15,7 @@ export interface ExtensionContributions {
       readonly?: boolean;
     };
 
-    'global-hook'?: Array<
-      'beforePreStart' | 'afterPreStart'
-    >;
+    'global-hook'?: Array<'beforePreStart' | 'afterPreStart'>;
   };
 
   'builder'?: string;

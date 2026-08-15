@@ -2,11 +2,11 @@ import { approxEqual } from './number.js';
 import { Vec2 } from './vec2.js';
 
 export class Mat3 {
-  public static ZERO = Object.freeze(new Mat3(
+  static ZERO = Object.freeze(new Mat3(
     0, 0, 0, 0, 0, 0, 0, 0, 0,
   ));
 
-  public static IDENTITY = Object.freeze(new Mat3(
+  static IDENTITY = Object.freeze(new Mat3(
     1, 0, 0, 0, 1, 0, 0, 0, 1,
   ));
 

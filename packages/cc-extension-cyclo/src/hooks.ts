@@ -5,15 +5,15 @@ import { mergeContributions, type ExtensionContributions } from '@cyclonium/cc-e
 import assetDBContributionScript from './contributions/asset-db/register.js?contribution-script';
 import sceneContributionScript from './contributions/scene/contribution.js?contribution-script';
 
-export async function register(info: {
+export function register(info: {
   contributions: ExtensionContributions;
-}) {
-  const contributions = await getContributions();
+}): void {
+  const contributions = getContributions();
   mergeContributions(info.contributions ??= {}, contributions);
   logger.debug(`registered contributions: ${JSON.stringify(contributions, undefined, 2)}`);
 }
 
-async function getContributions(): Promise<ExtensionContributions> {
+function getContributions(): ExtensionContributions {
   return {
     'asset-db': {
       'script': assetDBContributionScript,
