@@ -1,9 +1,6 @@
 name: Release npm packages
 
 on:
-  pull_request:
-    branches:
-      - main
   push:
     branches:
       - main
@@ -16,46 +13,24 @@ permissions:
   id-token: write
 
 jobs:
-  validate:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          package-manager-cache: false
-
-      - name: Enable pnpm
-        run: corepack enable
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build workspace
-        run: pnpm build
-
   release:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
+      - uses: pnpm/action-setup@v6
+
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 26
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
-      - name: Enable pnpm
-        run: corepack enable
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build workspace
-        run: pnpm build
+        run: node --run build
 
       - name: Create version pull request or publish
         id: changesets
