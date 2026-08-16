@@ -1,6 +1,19 @@
 /// <reference types="./node_modules/@cocos/creator-types/engine.d.ts" />
 
 declare module 'cc' {
+  export namespace _decorator {
+    export function editable(
+      target: object,
+      propertyKey: string | symbol,
+      descriptorOrInitializer?: PropertyDescriptor | (() => unknown) | null,
+    ): void;
+    export function serializable(
+      target: object,
+      propertyKey: string | symbol,
+      descriptorOrInitializer?: PropertyDescriptor | (() => unknown) | null,
+    ): void;
+  }
+
   export namespace componentEditorTraits {
     export interface BoundingComponent extends Component {
       [BoundingComponent.Tags.getBoundingBox](): geometry.AABB | undefined;

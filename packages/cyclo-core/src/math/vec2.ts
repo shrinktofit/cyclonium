@@ -1,14 +1,14 @@
 import { Vec2, v2 } from '@cyclonium/math/vec2';
 import { applyLegacyDecorators } from '../decorator/legacy/apply-legacy-decorators.ts';
-import { editable, cycloBuiltinClass, serializable } from '../decorator/legacy/legacy-general-decorator.ts';
+import { editable, cycloBuiltinClass, stored } from '../decorator/legacy/legacy-general-decorator.ts';
 import * as cc from 'cc';
 
 applyLegacyDecorators(Vec2, {
   classDecorators: [cycloBuiltinClass('Vec2')],
   // @ts-expect-error -- Legacy decorators require metadata for Vec2 fields declared by another package.
   propertyDecorators: {
-    x: [serializable, editable],
-    y: [serializable, editable],
+    x: [stored, editable],
+    y: [stored, editable],
   },
 });
 

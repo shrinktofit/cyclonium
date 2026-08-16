@@ -1,4 +1,4 @@
-import { editable, idem, idemBy, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, idem, idemBy, stored } from '@cyclonium/core/legacy-decorator';
 import { Vec2 } from '@cyclonium/core/math/vec2';
 import { fromPx2ImplVec2, toPx2ImplVec2 } from './exchange.js';
 import { px2Impl } from './px2-impl.js';
@@ -245,40 +245,40 @@ export class KinematicCharacterController2D extends PhysicsComponent2DBase {
 
   private _impl: px2Impl.KinematicCharacterController | undefined;
 
-  @serializable
+  @stored
   private _skinWidth = 0.01;
 
-  @serializable
+  @stored
   private _up = Vec2.UNIT_Y.clone();
 
-  @serializable
+  @stored
   private _slideEnabled = true;
 
-  @serializable
+  @stored
   private _minSlopeSlideAngle = toRadians(30);
 
-  @serializable
+  @stored
   private _maxSlopeClimbAngle = toRadians(45);
 
-  @serializable
+  @stored
   private _autoStepEnabled = true;
 
-  @serializable
+  @stored
   private _autoStepMaxHeight = 0.1;
 
-  @serializable
+  @stored
   private _autoStepMinWidth = 0.1;
 
-  @serializable
+  @stored
   private _autoStepIncludeDynamicBodies = false;
 
-  @serializable
+  @stored
   private _snapToGroundEnabled = true;
 
-  @serializable
+  @stored
   private _snapToGroundDistance = 0.1;
 
-  @serializable
+  @stored
   private _applyImpulsesToDynamicBodies = false;
 
   private _lastMovement = Vec2.ZERO.clone();

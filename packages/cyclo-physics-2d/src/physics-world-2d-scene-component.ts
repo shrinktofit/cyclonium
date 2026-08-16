@@ -1,5 +1,5 @@
 import { EDITOR_NOT_IN_PREVIEW } from 'cc/env';
-import { editable, executionOrder, idem, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, executionOrder, idem, stored } from '@cyclonium/core/legacy-decorator';
 import { CycloComponent, PredefinedExecutionOrder } from '@cyclonium/core/framework';
 import { director } from 'cc';
 import { cycloBuiltinClass, TimeAccumulator } from '@cyclonium/core/internal';
@@ -103,10 +103,10 @@ export class PhysicsWorld2DSceneComponent extends CycloComponent {
 
   private _overloading = false;
 
-  @serializable
+  @stored
   private _debug = false;
 
-  @serializable
+  @stored
   private _settings: Physics2DSettings | null = null;
 
   private _updateFrame(deltaTime: number) {

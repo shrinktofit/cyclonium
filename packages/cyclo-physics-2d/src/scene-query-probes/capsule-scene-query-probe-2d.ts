@@ -1,4 +1,4 @@
-import { editable, executeInEditMode, idem, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, executeInEditMode, idem, stored } from '@cyclonium/core/legacy-decorator';
 import { cycloBuiltinClass } from '@cyclonium/core/internal';
 import { Vec2 } from '@cyclonium/core/math/vec2';
 import { drawCapsuleSceneQueryProbe2DGizmo } from '#gizmo';
@@ -74,10 +74,10 @@ export class CapsuleSceneQueryProbe2D extends SceneQueryProbe2D {
     drawCapsuleSceneQueryProbe2DGizmo(this);
   }
 
-  @serializable
+  @stored
   private _radius = 1;
 
-  @serializable
+  @stored
   private _halfHeight = 1;
 
   private _getUniformScale() {

@@ -1,16 +1,16 @@
 import { Asset, CCInteger } from 'cc';
-import { editable, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, stored } from '@cyclonium/core/legacy-decorator';
 import { cycloBuiltinClass } from '@cyclonium/core/internal';
 import { CollisionMatrix } from './collision-matrix.js';
 import { dumpRaw } from '@cyclonium/core/utils';
 
 @cycloBuiltinClass('Physics2DSettings')
 export class Physics2DSettings extends Asset {
-  @serializable
+  @stored
   @editable({ min: 1 })
   fps = 60;
 
-  @serializable
+  @stored
   @editable({ type: CCInteger, min: 1, step: 1 })
   maxSubsteps = 4;
 
@@ -27,10 +27,10 @@ export class Physics2DSettings extends Asset {
     return this._tags[tag] ?? -1;
   }
 
-  @serializable
+  @stored
   private _tags: Record<string, number> = {};
 
-  @serializable
+  @stored
   private _collisionMatrix = new CollisionMatrix();
 
   @editable

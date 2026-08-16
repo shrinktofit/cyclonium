@@ -1,7 +1,7 @@
 import { CCString } from 'cc';
 import { EDITOR_NOT_IN_PREVIEW } from 'cc/env';
 import { Transform2DComponent } from '@cyclonium/core/2d';
-import { editable, idem, requiresComponent, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, idem, requiresComponent, stored } from '@cyclonium/core/legacy-decorator';
 import { cycloBuiltinClass } from '@cyclonium/core/internal';
 import { Vec2 } from '@cyclonium/core/math/vec2';
 import { PhysicsComponent2DBase } from './physics-component-2d-base.js';
@@ -197,22 +197,22 @@ export abstract class SceneQueryProbe2D extends PhysicsComponent2DBase {
     }
   }
 
-  @serializable
+  @stored
   private _targetTags: string[] = [];
 
-  @serializable
+  @stored
   private _dynamics = true;
 
-  @serializable
+  @stored
   private _fixed = true;
 
-  @serializable
+  @stored
   private _kinematics = true;
 
-  @serializable
+  @stored
   private _sensors = true;
 
-  @serializable
+  @stored
   private _solids = true;
 
   private _filterCache: SceneQueryFilter | undefined = undefined;

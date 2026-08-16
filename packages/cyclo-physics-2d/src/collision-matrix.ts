@@ -1,4 +1,4 @@
-import { editable, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, stored } from '@cyclonium/core/legacy-decorator';
 import { cycloBuiltinClass } from '@cyclonium/core/internal';
 import { dumpRaw } from '@cyclonium/core/utils';
 
@@ -38,7 +38,7 @@ export class CollisionMatrix {
     return bits;
   }
 
-  @serializable
+  @stored
   private _values: boolean[] = new Array<boolean>(EXTENT * (EXTENT + 1) / 2).fill(false);
 
   @editable
