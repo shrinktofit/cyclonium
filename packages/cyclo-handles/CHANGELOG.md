@@ -1,5 +1,13 @@
 # @cyclonium/handles
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [84ebc9a]
+  - @cyclonium/core@1.0.0
+  - @cyclonium/canvas-3d@1.0.0
+
 ## 0.0.105
 
 ### Patch Changes
