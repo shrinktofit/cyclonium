@@ -1,7 +1,7 @@
 /// <meta "uuid"="d716c0b9-0a04-4247-b7a1-21f76bbf0e3b"/>
 
 import { CycloComponent } from '@cyclonium/core/framework';
-import { editable, executeInEditMode, cycloClass, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, executeInEditMode, cycloClass, stored } from '@cyclonium/core/legacy-decorator';
 import { SortingTreeGroup } from './sortable.js';
 import { SortSettings } from './sort-settings.js';
 
@@ -29,6 +29,6 @@ export class SortingGroup extends CycloComponent implements SortingTreeGroup {
     this._sortSettings.disconnect();
   }
 
-  @serializable
+  @stored
   private _sortSettings = new SortSettings();
 }

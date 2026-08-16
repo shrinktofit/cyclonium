@@ -71,7 +71,7 @@ const cycloBuiltinClass = createScopedCycloClassDecorator({
 
 export { cycloClass, cycloBuiltinClass };
 
-export const serializable = _decorator.property;
+export const stored: PropertyDecorator = _decorator.serializable;
 
 /**
  * Marks that the property's default value might vary between instances.

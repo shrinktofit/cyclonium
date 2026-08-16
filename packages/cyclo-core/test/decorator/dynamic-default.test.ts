@@ -4,14 +4,18 @@ import {
   dynamicDefault,
   editable,
   cycloClass,
-  serializable,
+  stored,
 } from '@/export/legacy-decorator.js';
 
 describe('dynamicDefault', () => {
-  it('should clear the captured default for serializable properties', () => {
+  it('should clear the captured default for stored properties', () => {
+    /// @case
+    /// A stored property has a per-instance dynamic initializer and is finalized by `cycloClass`.
+    /// @expect
+    /// Its captured reusable default is cleared while the property remains registered with CCClass.
     @cycloClass(nextClassName('SerializableDynamicDefault'))
     class Target {
-      @serializable
+      @stored
       @dynamicDefault
       value = Math.random();
     }
@@ -21,6 +25,10 @@ describe('dynamicDefault', () => {
   });
 
   it('should clear the captured default for editable properties', () => {
+    /// @case
+    /// An editable property has a per-instance dynamic initializer and is finalized by `cycloClass`.
+    /// @expect
+    /// Its captured reusable default is cleared while the property remains registered with CCClass.
     @cycloClass(nextClassName('EditableDynamicDefault'))
     class Target {
       @editable
@@ -33,6 +41,10 @@ describe('dynamicDefault', () => {
   });
 
   it('should clear the captured default for properties only marked as dynamic default', () => {
+    /// @case
+    /// A property is marked only as dynamic-default before its class is finalized by `cycloClass`.
+    /// @expect
+    /// CCClass receives an explicit undefined default without storage or Inspector metadata being required.
     @cycloClass(nextClassName('OnlyDynamicDefault'))
     class Target {
       @dynamicDefault
@@ -44,6 +56,10 @@ describe('dynamicDefault', () => {
   });
 
   it('should not apply dynamic defaults when the class is not finalized by cycloClass', () => {
+    /// @case
+    /// A property is marked as dynamic-default but its class is never finalized by `cycloClass`.
+    /// @expect
+    /// The plain class is not registered and no CCClass default metadata is written.
     class Target {
       @dynamicDefault
       value = Math.random();

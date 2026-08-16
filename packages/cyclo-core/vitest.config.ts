@@ -29,6 +29,10 @@ export default defineConfig({
         plugins: [
           ...ccTest({
             defaultStrategy: 'standalone',
+            configure: {
+              DEV: true,
+              TEST: true,
+            },
           }),
         ],
       },

@@ -1,4 +1,4 @@
-import { editable, executeInEditMode, idem, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, executeInEditMode, idem, stored } from '@cyclonium/core/legacy-decorator';
 import { Collider2D } from '../collider-2d.js';
 import { px2Impl } from '../px2-impl.js';
 import { EDITOR_NOT_IN_PREVIEW } from 'cc/env';
@@ -59,10 +59,10 @@ export class CapsuleCollider2D extends Collider2D {
     this._implCollider?.setRadius(this._getRadius());
   }
 
-  @serializable
+  @stored
   private _radius = 1;
 
-  @serializable
+  @stored
   private _halfHeight = 1;
 
   private _getRadius() {

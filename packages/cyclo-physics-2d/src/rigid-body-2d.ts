@@ -1,5 +1,5 @@
 import { Transform2DComponent, TransformChangeFlagsObserver, TransformFlag } from '@cyclonium/core/2d';
-import { designType, editable, idem, requiresComponent, serializable } from '@cyclonium/core/legacy-decorator';
+import { designType, editable, idem, requiresComponent, stored } from '@cyclonium/core/legacy-decorator';
 import { Vec2 } from '@cyclonium/core/math/vec2';
 import { fromPx2ImplVec2, toPx2ImplVec2 } from './exchange.js';
 import { px2Impl } from './px2-impl.js';
@@ -286,19 +286,19 @@ export class RigidBody2D extends PhysicsComponent2DBase {
 
   private _rigidBodyControlBlock: RigidBody2DControlBlock | null = null;
 
-  @serializable
+  @stored
   private _tags: string[] = [];
 
-  @serializable
+  @stored
   private _type: RigidBody2DType = defaultBodyType;
 
-  @serializable
+  @stored
   private _ccd = false;
 
-  @serializable
+  @stored
   private _gravityScale = 1.0;
 
-  @serializable
+  @stored
   private _collisionTargetTypeFilter = getDefaultCollisionTargetTypeFilterOf(defaultBodyType);
 
   private _physicsPosition = new Vec2();

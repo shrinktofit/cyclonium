@@ -1,4 +1,4 @@
-import { editable, executeInEditMode, idem, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, executeInEditMode, idem, stored } from '@cyclonium/core/legacy-decorator';
 import { cycloBuiltinClass } from '@cyclonium/core/internal';
 import { Vec2 } from '@cyclonium/core/math/vec2';
 import { drawBoxSceneQueryProbe2DGizmo } from '#gizmo';
@@ -53,7 +53,7 @@ export class BoxSceneQueryProbe2D extends SceneQueryProbe2D {
     drawBoxSceneQueryProbe2DGizmo(this);
   }
 
-  @serializable
+  @stored
   private _halfExtents = new Vec2(1, 1);
 
   private _scaledHalfExtents = new Vec2();

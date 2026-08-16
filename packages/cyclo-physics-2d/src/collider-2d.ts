@@ -1,5 +1,5 @@
 import { Transform2DComponent, TransformChangeFlagsObserver, TransformFlag } from '@cyclonium/core/2d';
-import { editable, requiresComponent, serializable } from '@cyclonium/core/legacy-decorator';
+import { editable, requiresComponent, stored } from '@cyclonium/core/legacy-decorator';
 import { cycloBuiltinClass } from '@cyclonium/core/internal';
 import { Vec2 } from '@cyclonium/core/math/vec2';
 import { type Contact2DInfo } from './contact.js';
@@ -295,10 +295,10 @@ export abstract class Collider2D extends PhysicsComponent2DBase {
     implCollider.setShape(shape);
   }
 
-  @serializable
+  @stored
   private _isSensor = false;
 
-  @serializable
+  @stored
   private _center = new Vec2();
 
   private _handle: Collider2DHandle | null = null;

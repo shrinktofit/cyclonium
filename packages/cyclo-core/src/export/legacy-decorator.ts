@@ -7,7 +7,7 @@ export {
   dynamicDefault,
   idem,
   idemBy,
-  serializable,
+  stored,
   type CycloClassOptions,
   type CycloClassDecorator,
 } from '../decorator/legacy/legacy-general-decorator.ts';

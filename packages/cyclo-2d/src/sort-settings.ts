@@ -1,4 +1,4 @@
-import { cycloClass, editable, idem, designType, serializable } from '@cyclonium/core/legacy-decorator';
+import { cycloClass, editable, idem, designType, stored } from '@cyclonium/core/legacy-decorator';
 import { CCInteger } from 'cc';
 import { MIN_ORDER_IN_LAYER, MAX_ORDER_IN_LAYER, type SortableRenderer, type SortingTreeGroup } from './sortable.js';
 import { SortingLayer } from './sorting-layer.js';
@@ -53,10 +53,10 @@ export class SortSettings {
     this._sortingTreeNode = undefined;
   }
 
-  @serializable
+  @stored
   private _sortingLayer = 0;
 
-  @serializable
+  @stored
   private _orderInLayer = 0;
 
   private _sortingTreeNode: SortingTreeNode | undefined = undefined;

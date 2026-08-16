@@ -1,7 +1,7 @@
 /// <meta "uuid"="1ca96b17-efb6-4805-961e-17c292d0840f"/>
 
 import { CycloComponent } from '@cyclonium/core/framework';
-import { designType, editable, executeInEditMode, cycloClass, idem, serializable } from '@cyclonium/core/legacy-decorator';
+import { designType, editable, executeInEditMode, cycloClass, idem, stored } from '@cyclonium/core/legacy-decorator';
 import { Material, Color, renderer, RenderingSubMesh, gfx, EffectAsset, Vec3, componentEditorTraits, geometry, assetManager, type Asset } from 'cc';
 import { assert, markEnum } from '@cyclonium/core/utils';
 import { logger } from '@cyclonium/core/log';
@@ -67,12 +67,11 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
     }
   }
 
+  @stored
   @editable
-  @serializable
   debugShowNormals = false;
 
   @editable
-  @serializable
   @designType(SpriteRenderType)
   @idem
   get renderType() {
@@ -212,22 +211,22 @@ export class SpriteRenderer extends CycloComponent implements SortableRenderer {
     }
   }
 
-  @serializable
+  @stored
   private _renderType = SpriteRenderType.simple;
 
-  @serializable
+  @stored
   private readonly _color = new Color(Color.WHITE);
 
-  @serializable
+  @stored
   private _sprite: Sprite | undefined = undefined;
 
-  @serializable
+  @stored
   private _geometryScale = 1;
 
-  @serializable
+  @stored
   private _material: Material | null = null;
 
-  @serializable
+  @stored
   private _sortSettings = new SortSettings();
 
   private _renderRecord: RenderRecord | null = null;
