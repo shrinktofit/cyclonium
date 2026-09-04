@@ -19,6 +19,10 @@ export namespace executionOrder {
   }
 }
 
+export const disallowMultiple = defineComponentDecoratorWithOptionalBoolean((target, value) => {
+  _decorator.disallowMultiple(value)(target);
+});
+
 export const executeInEditMode = defineComponentDecoratorWithOptionalBoolean((target, value) => {
   _decorator.executeInEditMode(value)(target);
 });

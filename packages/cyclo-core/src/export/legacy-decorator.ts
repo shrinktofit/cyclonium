@@ -13,6 +13,7 @@ export {
 } from '../decorator/legacy/legacy-general-decorator.ts';
 
 export {
+  disallowMultiple,
   executionOrder,
   executeInEditMode,
   requiresComponent,
