@@ -1,5 +1,11 @@
 # @cyclonium/core
 
+## 1.0.1
+
+### Patch Changes
+
+- 486645f: Add `ModelRendererSorting` to connect Cocos `ModelRenderer` components to Cyclo sorting layers, and expose the `disallowMultiple` component decorator from Cyclo Core.
+
 ## 1.0.0
 
 ### Major Changes

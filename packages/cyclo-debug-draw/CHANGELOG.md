@@ -1,5 +1,12 @@
 # @cyclonium/debug-draw
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [486645f]
+  - @cyclonium/core@1.0.1
+
 ## 1.0.0
 
 ### Patch Changes
