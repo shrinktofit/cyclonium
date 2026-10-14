@@ -1,5 +1,13 @@
 # @cyclonium/2d
 
+## 3.1.1
+
+### Patch Changes
+
+- Updated dependencies [8d3cd9f]
+  - @cyclonium/core@1.0.2
+  - @cyclonium/editor@1.0.2
+
 ## 3.1.0
 
 ### Minor Changes
