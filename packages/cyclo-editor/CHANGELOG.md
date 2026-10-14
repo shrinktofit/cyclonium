@@ -1,5 +1,14 @@
 # @cyclonium/editor
 
+## 1.0.2
+
+### Patch Changes
+
+- 8d3cd9f: Provide the typed `CCObject.objectFlags` polyfill through `@cyclonium/core/cc-polyfills/object-flag` and automatically load it from framework and editor. Editor object flags now update the engine without requiring a project-owned polyfill.
+- Updated dependencies [8d3cd9f]
+  - @cyclonium/core@1.0.2
+  - @cyclonium/handles@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes
