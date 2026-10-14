@@ -1,3 +1,5 @@
+import '../cc-polyfills/object-flag.js';
+
 export { CycloComponent } from '../framework/component.ts';
 export {
   nextFrame,

@@ -1,4 +1,5 @@
 import { CCObject, Component, director, Node, System } from 'cc';
+import '@cyclonium/core/cc-polyfills/object-flag';
 import EventEmitter from 'node:events';
 import { SceneGuiContext } from './scene-gui-context.js';
 import { HandleEditorInput } from './handle-editor-input.js';
