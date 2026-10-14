@@ -13,6 +13,7 @@
     "skipLibCheck": true,
   },
   "references": [
+    { "path": "../cyclo-core/tsconfig.json" },
     { "path": "../cyclo-handles/tsconfig.json" },
   ],
 }

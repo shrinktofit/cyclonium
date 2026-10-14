@@ -11,6 +11,7 @@
     "lib/**/*{.js,.d.ts}"
   ],
   "exports": {
+    "./cc-polyfills/object-flag": "./lib/cc-polyfills/object-flag.js",
     "./internal": "./lib/export/internal.js",
     "./framework": "./lib/export/framework.js",
     "./utils": "./lib/export/utils.js",
@@ -30,7 +31,7 @@
     "prepublishOnly": "npm run build --clean && npm run build",
     "build": "tsc -b",
     "dev": "tsc --watch",
-    "test": "npm run test:compile && npm run t",
+    "test": "node --run test:compile && node --run t",
     "test:compile": "tsc -b test/tsconfig.json",
     "t": "vitest run"
   },
