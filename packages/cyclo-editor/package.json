@@ -26,14 +26,14 @@
     "dev": "tsc -b --watch"
   },
   "dependencies": {
-    "@cyclonium/handles": "workspace:*"
+    "@cyclonium/handles": "workspace:^"
   },
   "peerDependencies": {
-    "@cyclonium/core": "workspace:*"
+    "@cyclonium/core": "workspace:^"
   },
   "devDependencies": {
-    "@cyclonium/workflow": "workspace:*",
-    "@cyclonium/types-cc": "workspace:*",
+    "@cyclonium/workflow": "workspace:^",
+    "@cyclonium/types-cc": "workspace:^",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

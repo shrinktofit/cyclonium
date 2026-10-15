@@ -1,5 +1,7 @@
 packages:
   - 'packages/*'
+saveWorkspaceProtocol: rolling
+savePrefix: '^'
 catalog:
   'vite': '^7.3.2'
   'vitest': '^4.1.5'

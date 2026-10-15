@@ -21,11 +21,11 @@
     "t": "vitest run"
   },
   "dependencies": {
-    "@cyclonium/abort-controller": "workspace:*",
-    "@cyclonium/algorithm": "workspace:*"
+    "@cyclonium/abort-controller": "workspace:^",
+    "@cyclonium/algorithm": "workspace:^"
   },
   "devDependencies": {
-    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/workflow": "workspace:^",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

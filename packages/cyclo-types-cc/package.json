@@ -9,7 +9,7 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@cyclonium/workflow": "workspace:*"
+    "@cyclonium/workflow": "workspace:^"
   },
   "dependencies": {
     "@cocos/creator-types": "^3.8.6"

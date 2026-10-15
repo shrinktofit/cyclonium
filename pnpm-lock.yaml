@@ -36,11 +36,14 @@ importers:
         specifier: ^2.29.5
         version: 2.29.5
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:packages/workflow
       '@shrinktofit/eslint-config':
         specifier: ^0.0.10
         version: 0.0.10(@typescript-eslint/parser@8.67.0(eslint@9.39.5(jiti@2.6.1))(typescript@6.0.3))(eslint@9.39.5(jiti@2.6.1))(ts-declaration-location@1.0.7(typescript@6.0.2))
+      cross-spawn:
+        specifier: ^7.0.6
+        version: 7.0.6
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.6.1)
@@ -61,7 +64,7 @@ importers:
         version: 5.0.2
     devDependencies:
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/ejs':
         specifier: ^3.1.5
@@ -85,7 +88,7 @@ importers:
   packages/cc-extension-cyclo:
     dependencies:
       '@cyclonium/cc-extension-utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cc-extension-utils
       fs-extra:
         specifier: ^11.3.0
@@ -107,13 +110,13 @@ importers:
         specifier: ^3.8.5
         version: 3.8.6
       '@cyclonium/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-core
       '@cyclonium/physics-2d':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-physics-2d
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/fs-extra':
         specifier: ^11.0.4
@@ -150,7 +153,7 @@ importers:
         specifier: ^3.8.5
         version: 3.8.6
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/fs-extra':
         specifier: ^11.0.4
@@ -171,17 +174,17 @@ importers:
   packages/cc-test:
     dependencies:
       '@cyclonium/bundle-wasm':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../bundle-wasm
       ejs:
         specifier: ^5.0.2
         version: 5.0.2
     devDependencies:
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/ejs':
         specifier: ^3.1.5
@@ -205,23 +208,23 @@ importers:
   packages/cyclo-2d:
     dependencies:
       '@cyclonium/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-core
     devDependencies:
       '@cyclonium/canvas-3d':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-canvas-3d
       '@cyclonium/cc-test':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cc-test
       '@cyclonium/editor':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-editor
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/node':
         specifier: 'catalog:'
@@ -246,7 +249,7 @@ importers:
         version: 3.0.0
     devDependencies:
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       typescript:
         specifier: 'catalog:'
@@ -255,7 +258,7 @@ importers:
   packages/cyclo-algorithm:
     devDependencies:
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/node':
         specifier: 'catalog:'
@@ -270,17 +273,17 @@ importers:
   packages/cyclo-canvas-3d:
     dependencies:
       '@cyclonium/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-core
     devDependencies:
       '@cyclonium/cc-test':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cc-test
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/node':
         specifier: 'catalog:'
@@ -301,23 +304,23 @@ importers:
   packages/cyclo-core:
     dependencies:
       '@cyclonium/abort-controller':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-abort-controller
       '@cyclonium/algorithm':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-algorithm
       '@cyclonium/math':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-math
     devDependencies:
       '@cyclonium/cc-test':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cc-test
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/node':
         specifier: 'catalog:'
@@ -332,17 +335,17 @@ importers:
   packages/cyclo-debug-draw:
     dependencies:
       '@cyclonium/algorithm':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-algorithm
       '@cyclonium/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-core
     devDependencies:
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       typescript:
         specifier: 'catalog:'
@@ -351,17 +354,17 @@ importers:
   packages/cyclo-editor:
     dependencies:
       '@cyclonium/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-core
       '@cyclonium/handles':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-handles
     devDependencies:
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/node':
         specifier: 'catalog:'
@@ -373,14 +376,14 @@ importers:
   packages/cyclo-event:
     dependencies:
       '@cyclonium/abort-controller':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-abort-controller
       '@cyclonium/algorithm':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-algorithm
     devDependencies:
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/node':
         specifier: 'catalog:'
@@ -395,17 +398,17 @@ importers:
   packages/cyclo-handles:
     dependencies:
       '@cyclonium/canvas-3d':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-canvas-3d
       '@cyclonium/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-core
     devDependencies:
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       typescript:
         specifier: 'catalog:'
@@ -414,7 +417,7 @@ importers:
   packages/cyclo-math:
     devDependencies:
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/node':
         specifier: 'catalog:'
@@ -429,32 +432,32 @@ importers:
   packages/cyclo-physics-2d:
     dependencies:
       '@cyclonium/algorithm':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-algorithm
       '@cyclonium/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-core
       '@cyclonium/debug-draw':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-debug-draw
       '@cyclonium/event':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-event
       '@cyclonium/rapier2d':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rapier
       '@cyclonium/web-assembly':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../web-assembly
     devDependencies:
       '@cyclonium/cc-test':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cc-test
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       '@types/fs-extra':
         specifier: ^11.0.4
@@ -482,19 +485,19 @@ importers:
         version: 3.8.7
     devDependencies:
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
 
   packages/fetch:
     devDependencies:
       '@cyclonium/minigame-globals':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../minigame-globals
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       minigame-api-typings:
         specifier: ^3.8.11
@@ -509,10 +512,10 @@ importers:
   packages/minigame-globals:
     devDependencies:
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       minigame-api-typings:
         specifier: ^3.8.11
@@ -542,10 +545,10 @@ importers:
   packages/text-encoding:
     devDependencies:
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       minigame-api-typings:
         specifier: ^3.8.11
@@ -557,10 +560,10 @@ importers:
   packages/web-assembly:
     devDependencies:
       '@cyclonium/types-cc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../cyclo-types-cc
       '@cyclonium/workflow':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../workflow
       minigame-api-typings:
         specifier: ^3.8.11

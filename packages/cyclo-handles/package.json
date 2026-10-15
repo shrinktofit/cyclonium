@@ -22,14 +22,14 @@
     "dev": "tsc -b --watch"
   },
   "peerDependencies": {
-    "@cyclonium/core": "workspace:*"
+    "@cyclonium/core": "workspace:^"
   },
   "dependencies": {
-    "@cyclonium/canvas-3d": "workspace:*"
+    "@cyclonium/canvas-3d": "workspace:^"
   },
   "devDependencies": {
-    "@cyclonium/workflow": "workspace:*",
-    "@cyclonium/types-cc": "workspace:*",
+    "@cyclonium/workflow": "workspace:^",
+    "@cyclonium/types-cc": "workspace:^",
     "typescript": "catalog:"
   }
 }

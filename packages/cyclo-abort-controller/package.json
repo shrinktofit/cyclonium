@@ -28,7 +28,7 @@
     "abort-controller": "^3.0.0"
   },
   "devDependencies": {
-    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/workflow": "workspace:^",
     "typescript": "catalog:"
   }
 }

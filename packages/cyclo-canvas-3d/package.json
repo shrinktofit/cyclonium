@@ -23,12 +23,12 @@
     "t": "npm run test:browser -- run --browser.headless=true"
   },
   "peerDependencies": {
-    "@cyclonium/core": "workspace:*"
+    "@cyclonium/core": "workspace:^"
   },
   "devDependencies": {
-    "@cyclonium/cc-test": "workspace:*",
-    "@cyclonium/workflow": "workspace:*",
-    "@cyclonium/types-cc": "workspace:*",
+    "@cyclonium/cc-test": "workspace:^",
+    "@cyclonium/workflow": "workspace:^",
+    "@cyclonium/types-cc": "workspace:^",
     "@types/node": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "playwright": "catalog:",
