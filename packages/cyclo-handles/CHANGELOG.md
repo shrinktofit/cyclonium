@@ -1,5 +1,14 @@
 # @cyclonium/handles
 
+## 1.0.3
+
+### Patch Changes
+
+- 3e1008f: Publish internal workspace dependencies and peers with caret ranges instead of exact versions. Preserve local workspace linking and each dependency's current minimum compatible version.
+- Updated dependencies [3e1008f]
+  - @cyclonium/canvas-3d@1.0.3
+  - @cyclonium/core@1.0.3
+
 ## 1.0.2
 
 ### Patch Changes

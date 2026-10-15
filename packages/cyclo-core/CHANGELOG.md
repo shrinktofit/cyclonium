@@ -1,5 +1,15 @@
 # @cyclonium/core
 
+## 1.0.3
+
+### Patch Changes
+
+- 3e1008f: Publish internal workspace dependencies and peers with caret ranges instead of exact versions. Preserve local workspace linking and each dependency's current minimum compatible version.
+- Updated dependencies [3e1008f]
+  - @cyclonium/abort-controller@0.0.103
+  - @cyclonium/algorithm@1.0.1
+  - @cyclonium/math@0.0.105
+
 ## 1.0.2
 
 ### Patch Changes

@@ -10,7 +10,7 @@
   "exm": {
     "registryPackageName": "@cyclonium/extension-cyclo"
   },
-  "version": "0.0.100",
+  "version": "0.0.101",
   "type": "module",
   "package_version": 2,
   "editor": ">=3.8.5",
