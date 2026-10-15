@@ -27,8 +27,8 @@
     "test:browser:dev": "vitest"
   },
   "peerDependencies": {
-    "@cyclonium/core": "workspace:*",
-    "@cyclonium/editor": "workspace:*"
+    "@cyclonium/core": "workspace:^",
+    "@cyclonium/editor": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@cyclonium/editor": {
@@ -36,11 +36,11 @@
     }
   },
   "devDependencies": {
-    "@cyclonium/canvas-3d": "workspace:*",
-    "@cyclonium/cc-test": "workspace:*",
-    "@cyclonium/editor": "workspace:*",
-    "@cyclonium/workflow": "workspace:*",
-    "@cyclonium/types-cc": "workspace:*",
+    "@cyclonium/canvas-3d": "workspace:^",
+    "@cyclonium/cc-test": "workspace:^",
+    "@cyclonium/editor": "workspace:^",
+    "@cyclonium/workflow": "workspace:^",
+    "@cyclonium/types-cc": "workspace:^",
     "@types/node": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "playwright": "catalog:",

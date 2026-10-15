@@ -32,9 +32,9 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/workflow": "workspace:^",
     "@types/ejs": "^3.1.5",
-    "@cyclonium/types-cc": "workspace:*",
+    "@cyclonium/types-cc": "workspace:^",
     "@types/node": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "playwright": "catalog:",
@@ -45,7 +45,7 @@
     "vitest": "*"
   },
   "dependencies": {
-    "@cyclonium/bundle-wasm": "workspace:*",
+    "@cyclonium/bundle-wasm": "workspace:^",
     "ejs": "^5.0.2"
   }
 }

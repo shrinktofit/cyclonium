@@ -30,6 +30,7 @@ export default defineConfig([
           allowDefaultProject: [
             'env.d.ts',
             'eslint.config.js',
+            'scripts/*.mjs',
             'vitest.workspace.ts',
             'packages/bundle-wasm/static/*.ts',
             'packages/cc-extension-cyclo/*.cjs',

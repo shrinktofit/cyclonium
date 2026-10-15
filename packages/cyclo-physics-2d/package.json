@@ -33,19 +33,19 @@
     "t": "npm run test:browser -- run --browser.headless=true"
   },
   "dependencies": {
-    "@cyclonium/algorithm": "workspace:*",
-    "@cyclonium/debug-draw": "workspace:*",
-    "@cyclonium/event": "workspace:*",
-    "@cyclonium/rapier2d": "workspace:*",
-    "@cyclonium/web-assembly": "workspace:*"
+    "@cyclonium/algorithm": "workspace:^",
+    "@cyclonium/debug-draw": "workspace:^",
+    "@cyclonium/event": "workspace:^",
+    "@cyclonium/rapier2d": "workspace:^",
+    "@cyclonium/web-assembly": "workspace:^"
   },
   "peerDependencies": {
-    "@cyclonium/core": "workspace:*"
+    "@cyclonium/core": "workspace:^"
   },
   "devDependencies": {
-    "@cyclonium/cc-test": "workspace:*",
-    "@cyclonium/workflow": "workspace:*",
-    "@cyclonium/types-cc": "workspace:*",
+    "@cyclonium/cc-test": "workspace:^",
+    "@cyclonium/workflow": "workspace:^",
+    "@cyclonium/types-cc": "workspace:^",
     "@types/fs-extra": "^11.0.4",
     "@vitest/browser-playwright": "catalog:",
     "fs-extra": "^11.3.0",

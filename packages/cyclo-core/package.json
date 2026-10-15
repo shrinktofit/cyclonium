@@ -36,14 +36,14 @@
     "t": "vitest run"
   },
   "dependencies": {
-    "@cyclonium/abort-controller": "workspace:*",
-    "@cyclonium/algorithm": "workspace:*",
-    "@cyclonium/math": "workspace:*"
+    "@cyclonium/abort-controller": "workspace:^",
+    "@cyclonium/algorithm": "workspace:^",
+    "@cyclonium/math": "workspace:^"
   },
   "devDependencies": {
-    "@cyclonium/cc-test": "workspace:*",
-    "@cyclonium/workflow": "workspace:*",
-    "@cyclonium/types-cc": "workspace:*",
+    "@cyclonium/cc-test": "workspace:^",
+    "@cyclonium/workflow": "workspace:^",
+    "@cyclonium/types-cc": "workspace:^",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

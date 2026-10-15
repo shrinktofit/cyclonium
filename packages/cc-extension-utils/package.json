@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@cocos/creator-types": "^3.8.5",
-    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/workflow": "workspace:^",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "catalog:",
     "typescript": "catalog:",

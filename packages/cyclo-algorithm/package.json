@@ -24,7 +24,7 @@
     "t": "vitest run"
   },
   "devDependencies": {
-    "@cyclonium/workflow": "workspace:*",
+    "@cyclonium/workflow": "workspace:^",
     "@types/node": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
