@@ -52,7 +52,9 @@ export async function setupGame({
   if (!internalInjections.headless) {
     option.overrideSettings.rendering.customPipeline = 'custom';
     option.overrideSettings.rendering.enableEffectImport = true;
-    option.overrideSettings.rendering.effectSettingsPath = 'src/effect.bin';
+    option.overrideSettings.rendering.effectSettingsPath = internalInjections.baseURL
+      ? new URL('src/effect.bin', internalInjections.baseURL).href
+      : 'src/effect.bin';
     option.overrideSettings.engine ??= {};
     option.overrideSettings.engine.builtinAssets = resolveBuiltinAssets(builtinAssets);
   }
