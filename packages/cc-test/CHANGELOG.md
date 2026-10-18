@@ -1,5 +1,11 @@
 # @cyclonium/cc-test
 
+## 0.0.104
+
+### Patch Changes
+
+- da0eb69: Support Eng test-engine entries and ImportGuide-based editor previews.
+
 ## 0.0.103
 
 ### Patch Changes
