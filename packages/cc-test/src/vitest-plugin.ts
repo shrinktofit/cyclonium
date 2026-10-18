@@ -4,7 +4,7 @@ import bundleWasm from '@cyclonium/bundle-wasm/vite';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { join } from 'node:path';
 import { readFileSync } from 'node:fs';
-import exportMap from './export-map.js';
+import type { PreviewEngineConfig } from './editor-preview-based/init.js';
 import { canvasSnapshotCommands } from './node/canvas-snapshot-command.js';
 import type { CanvasOptions, StandaloneConfigure } from './runtime/internal-shared.js';
 import type { InternalInjections } from 'virtual:cyclo-cc-test/internal-injections';
@@ -46,7 +46,7 @@ type Strategy = typeof strategies[number];
 type CcModuleId = typeof MODULE_ID_CC | typeof MODULE_ID_CC_ENV;
 type InternalModuleBase = CcModuleId | typeof moduleBaseInit | typeof moduleStandaloneConfigureGuard;
 const moduleIdToStandaloneModuleId = {
-  [MODULE_ID_CC]: 'cc',
+  [MODULE_ID_CC]: 'cc.js',
   [MODULE_ID_CC_ENV]: 'cc-env.js',
 };
 const moduleIdToInternalModuleId = {
@@ -66,6 +66,7 @@ function corePlugin({
 }: PluginOptions): Plugin {
   let viteEnvEditorBaseURL = '';
   let viteEnvStandaloneEngineDir = '';
+  let previewEngineConfig: Promise<PreviewEngineConfig> | undefined;
   const standaloneConfigureGuardModuleId = getInternalStandaloneConfigureGuardModuleId('standalone', standaloneConfigureGuardSeed++);
   return {
     name: 'vitest-plugin-cc-test',
@@ -117,7 +118,7 @@ function corePlugin({
       }
     },
 
-    load(id) {
+    async load(id) {
       if (id === moduleRuntimeInternalInjections) {
         return {
           code: renderTemplate('runtime/internal-injections.ts.ejs', {
@@ -138,11 +139,26 @@ function corePlugin({
 
       switch (parsed.strategy) {
       case 'editor-preview-based': {
+        const baseURL = getEditorBaseURL(editorBasedOpts, viteEnvEditorBaseURL);
+        const configUrl = new URL('/scripting/engine/config.json', baseURL);
+        for (const feature of ['gfx-webgl2', 'custom-pipeline']) {
+          configUrl.searchParams.append('features', feature);
+        }
+        previewEngineConfig ??= fetch(configUrl)
+          .then(async (response) => {
+            if (!response.ok) {
+              throw new Error('Failed to load editor preview engine configuration: '
+                + response.status + ' ' + response.statusText);
+            }
+            return await response.json() as PreviewEngineConfig;
+          });
+        const engine = await previewEngineConfig;
         if (parsed.base === moduleBaseInit) {
           const initModuleId = fileURLToPath(new URL('./editor-preview-based/init.js', import.meta.url)).replace(/\\/g, '/');
           const initOpts = {
-            baseURL: getEditorBaseURL(editorBasedOpts, viteEnvEditorBaseURL),
+            baseURL,
             canvas: canvasOpts,
+            engine,
           };
           return {
             code: renderTemplate('editor-preview-based/pre-init.ts.ejs', {
@@ -162,7 +178,7 @@ function corePlugin({
             postInitModuleSpecifier: toModuleSpecifier(pathToFileURL(join(import.meta.dirname, 'editor-preview-based/post-init.js')).href),
             postInitOpts: toSource({ setupGame: autoInit }),
             syntheticNamedExportsId: syntheticNamedExports,
-            exportBindings: exportMap[parsed.base],
+            exportBindings: engine.exportNames[parsed.base],
           }),
         };
       }

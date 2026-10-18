@@ -15,9 +15,21 @@ declare global {
   };
 }
 
+export interface PreviewEngineConfig {
+  importGuideUrl: string;
+  environment: {
+    platform: string;
+    mode: string;
+    features: readonly string[];
+    flags?: Readonly<Record<string, boolean | number>>;
+  };
+  exportNames: Readonly<Record<string, readonly string[]>>;
+}
+
 export interface InitOptionsEditorPreviewBased {
   baseURL: string;
   canvas?: CanvasOptions;
+  engine: PreviewEngineConfig;
 }
 
 export async function init(opts: InitOptionsEditorPreviewBased) {
@@ -47,25 +59,40 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
     return await evaluateScript(new URL(url, baseURL).href, type);
   };
 
-  await evalCCScript('/scripting/engine/bin/.cache/dev/preview/import-map.json', 'systemjs-importmap');
   await evalCCScript('/scripting/x/import-map.json', 'systemjs-importmap');
   await evalCCScript('/scripting/import-map-global', 'systemjs-importmap');
   await evalCCScript('/scripting/systemjs/system.js');
+  const { ImportGuide } = await import(/* @vite-ignore */
+    new URL(opts.engine.importGuideUrl, baseURL).href,
+  ) as {
+    ImportGuide: new (options: PreviewEngineConfig['environment']) => {
+      resolve(specifier: string, url: string): string;
+      loadSyntheticModuleSource(url: string): string | undefined;
+    };
+  };
+  const guide = new ImportGuide(opts.engine.environment);
   const systemJsPrototype = System.constructor.prototype;
   const virtualPalModules = new Set([
     'pal/env',
     'pal/screen-adapter',
   ]);
-  const vendorResolve = systemJsPrototype.resolve?.bind(systemJsPrototype) ?? System.resolve.bind(System);
+  const vendorResolve = systemJsPrototype.resolve;
   systemJsPrototype.resolve = function (id: string, parentUrl?: string) {
     if (virtualPalModules.has(id)) {
       return id;
     }
-    return vendorResolve(id, parentUrl);
+    const engineUrl = guide.resolve(id, parentUrl ?? baseURL.href);
+    return engineUrl !== id ? engineUrl : vendorResolve.call(this, id, parentUrl);
   };
 
   const vendorSystemInstantiate = systemJsPrototype.instantiate;
   systemJsPrototype.instantiate = async function (id: string, parentUrl?: string) {
+    const source = guide.loadSyntheticModuleSource(id);
+    if (source !== undefined) {
+      // eslint-disable-next-line @typescript-eslint/no-implied-eval -- Execute Guide-generated System.register code.
+      new Function('System', `${source}\n//# sourceURL=${id}`)(this);
+      return this.getRegister();
+    }
     if (id === 'pal/env') {
       const { BrowserPalEnvController } = await import('./cc-pal/browser-env.js');
       const palEnvController = new BrowserPalEnvController(gameDiv, gameContainer, gameCanvas);
@@ -114,7 +141,6 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
       return { json: {}, url: url.href };
     });
   });
-  await evalCCScript('/scripting/engine/bin/.cache/dev/preview/bundled/index.js');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cc = await System.import('cc') as Record<string, any>;
   const builtinPipelineURL = internalInjections.headless
@@ -131,22 +157,6 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
   const internalDownloader = new Downloader({
     baseURL: baseURL.href,
   });
-
-  await System.import('q-bundled:///fs/exports/gfx-webgl2.js');
-  await System.import('q-bundled:///fs/exports/custom-pipeline.js');
-  const { effectSettings } = (await System.import('q-bundled:///fs/cocos/core/effect-settings.js')) as {
-    effectSettings: {
-      _data: ArrayBuffer;
-      init: (path: string) => Promise<void>;
-    };
-  };
-  effectSettings.init = async function (path: string | null | undefined) {
-    if (!path) {
-      return;
-    }
-    const arrayBuffer = await internalDownloader.downloadArrayBuffer(path);
-    this._data = arrayBuffer;
-  };
 
   for (const [ext, downloadHandler] of Object.entries(createDownloadHandlers(internalDownloader))) {
     cc.assetManager.downloader.register(ext, callbackfy(downloadHandler));
