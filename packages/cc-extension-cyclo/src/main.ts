@@ -4,7 +4,7 @@ import { selfExtensionName } from './self-info.js';
 export default function () {
   logger.debug(`${selfExtensionName} loaded`);
   return {
-    dispose() {
+    deactivate() {
       logger.debug(`${selfExtensionName} unloaded`);
     },
   };
