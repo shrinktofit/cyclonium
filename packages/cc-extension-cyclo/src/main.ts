@@ -1,12 +1,11 @@
 import { logger } from './logger.js';
 import { selfExtensionName } from './self-info.js';
 
-export const methods = {};
-
-export function load(): void {
+export default function () {
   logger.debug(`${selfExtensionName} loaded`);
-}
-
-export function unload() {
-  logger.debug(`${selfExtensionName} unloaded`);
+  return {
+    deactivate() {
+      logger.debug(`${selfExtensionName} unloaded`);
+    },
+  };
 }
