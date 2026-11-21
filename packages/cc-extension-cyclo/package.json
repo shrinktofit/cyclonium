@@ -7,9 +7,6 @@
     "directory": "packages/cc-extension-cyclo"
   },
   "extensionName": "cc-extension-cyclo",
-  "exm": {
-    "registryPackageName": "@cyclonium/extension-cyclo"
-  },
   "version": "0.0.102",
   "type": "module",
   "package_version": 2,
