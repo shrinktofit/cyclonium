@@ -27,6 +27,7 @@
     "hookScript": "./dist/hooks.cjs"
   },
   "vortex": {
+    "extensionId": "tech.bsgames.cyclo",
     "extensionName": "cc-extension-cyclo",
     "hookScript": "./dist/hooks.cjs"
   },
