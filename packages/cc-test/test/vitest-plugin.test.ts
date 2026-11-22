@@ -58,7 +58,7 @@ describe('editor based mode', () => {
         }),
       ],
       env: {
-        VITE_CC_TEST_EDITOR_BASE_URL: 'http://localhost:7457/',
+        VITE_CC_TEST_EDITOR_BASE_URL: 'http://localhost:12139/ext/volix.preview/',
       },
     });
     expect(testResult.ok).toBe(true);
@@ -74,7 +74,7 @@ describe('editor based mode', () => {
         }),
       ],
       env: {
-        VITE_CC_TEST_EDITOR_BASE_URL: 'http://localhost:7457/',
+        VITE_CC_TEST_EDITOR_BASE_URL: 'http://localhost:12139/ext/volix.preview/',
       },
     });
     expect(testResult.ok).toBe(true);
@@ -87,18 +87,20 @@ describe('editor based mode', () => {
         thisPlugin({
           autoInit: false,
           editorBased: {
-            baseURL: 'http://localhost:7458/',
+            baseURL: 'http://localhost:12140/ext/volix.preview/',
           },
         }),
       ],
       env: {
-        VITE_CC_TEST_EDITOR_BASE_URL: 'http://localhost:7457/',
+        VITE_CC_TEST_EDITOR_BASE_URL: 'http://localhost:12139/ext/volix.preview/',
       },
     });
     expect(testResult.ok).toBe(true);
   });
 
   it('should configure runtime baseURL with the default editor URL', async () => {
+    /// @case Runtime setup is imported without an editor URL override.
+    /// @expect It exposes the namespaced default preview URL.
     const testResult = await runTestFixture({
       fixtureDir: fixtureOf`editor-runtime-injections-default`,
       plugins: [
@@ -106,6 +108,9 @@ describe('editor based mode', () => {
           autoInit: false,
         }),
       ],
+      env: {
+        VITE_CC_TEST_EDITOR_BASE_URL: '',
+      },
     });
     expect(testResult.ok).toBe(true);
   });
@@ -249,6 +254,7 @@ describe(`standalone mode`, () => {
         thisPlugin({
           defaultStrategy: 'standalone',
           configure: {
+            platform: 'NODEJS',
             HEADLESS: false,
             DEBUG: false,
             NET_MODE: 7,

@@ -41,12 +41,14 @@ export async function evaluateScript(url: string, type?: string) {
 }
 
 function isEngineScriptUrl(url: string) {
-  return new URL(url).pathname.startsWith('/scripting/engine/');
+  const pathname = new URL(url).pathname;
+  return pathname.startsWith('/ext/volix.preview/scripting/engine/')
+    || pathname.startsWith('/ext/volix.engine/development/');
 }
 
 export function polyfill(): void {
   const vendorFetch = globalThis.fetch;
-  const ENGINE_EXTERNAL_URL_PREFIX = '/engine_external/?url=';
+  const ENGINE_EXTERNAL_URL_PREFIX = '/ext/volix.preview/engine_external/?url=';
   globalThis.fetch = async (url, ...remainArgs) => {
     if (typeof url === 'string' && url.startsWith(ENGINE_EXTERNAL_URL_PREFIX)) {
       const encoded = `${ENGINE_EXTERNAL_URL_PREFIX}${encodeURIComponent(url.slice(ENGINE_EXTERNAL_URL_PREFIX.length))}`;

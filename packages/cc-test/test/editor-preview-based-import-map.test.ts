@@ -5,7 +5,7 @@ describe('resolveBuiltinPipelineURL', () => {
   it('should locate the builtin pipeline URL by its stable import-map source key', () => {
     const defaultRenderPipelineDir = 'file:///preview-engine/editor/assets/default_renderpipeline';
     const builtinPipelineSpecifier = `${defaultRenderPipelineDir}/builtin-pipeline.ts`;
-    const importMapURL = new URL('http://localhost:7456/scripting/x/import-map.json');
+    const importMapURL = new URL('http://localhost:12138/ext/volix.preview/scripting/x/import-map.json');
 
     expect(resolveBuiltinPipelineURL({
       imports: {
@@ -13,7 +13,7 @@ describe('resolveBuiltinPipelineURL', () => {
         [builtinPipelineSpecifier]: './chunks/c1/c13be63ea4603203e523072954d7e785dacda0fc.js',
         cc: './chunks/cc.js',
       },
-    }, importMapURL)).toBe('http://localhost:7456/scripting/x/chunks/c1/c13be63ea4603203e523072954d7e785dacda0fc.js');
+    }, importMapURL)).toBe('http://localhost:12138/ext/volix.preview/scripting/x/chunks/c1/c13be63ea4603203e523072954d7e785dacda0fc.js');
   });
 
   it('should throw a clear error when the builtin pipeline key is missing', () => {
@@ -22,7 +22,7 @@ describe('resolveBuiltinPipelineURL', () => {
         imports: {
           cc: './chunks/cc.js',
         },
-      }, new URL('http://localhost:7456/scripting/x/import-map.json'));
+      }, new URL('http://localhost:12138/ext/volix.preview/scripting/x/import-map.json'));
     }).toThrow('Can not locate builtin pipeline module in editor preview import map.');
   });
 });

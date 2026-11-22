@@ -40,7 +40,7 @@ const moduleBaseInit = '\0cc-test:init';
 const moduleStandaloneConfigureGuard = '\0cc-test:standalone-configure-guard';
 const moduleRuntimeInternalInjections = '\0cc-test:runtime-internal-injections';
 const moduleRuntimeInternalInjectionsSpecifier = 'virtual:cyclo-cc-test/internal-injections';
-const DEFAULT_EDITOR_BASE_URL = 'http://localhost:7456/';
+const DEFAULT_EDITOR_BASE_URL = 'http://localhost:12138/ext/volix.preview/';
 const strategies = ['editor-preview-based', 'standalone'] as const;
 type Strategy = typeof strategies[number];
 type CcModuleId = typeof MODULE_ID_CC | typeof MODULE_ID_CC_ENV;
@@ -140,7 +140,7 @@ function corePlugin({
       switch (parsed.strategy) {
       case 'editor-preview-based': {
         const baseURL = getEditorBaseURL(editorBasedOpts, viteEnvEditorBaseURL);
-        const configUrl = new URL('/scripting/engine/config.json', baseURL);
+        const configUrl = new URL('scripting/engine/config.json', baseURL);
         for (const feature of ['gfx-webgl2', 'custom-pipeline']) {
           configUrl.searchParams.append('features', feature);
         }
@@ -196,6 +196,7 @@ function corePlugin({
 
         if (parsed.base === moduleStandaloneConfigureGuard) {
           const defaultConfigure = {
+            platform: 'HTML5',
             HEADLESS: true,
             ...configureOpts,
           };

@@ -3,6 +3,8 @@ import { getCanvas, setupGame } from '@cyclonium/cc-test/runtime';
 import { expect, it } from 'vitest';
 
 it('should apply setupGame canvas options before initializing game', async () => {
+  /// @case Override the plugin canvas ID and DPR, initialize the game, then resize its public PAL window.
+  /// @expect The same render canvas keeps its per-test ID and DPR while its logical and pixel dimensions follow the resize.
   expect(cc.game).toBeDefined();
 
   const canvas = getCanvas();
@@ -49,6 +51,27 @@ it('should apply setupGame canvas options before initializing game', async () =>
   });
   expectGameDivStyle(document.getElementById('GameDiv'), 80, 64);
   expectGameContainerStyle(document.getElementById('Cocos3dGameContainer'));
+
+  const { mainWindow } = await System.import('pal/windowing') as {
+    mainWindow: { resize(width: number, height: number): Promise<void> };
+  };
+  await mainWindow.resize(100, 80);
+
+  expect(getCanvas()).toBe(canvas);
+  expect(cc.game.canvas).toBe(canvas);
+  expect(document.getElementById('PerTestGameCanvas')).toBe(canvas);
+  expectCanvas(canvas, {
+    id: 'PerTestGameCanvas',
+    width: 250,
+    height: 200,
+  });
+  expectCocosScreenSize({
+    devicePixelRatio: 2.5,
+    frameWidth: 100,
+    frameHeight: 80,
+    windowWidth: 250,
+    windowHeight: 200,
+  });
 });
 
 interface ExpectedCanvas {

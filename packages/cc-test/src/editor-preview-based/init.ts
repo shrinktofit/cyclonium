@@ -44,14 +44,17 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
   gameContainer.id = 'Cocos3dGameContainer';
   gameDiv.appendChild(gameContainer);
 
-  const gameCanvas = document.createElement('canvas');
-  let resolvedCanvasOptions: ResolvedCanvasOptions | undefined;
-  internalShared.canvas = gameCanvas;
-  internalShared.configureCanvas = createCanvasConfigurator(gameDiv, gameContainer, gameCanvas, opts.canvas, (options) => {
-    resolvedCanvasOptions = options;
-  });
-  internalShared.configureCanvas();
-  gameContainer.appendChild(gameCanvas);
+  const defaultCanvasOptions: ResolvedCanvasOptions = {
+    id: opts.canvas?.id ?? 'GameCanvas',
+    devicePixelRatio: opts.canvas?.devicePixelRatio ?? window.devicePixelRatio,
+    size: {
+      width: opts.canvas?.size?.width ?? 300,
+      height: opts.canvas?.size?.height ?? 150,
+    },
+  };
+  let resolvedCanvasOptions = defaultCanvasOptions;
+  applyGameDivStyle(gameDiv, defaultCanvasOptions.size);
+  applyGameContainerStyle(gameContainer);
 
   const baseURL = new URL(opts.baseURL);
 
@@ -59,9 +62,9 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
     return await evaluateScript(new URL(url, baseURL).href, type);
   };
 
-  await evalCCScript('/scripting/x/import-map.json', 'systemjs-importmap');
-  await evalCCScript('/scripting/import-map-global', 'systemjs-importmap');
-  await evalCCScript('/scripting/systemjs/system.js');
+  await evalCCScript('scripting/x/import-map.json', 'systemjs-importmap');
+  await evalCCScript('scripting/import-map-global', 'systemjs-importmap');
+  await evalCCScript('scripting/systemjs/system.js');
   const { ImportGuide } = await import(/* @vite-ignore */
     new URL(opts.engine.importGuideUrl, baseURL).href,
   ) as {
@@ -106,7 +109,7 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
         canvas: gameCanvas,
         configureCanvas: internalShared.configureCanvas,
         getDevicePixelRatio: () => {
-          return resolvedCanvasOptions?.devicePixelRatio ?? window.devicePixelRatio;
+          return resolvedCanvasOptions.devicePixelRatio;
         },
       });
       return createSystemJsModule(palScreenAdapterController.pal);
@@ -131,7 +134,7 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
     return this.getRegister();
   };
   System.setResolutionDetailMapCallback(() => {
-    const url = new URL('/scripting/x/resolution-detail-map.json', baseURL);
+    const url = new URL('scripting/x/resolution-detail-map.json', baseURL);
     return fetch(url).then(async (response) => {
       return JSON.parse(await response.text());
     }).then(function (json) {
@@ -141,6 +144,40 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
       return { json: {}, url: url.href };
     });
   });
+  const { createMainWindow } = await System.import('pal/windowing/web/prelude') as {
+    createMainWindow(this: void, options: {
+      windowEl: HTMLElement;
+      onResizeRequest(width: number, height: number): Promise<void>;
+    }): {
+      requestSurface(): {
+        readonly rawHandle: HTMLCanvasElement;
+        resize(width: number, height: number): void;
+      };
+    };
+  };
+  const mainWindow = createMainWindow({
+    windowEl: gameDiv,
+    onResizeRequest: (width, height) => {
+      configureCanvas({ ...resolvedCanvasOptions, size: { width, height } });
+      return Promise.resolve();
+    },
+  });
+  const surface = mainWindow.requestSurface();
+  const gameCanvas = surface.rawHandle;
+  internalShared.canvas = gameCanvas;
+  const configureCanvas = createCanvasConfigurator(gameDiv, gameContainer, gameCanvas, defaultCanvasOptions, (options) => {
+    resolvedCanvasOptions = options;
+    Object.defineProperty(window, 'devicePixelRatio', {
+      configurable: true,
+      value: options.devicePixelRatio,
+    });
+    surface.resize(
+      Math.round(options.size.width * options.devicePixelRatio),
+      Math.round(options.size.height * options.devicePixelRatio),
+    );
+  });
+  internalShared.configureCanvas = configureCanvas;
+  configureCanvas();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cc = await System.import('cc') as Record<string, any>;
   const builtinPipelineURL = internalInjections.headless
@@ -232,7 +269,7 @@ function callbackfy<T, TArgs extends unknown[]>(promise: (...args: TArgs) => Pro
 
 type BundleConfigOptions = Record<string, unknown>;
 async function resolveEditorPreviewBuiltinPipelineURL(baseURL: URL): Promise<string> {
-  const xImportMapURL = new URL('/scripting/x/import-map.json', baseURL);
+  const xImportMapURL = new URL('scripting/x/import-map.json', baseURL);
   const xImportMap = await loadSystemJSImportMap(xImportMapURL);
   return resolveBuiltinPipelineURL(xImportMap, xImportMapURL);
 }
@@ -285,7 +322,7 @@ function polyfill(opts: InitOptionsEditorPreviewBased) {
   polyfillCanvasSelectors();
 
   const vendorFetch = globalThis.fetch;
-  const ENGINE_EXTERNAL_URL_PREFIX = '/engine_external/?url=';
+  const ENGINE_EXTERNAL_URL_PREFIX = '/ext/volix.preview/engine_external/?url=';
   globalThis.fetch = async (url, ...remainArgs) => {
     if (typeof url === 'string' && url.startsWith(ENGINE_EXTERNAL_URL_PREFIX)) {
       const encoded = `${ENGINE_EXTERNAL_URL_PREFIX}${encodeURIComponent(url.slice(ENGINE_EXTERNAL_URL_PREFIX.length))}`;
@@ -364,8 +401,6 @@ function applyCanvasOptions(
   opts: ResolvedCanvasOptions,
 ): void {
   gameCanvas.id = opts.id;
-  gameCanvas.width = Math.round(opts.size.width * opts.devicePixelRatio);
-  gameCanvas.height = Math.round(opts.size.height * opts.devicePixelRatio);
   applyGameDivStyle(gameDiv, opts.size);
   applyGameContainerStyle(gameContainer);
   applyGameCanvasStyle(gameCanvas);
