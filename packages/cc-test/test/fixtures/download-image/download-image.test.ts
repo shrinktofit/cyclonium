@@ -23,10 +23,18 @@ describe('Downloader.downloadImage', () => {
   });
 
   it('should reject when the browser fails to load the image', async () => {
+    /// @case A malformed image reaches the browser's image error event.
+    /// @expect The downloader rejects with an Error naming the URL and preserving the original event as its cause.
     const downloader = new Downloader({
       baseURL: window.location.href,
     });
 
-    await expect(downloader.downloadImage('data:image/png;base64,not-an-image')).rejects.toBeInstanceOf(Event);
+    const url = 'data:image/png;base64,not-an-image';
+    const download = downloader.downloadImage(url);
+    await expect(download).rejects.toBeInstanceOf(Error);
+    await expect(download).rejects.toMatchObject({
+      message: `Failed to download image: ${url}`,
+      cause: expect.any(Event),
+    });
   });
 });

@@ -68,7 +68,11 @@ export async function runTestFixture(opts: {
           browser: browser
             ? {
               enabled: true,
-              provider: playwright(),
+              provider: playwright({
+                launchOptions: {
+                  args: ['--disable-web-security'],
+                },
+              }),
               headless: true,
               instances: [
                 {

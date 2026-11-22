@@ -47,6 +47,7 @@ export interface ExtensionContributions {
     script: string;
   };
 
+  /** Cocos Creator server contribution. Vortex uses `web-server` instead. */
   'server'?: string;
 }
 

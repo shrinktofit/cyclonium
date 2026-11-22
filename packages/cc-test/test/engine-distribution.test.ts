@@ -4,6 +4,21 @@ import ccTest from '@/vitest-plugin.js';
 import { fixtureOf, runTestFixture } from './fixture-runner.js';
 
 describe('Eng engine distribution integration', () => {
+  it.each([false, true])('loads the standalone player engine without an editor bridge (browser: %s)', async (browser) => {
+    /// @case Load the real standalone engine in Node and Chromium without an explicit platform override.
+    /// @expect The player filesystem platform is selected before cc is imported, and Asset identity is preserved without EditorExtends.
+    const result = await runTestFixture({
+      browser,
+      fixtureDir: fixtureOf`standalone-platform`,
+      plugins: ccTest({
+        defaultStrategy: 'standalone',
+        autoInit: false,
+        standalone: { dir: process.env.VITE_CC_TEST_STANDALONE_ENGINE_DIR },
+      }),
+    });
+    expect(result.ok, result.errors.map((error) => error.message).join('\n')).toBe(true);
+  }, 120_000);
+
   it('uses the standalone test-engine public entries', async () => {
     /// @case Load a compiled Eng distribution through the public Vitest plugin.
     /// @expect Configuration, named exports and Asset identity survive the ESM bridge.
