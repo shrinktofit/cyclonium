@@ -158,7 +158,7 @@ export async function init(opts: InitOptionsEditorPreviewBased) {
   const mainWindow = createMainWindow({
     windowEl: gameDiv,
     onResizeRequest: (width, height) => {
-      configureCanvas({ size: { width, height } });
+      configureCanvas({ ...resolvedCanvasOptions, size: { width, height } });
       return Promise.resolve();
     },
   });
