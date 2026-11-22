@@ -1,5 +1,11 @@
 # @cyclonium/cc-test
 
+## 0.0.105
+
+### Patch Changes
+
+- 76c650c: Load standalone engines with the HTML5 player platform so filesystem selection works without editor-only bridges. Preserve explicit platform overrides. Use the engine window's presentation surface for editor preview canvases, keeping configured size and pixel density synchronized.
+
 ## 0.0.104
 
 ### Patch Changes
